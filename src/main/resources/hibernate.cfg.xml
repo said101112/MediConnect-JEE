@@ -33,6 +33,10 @@
         <mapping class="com.mediconnect.model.Patient"/>
         <mapping class="com.mediconnect.model.Medecin"/>
         <mapping class="com.mediconnect.model.Secretaire"/>
+        <mapping class="com.mediconnect.model.Disponibilite"/>
+        <mapping class="com.mediconnect.model.RendezVous"/>
+        <mapping class="com.mediconnect.model.Consultation"/>
+        <mapping class="com.mediconnect.model.Facture"/>
 
     </session-factory>
 </hibernate-configuration>
