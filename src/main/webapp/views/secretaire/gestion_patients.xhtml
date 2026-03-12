@@ -1,0 +1,94 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets" xmlns:p="http://primefaces.org/ui" template="layout.xhtml">
+
+    <ui:define name="title">Patients - Secrétaire</ui:define>
+
+    <ui:define name="topbar-title">
+        <i class="pi pi-users" style="color: var(--primary-color);"></i> Patients
+    </ui:define>
+
+    <ui:define name="topbar-actions">
+        <p:commandButton value="New Patient" icon="pi pi-user-plus" onclick="PF('patientDialog').show();" type="button"
+            styleClass="ui-button-primary" style="padding: 0.5rem 1rem;" />
+    </ui:define>
+
+    <ui:define name="content">
+        <style>
+            .card {
+                background: white;
+                border-radius: 12px;
+                padding: 24px;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+                border: 1px solid var(--surface-border);
+            }
+        </style>
+
+        <h:form id="form">
+            <p:growl id="messages" showDetail="true" />
+
+            <div class="card">
+                <p:dataTable id="patientsTable" var="patient" value="#{patientBean.patients}" paginator="true" rows="10"
+                    emptyMessage="Aucun patient trouvé." styleClass="ui-datatable-striped">
+
+                    <p:column headerText="Nom">
+                        <h:outputText value="#{patient.nom}" style="font-weight: 500;" />
+                    </p:column>
+                    <p:column headerText="Prénom">
+                        <h:outputText value="#{patient.prenom}" />
+                    </p:column>
+                    <p:column headerText="Email">
+                        <h:outputText value="#{patient.email}" />
+                    </p:column>
+                    <p:column headerText="Téléphone">
+                        <h:outputText value="#{patient.telephone}" />
+                    </p:column>
+                    <p:column headerText="CIN">
+                        <h:outputText value="#{patient.cin}" />
+                    </p:column>
+                    <p:column headerText="Action" style="width: 100px; text-align: center;">
+                        <p:commandButton icon="pi pi-eye" title="Voir Dossier"
+                            styleClass="rounded-button ui-button-flat ui-button-plain" />
+                    </p:column>
+                </p:dataTable>
+            </div>
+
+            <p:dialog header="Ajouter un nouveau patient" widgetVar="patientDialog" modal="true" showEffect="fade"
+                hideEffect="fade" resizable="false">
+                <p:outputPanel id="patientDetail" style="text-align:center;">
+                    <h:panelGrid columns="2" cellpadding="8" style="text-align:left;">
+
+                        <h:outputLabel for="nom" value="Nom:" style="font-weight: 500;" />
+                        <p:inputText id="nom" value="#{patientBean.newPatient.nom}" required="true" />
+
+                        <h:outputLabel for="prenom" value="Prénom:" style="font-weight: 500;" />
+                        <p:inputText id="prenom" value="#{patientBean.newPatient.prenom}" required="true" />
+
+                        <h:outputLabel for="cin" value="CIN:" style="font-weight: 500;" />
+                        <p:inputText id="cin" value="#{patientBean.newPatient.cin}" required="true" />
+
+                        <h:outputLabel for="email" value="Email:" style="font-weight: 500;" />
+                        <p:inputText id="email" value="#{patientBean.newPatient.email}" required="true" />
+
+                        <h:outputLabel for="telephone" value="Téléphone:" style="font-weight: 500;" />
+                        <p:inputText id="telephone" value="#{patientBean.newPatient.telephone}" />
+
+                        <h:outputLabel for="dob" value="Date Nais.:" style="font-weight: 500;" />
+                        <p:datePicker id="dob" value="#{patientBean.newPatient.dateNaissance}" pattern="yyyy-MM-dd" />
+
+                        <h:outputLabel for="antecedents" value="Antécédents:" style="font-weight: 500;" />
+                        <p:inputTextarea id="antecedents" value="#{patientBean.newPatient.antecedents}" rows="3"
+                            cols="22" />
+
+                    </h:panelGrid>
+                </p:outputPanel>
+                <f:facet name="footer">
+                    <p:commandButton value="Enregistrer" action="#{patientBean.savePatient}"
+                        update="patientsTable messages patientDetail"
+                        oncomplete="if (!args.validationFailed) PF('patientDialog').hide();"
+                        styleClass="ui-button-primary" />
+                </f:facet>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

@@ -2,9 +2,6 @@ package com.mediconnect.controller;
 
 import com.mediconnect.model.Patient;
 import com.mediconnect.model.Role;
-import com.mediconnect.model.User;
-import com.mediconnect.repository.UserRepository;
-import com.mediconnect.util.PasswordUtil;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -14,7 +11,6 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
 import java.io.Serializable;
-import java.util.Optional;
 
 @Named
 @RequestScoped
@@ -36,14 +32,6 @@ public class SignupBean implements Serializable {
             return null;
         }
 
-        UserRepository repo = new UserRepository();
-        Optional<User> existingUser = repo.findByEmail(email.trim().toLowerCase());
-        if (existingUser.isPresent()) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Cet email est déjà utilisé."));
-            return null;
-        }
-
         // Parse Full Name into Nom and Prenom
         String nom = "";
         String prenom = "";
@@ -61,14 +49,15 @@ public class SignupBean implements Serializable {
         newUser.setPrenom(prenom);
         newUser.setNom(nom);
         newUser.setEmail(email.trim().toLowerCase());
-        newUser.setPassword(PasswordUtil.hashPassword(password));
-        newUser.setActive(true);
+
         // Provide dummy data for required database fields
         newUser.setCin("PENDING-" + UUID.randomUUID().toString().substring(0, 8));
         newUser.setDateNaissance(LocalDate.of(2000, 1, 1));
 
         try {
-            repo.save(newUser);
+            com.mediconnect.service.PatientService patientService = new com.mediconnect.service.PatientService();
+            patientService.registerPatient(newUser, password);
+
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_INFO, "Succès",
                             "Compte créé ! Vous pouvez maintenant vous connecter."));
@@ -78,8 +67,9 @@ public class SignupBean implements Serializable {
 
             return "login?faces-redirect=true";
         } catch (Exception e) {
+            String msg = e.getMessage() != null ? e.getMessage() : "Impossible de créer le compte.";
             FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur système", "Impossible de créer le compte."));
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", msg));
             e.printStackTrace();
             return null;
         }
