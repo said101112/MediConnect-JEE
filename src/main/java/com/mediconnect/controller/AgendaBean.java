@@ -103,6 +103,15 @@ public class AgendaBean implements Serializable {
             return;
         }
 
+        LocalDate clickedDate = selectEvent.getObject().toLocalDate();
+        if (clickedDate.isBefore(LocalDate.now())) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention",
+                            "Vous ne pouvez pas planifier de rendez-vous dans le passé."));
+            org.primefaces.PrimeFaces.current().ajax().addCallbackParam("showDialog", false);
+            return;
+        }
+
         newRendezVous = new RendezVous();
         newRendezVous.setPatient(new Patient());
 
@@ -110,7 +119,7 @@ public class AgendaBean implements Serializable {
         newRendezVous.setDureeMinutes(30);
 
         // Capture selected date
-        this.selectedDate = selectEvent.getObject().toLocalDate();
+        this.selectedDate = clickedDate;
         this.selectedTimeSlot = null; // Reset selection
 
         // Calculate free hours
@@ -130,6 +139,11 @@ public class AgendaBean implements Serializable {
             return;
         }
 
+        LocalDate today = LocalDate.now();
+        if (selectedDate.isBefore(today)) {
+            return; // No slots available for past dates
+        }
+
         List<LocalTime> allSlots = new ArrayList<>();
         // Morning
         for (int h = 9; h < 12; h++) {
@@ -147,7 +161,14 @@ public class AgendaBean implements Serializable {
                 .filter(r -> r.getDateHeure() != null && r.getDateHeure().toLocalDate().equals(selectedDate))
                 .collect(Collectors.toList());
 
+        LocalTime now = LocalTime.now();
+
         for (LocalTime slot : allSlots) {
+            // Filter out past times for today
+            if (selectedDate.isEqual(today) && slot.isBefore(now)) {
+                continue;
+            }
+
             boolean isFree = true;
             LocalTime slotEnd = slot.plusMinutes(30);
 
