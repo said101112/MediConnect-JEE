@@ -70,6 +70,7 @@ public class AuthorizationPhaseListener implements PhaseListener, Serializable {
         if (viewId == null)
             return true;
         return viewId.contains("/login.xhtml")
+                || viewId.contains("/signup.xhtml")
                 || viewId.contains("/access-denied.xhtml")
                 || viewId.startsWith("/jakarta.faces.resource")
                 || viewId.startsWith("/javax.faces.resource");
