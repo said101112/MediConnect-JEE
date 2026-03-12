@@ -1,9 +1,13 @@
 package com.mediconnect.controller;
 
+import com.mediconnect.model.Patient;
 import com.mediconnect.model.Role;
 import com.mediconnect.model.User;
 import com.mediconnect.repository.UserRepository;
 import com.mediconnect.util.PasswordUtil;
+
+import java.time.LocalDate;
+import java.util.UUID;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.application.FacesMessage;
@@ -53,13 +57,15 @@ public class SignupBean implements Serializable {
             }
         }
 
-        User newUser = new User();
+        Patient newUser = new Patient();
         newUser.setPrenom(prenom);
         newUser.setNom(nom);
         newUser.setEmail(email.trim().toLowerCase());
         newUser.setPassword(PasswordUtil.hashPassword(password));
-        newUser.setRole(role != null ? role : Role.PATIENT);
         newUser.setActive(true);
+        // Provide dummy data for required database fields
+        newUser.setCin("PENDING-" + UUID.randomUUID().toString().substring(0, 8));
+        newUser.setDateNaissance(LocalDate.of(2000, 1, 1));
 
         try {
             repo.save(newUser);

@@ -2,20 +2,22 @@ package com.mediconnect.model;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * JPA Entity representing a user in the MediConnect system.
+ * Mapped superclass or base Entity for all users in the MediConnect system.
+ * We use JOINED inheritance strategy to map to specific tables.
  */
 @Entity
 @Table(name = "users")
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "role", discriminatorType = DiscriminatorType.STRING)
 @NamedQueries({
         @NamedQuery(name = "User.findByEmail", query = "SELECT u FROM User u WHERE u.email = :email"),
-        @NamedQuery(name = "User.findAll", query = "SELECT u FROM User u ORDER BY u.nom"),
-        @NamedQuery(name = "User.findByRole", query = "SELECT u FROM User u WHERE u.role = :role ORDER BY u.nom")
+        @NamedQuery(name = "User.findAll", query = "SELECT u FROM User u ORDER BY u.id"),
+        @NamedQuery(name = "User.findByRole", query = "SELECT u FROM User u WHERE u.role = :role")
 })
-public class User implements Serializable {
+public abstract class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -30,63 +32,32 @@ public class User implements Serializable {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false, length = 20)
+    @Column(name = "role", nullable = false, length = 20, insertable = false, updatable = false)
     private Role role;
-
-    @Column(name = "nom", nullable = false, length = 100)
-    private String nom;
-
-    @Column(name = "prenom", nullable = false, length = 100)
-    private String prenom;
-
-    @Column(name = "telephone", length = 20)
-    private String telephone;
-
-    @Column(name = "date_naissance")
-    private LocalDate dateNaissance;
-
-    @Column(name = "adresse", length = 255)
-    private String adresse;
-
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 
     @Column(name = "active")
     private Boolean active = true;
 
-    // ==================== Constructors ====================
+    @Column(name = "created_at", insertable = false, updatable = false)
+    private LocalDateTime createdAt;
 
-    public User() {
-    }
+    // Abstract property getters that must be implemented by subclasses
+    public abstract String getNom();
 
-    public User(String email, String password, Role role, String nom, String prenom) {
-        this.email = email;
-        this.password = password;
-        this.role = role;
-        this.nom = nom;
-        this.prenom = prenom;
-    }
+    public abstract void setNom(String nom);
 
-    // ==================== Lifecycle Callbacks ====================
+    public abstract String getPrenom();
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
+    public abstract void setPrenom(String prenom);
 
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
+    public abstract String getTelephone();
+
+    public abstract void setTelephone(String telephone);
 
     // ==================== Helper Methods ====================
 
     public String getFullName() {
-        return prenom + " " + nom;
+        return getPrenom() + " " + getNom();
     }
 
     // ==================== Getters & Setters ====================
@@ -119,65 +90,10 @@ public class User implements Serializable {
         return role;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public String getNom() {
-        return nom;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public String getPrenom() {
-        return prenom;
-    }
-
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
-    }
-
-    public String getTelephone() {
-        return telephone;
-    }
-
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
-    }
-
-    public LocalDate getDateNaissance() {
-        return dateNaissance;
-    }
-
-    public void setDateNaissance(LocalDate dateNaissance) {
-        this.dateNaissance = dateNaissance;
-    }
-
-    public String getAdresse() {
-        return adresse;
-    }
-
-    public void setAdresse(String adresse) {
-        this.adresse = adresse;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+    // Usually role should be set via subclass instantiation instead of directly
+    // mutating it due to Discriminator,
+    // but JPA allows explicit setting if you ignore discriminator restrictions.
+    // It's safer to only read it.
 
     public Boolean getActive() {
         return active;
@@ -187,14 +103,11 @@ public class User implements Serializable {
         this.active = active;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", email='" + email + '\'' +
-                ", role=" + role +
-                ", nom='" + nom + '\'' +
-                ", prenom='" + prenom + '\'' +
-                '}';
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

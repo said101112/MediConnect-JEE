@@ -30,6 +30,9 @@
 
         <!-- Mapping des entités -->
         <mapping class="com.mediconnect.model.User"/>
+        <mapping class="com.mediconnect.model.Patient"/>
+        <mapping class="com.mediconnect.model.Medecin"/>
+        <mapping class="com.mediconnect.model.Secretaire"/>
 
     </session-factory>
 </hibernate-configuration>
