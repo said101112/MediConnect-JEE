@@ -161,7 +161,9 @@
                         update=":eventDialogForm:eventDetails messages"
                         oncomplete="if (args.showDialog) PF('eventDialog').show();" />
 
-                    <p:ajax event="eventSelect" listener="#{prendreRdvBean.onEventSelect}" update="messages" />
+                    <p:ajax event="eventSelect" listener="#{prendreRdvBean.onEventSelect}"
+                        update="messages :cancelDialogForm:cancelDetails"
+                        oncomplete="if (args.isMine) PF('cancelDialog').show();" />
                 </p:schedule>
             </div>
         </h:form>
@@ -202,6 +204,28 @@
                 </div>
             </h:form>
         </p:dialog>
+
+        <p:confirmDialog widgetVar="cancelDialog" header="Annuler le rendez-vous"
+            message="Êtes-vous sûr de vouloir annuler ce rendez-vous ?" severity="warn">
+            <h:form id="cancelDialogForm">
+                <p:outputPanel id="cancelDetails" style="margin-bottom: 20px;">
+                    <div
+                        style="background: #fff1f2; padding: 12px; border-radius: 8px; color: #991b1b; font-size: 14px;">
+                        <i class="pi pi-info-circle" style="margin-right: 8px;"></i>
+                        RDV prévu le <strong>#{prendreRdvBean.selectedDate}</strong> à
+                        <strong>#{prendreRdvBean.selectedTimeSlot}</strong>.
+                    </div>
+                </p:outputPanel>
+
+                <div style="text-align: right; display: flex; justify-content: flex-end; gap: 10px;">
+                    <p:commandButton value="Non, garder" type="button" onclick="PF('cancelDialog').hide();"
+                        styleClass="ui-button-flat ui-button-secondary" />
+                    <p:commandButton value="Oui, annuler le RDV" action="#{prendreRdvBean.deleteSelectedEvent}"
+                        update=":form:messages :form:schedule" oncomplete="PF('cancelDialog').hide();"
+                        styleClass="ui-button-danger" icon="pi pi-trash" />
+                </div>
+            </h:form>
+        </p:confirmDialog>
     </ui:define>
 
 </ui:composition>

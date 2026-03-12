@@ -26,17 +26,31 @@ public class RendezVousRepository {
         }
     }
 
-    public RendezVous save(RendezVous rdv) {
+    public void save(RendezVous rdv) {
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            session.persist(rdv);
+            session.merge(rdv);
             transaction.commit();
-            return rdv;
         } catch (Exception e) {
-            if (transaction != null) {
+            if (transaction != null)
                 transaction.rollback();
+            throw e;
+        }
+    }
+
+    public void deleteById(Long id) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            RendezVous rdv = session.get(RendezVous.class, id);
+            if (rdv != null) {
+                session.remove(rdv);
             }
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null)
+                transaction.rollback();
             throw e;
         }
     }

@@ -62,4 +62,8 @@ public class RendezVousService implements Serializable {
 
         rendezVousRepository.save(rdv);
     }
+
+    public void deleteRendezVous(Long id) {
+        rendezVousRepository.deleteById(id);
+    }
 }

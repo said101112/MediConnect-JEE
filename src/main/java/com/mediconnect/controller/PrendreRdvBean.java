@@ -41,6 +41,7 @@ public class PrendreRdvBean implements Serializable {
     private LocalDate selectedDate;
     private String selectedTimeSlot;
     private String selectedMedecinName;
+    private org.primefaces.model.ScheduleEvent<?> selectedEvent;
 
     @PostConstruct
     public void init() {
@@ -73,6 +74,7 @@ public class PrendreRdvBean implements Serializable {
                 String styleClass = isMine ? "my-rdv-slot" : "occupied-slot";
 
                 DefaultScheduleEvent<?> event = DefaultScheduleEvent.builder()
+                        .id(String.valueOf(rdv.getId())) // Explicitly set ID to fetch later
                         .title(title)
                         .startDate(start)
                         .endDate(end)
@@ -136,11 +138,43 @@ public class PrendreRdvBean implements Serializable {
         org.primefaces.PrimeFaces.current().ajax().addCallbackParam("showDialog", true);
     }
 
-    // Prevent clicking existing events entirely
+    // Handles clicking an existing event
     public void onEventSelect(SelectEvent<org.primefaces.model.ScheduleEvent<?>> selectEvent) {
-        FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_WARN, "Indisponible",
-                        "Ce créneau est déjà réservé par un autre patient."));
+        selectedEvent = selectEvent.getObject();
+
+        if ("my-rdv-slot".equals(selectedEvent.getStyleClass())) {
+            // It's the patient's own RDV
+            this.selectedDate = selectedEvent.getStartDate().toLocalDate();
+            this.selectedTimeSlot = String.format("%02d:%02d",
+                    selectedEvent.getStartDate().getHour(),
+                    selectedEvent.getStartDate().getMinute());
+
+            org.primefaces.PrimeFaces.current().ajax().addCallbackParam("isMine", true);
+        } else {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_WARN, "Indisponible",
+                            "Ce créneau est déjà réservé par un autre patient."));
+            org.primefaces.PrimeFaces.current().ajax().addCallbackParam("isMine", false);
+        }
+    }
+
+    public void deleteSelectedEvent() {
+        if (selectedEvent != null && selectedEvent.getId() != null) {
+            try {
+                Long rdvId = Long.parseLong(selectedEvent.getId());
+                rendezVousService.deleteRendezVous(rdvId);
+
+                loadEvents(); // Refresh UI
+
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_INFO, "Annulé",
+                                "Votre rendez-vous a été annulé avec succès."));
+            } catch (Exception e) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur",
+                                "Impossible d'annuler le rendez-vous."));
+            }
+        }
     }
 
     public void addEvent() {
