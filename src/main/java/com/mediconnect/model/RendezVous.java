@@ -35,62 +35,49 @@ public class RendezVous implements Serializable {
     @Column(name = "statut", length = 30)
     private StatutRDV statut = StatutRDV.PLANIFIE;
 
-    public RendezVous() {
+    public RendezVous() {}
+
+    public String getHeureFormatee() {
+        if (dateHeure == null) return "";
+        return String.format("%02d:%02d", dateHeure.getHour(), dateHeure.getMinute());
     }
 
-    public Integer getId() {
-        return id;
+    public String getDateFormatee() {
+        if (dateHeure == null) return "";
+        return String.format("%02d/%02d/%d",
+                dateHeure.getDayOfMonth(),
+                dateHeure.getMonthValue(),
+                dateHeure.getYear());
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public String getDateHeureFormatee() {
+        if (dateHeure == null) return "";
+        return String.format("%02d/%02d/%d %02d:%02d",
+                dateHeure.getDayOfMonth(),
+                dateHeure.getMonthValue(),
+                dateHeure.getYear(),
+                dateHeure.getHour(),
+                dateHeure.getMinute());
     }
 
-    public Patient getPatient() {
-        return patient;
-    }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
-    public void setPatient(Patient patient) {
-        this.patient = patient;
-    }
+    public Patient getPatient() { return patient; }
+    public void setPatient(Patient patient) { this.patient = patient; }
 
-    public Medecin getMedecin() {
-        return medecin;
-    }
+    public Medecin getMedecin() { return medecin; }
+    public void setMedecin(Medecin medecin) { this.medecin = medecin; }
 
-    public void setMedecin(Medecin medecin) {
-        this.medecin = medecin;
-    }
+    public LocalDateTime getDateHeure() { return dateHeure; }
+    public void setDateHeure(LocalDateTime dateHeure) { this.dateHeure = dateHeure; }
 
-    public LocalDateTime getDateHeure() {
-        return dateHeure;
-    }
+    public Integer getDureeMinutes() { return dureeMinutes; }
+    public void setDureeMinutes(Integer dureeMinutes) { this.dureeMinutes = dureeMinutes; }
 
-    public void setDateHeure(LocalDateTime dateHeure) {
-        this.dateHeure = dateHeure;
-    }
+    public String getMotif() { return motif; }
+    public void setMotif(String motif) { this.motif = motif; }
 
-    public Integer getDureeMinutes() {
-        return dureeMinutes;
-    }
-
-    public void setDureeMinutes(Integer dureeMinutes) {
-        this.dureeMinutes = dureeMinutes;
-    }
-
-    public String getMotif() {
-        return motif;
-    }
-
-    public void setMotif(String motif) {
-        this.motif = motif;
-    }
-
-    public StatutRDV getStatut() {
-        return statut;
-    }
-
-    public void setStatut(StatutRDV statut) {
-        this.statut = statut;
-    }
+    public StatutRDV getStatut() { return statut; }
+    public void setStatut(StatutRDV statut) { this.statut = statut; }
 }

@@ -41,78 +41,42 @@ public class Consultation implements Serializable {
     @Column(name = "cloturee")
     private Boolean cloturee = false;
 
-    public Consultation() {
+    public Consultation() {}
+
+    public String getDateVisiteFormatee() {
+        if (dateVisite == null) return "—";
+        return String.format("%02d/%02d/%d %02d:%02d",
+                dateVisite.getDayOfMonth(),
+                dateVisite.getMonthValue(),
+                dateVisite.getYear(),
+                dateVisite.getHour(),
+                dateVisite.getMinute());
     }
 
-    public Integer getId() {
-        return id;
-    }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    public RendezVous getRendezVous() { return rendezVous; }
+    public void setRendezVous(RendezVous rendezVous) { this.rendezVous = rendezVous; }
 
-    public RendezVous getRendezVous() {
-        return rendezVous;
-    }
+    public Patient getPatient() { return patient; }
+    public void setPatient(Patient patient) { this.patient = patient; }
 
-    public void setRendezVous(RendezVous rendezVous) {
-        this.rendezVous = rendezVous;
-    }
+    public Medecin getMedecin() { return medecin; }
+    public void setMedecin(Medecin medecin) { this.medecin = medecin; }
 
-    public Patient getPatient() {
-        return patient;
-    }
+    public LocalDateTime getDateVisite() { return dateVisite; }
+    public void setDateVisite(LocalDateTime dateVisite) { this.dateVisite = dateVisite; }
 
-    public void setPatient(Patient patient) {
-        this.patient = patient;
-    }
+    public String getObservations() { return observations; }
+    public void setObservations(String observations) { this.observations = observations; }
 
-    public Medecin getMedecin() {
-        return medecin;
-    }
+    public String getDiagnostic() { return diagnostic; }
+    public void setDiagnostic(String diagnostic) { this.diagnostic = diagnostic; }
 
-    public void setMedecin(Medecin medecin) {
-        this.medecin = medecin;
-    }
+    public String getCheminPdfOrdonnance() { return cheminPdfOrdonnance; }
+    public void setCheminPdfOrdonnance(String cheminPdfOrdonnance) { this.cheminPdfOrdonnance = cheminPdfOrdonnance; }
 
-    public LocalDateTime getDateVisite() {
-        return dateVisite;
-    }
-
-    public void setDateVisite(LocalDateTime dateVisite) {
-        this.dateVisite = dateVisite;
-    }
-
-    public String getObservations() {
-        return observations;
-    }
-
-    public void setObservations(String observations) {
-        this.observations = observations;
-    }
-
-    public String getDiagnostic() {
-        return diagnostic;
-    }
-
-    public void setDiagnostic(String diagnostic) {
-        this.diagnostic = diagnostic;
-    }
-
-    public String getCheminPdfOrdonnance() {
-        return cheminPdfOrdonnance;
-    }
-
-    public void setCheminPdfOrdonnance(String cheminPdfOrdonnance) {
-        this.cheminPdfOrdonnance = cheminPdfOrdonnance;
-    }
-
-    public Boolean getCloturee() {
-        return cloturee;
-    }
-
-    public void setCloturee(Boolean cloturee) {
-        this.cloturee = cloturee;
-    }
+    public Boolean getCloturee() { return cloturee; }
+    public void setCloturee(Boolean cloturee) { this.cloturee = cloturee; }
 }

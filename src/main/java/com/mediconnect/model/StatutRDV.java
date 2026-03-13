@@ -2,6 +2,7 @@ package com.mediconnect.model;
 
 public enum StatutRDV {
     PLANIFIE,
-    ANNULE,
-    TERMINE
+    EN_COURS,
+    TERMINE,
+    ANNULE
 }

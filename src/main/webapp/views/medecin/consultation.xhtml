@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <title>MediConnect – Consultation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',sans-serif; background:#f8fafc; color:#1e293b; display:flex; min-height:100vh; }
+
+        .sidebar { width:240px; background:#fff; border-right:1px solid #e2e8f0; display:flex; flex-direction:column; position:fixed; height:100vh; z-index:100; }
+        .sidebar-logo { display:flex; align-items:center; gap:10px; padding:20px; border-bottom:1px solid #f1f5f9; }
+        .logo-icon { width:38px; height:38px; background:#2563eb; border-radius:10px; display:flex; align-items:center; justify-content:center; color:white; font-size:18px; }
+        .logo-text { font-weight:700; font-size:1rem; color:#1e293b; }
+        .logo-sub  { font-size:0.72rem; color:#94a3b8; }
+        .sidebar-nav { flex:1; padding:16px 12px; }
+        .nav-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; color:#64748b; text-decoration:none; font-size:0.9rem; font-weight:500; transition:all 0.15s; margin-bottom:2px; }
+        .nav-item:hover { background:#f1f5f9; color:#1e293b; }
+        .nav-item.active { background:#eff6ff; color:#2563eb; }
+        .nav-item i { width:18px; text-align:center; }
+        .nav-section-label { font-size:0.68rem; font-weight:600; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; padding:12px 8px 6px; }
+        .sidebar-footer { padding:16px 20px; border-top:1px solid #f1f5f9; display:flex; align-items:center; gap:10px; }
+        .avatar { width:36px; height:36px; background:linear-gradient(135deg,#2563eb,#1d4ed8); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:0.85rem; flex-shrink:0; }
+        .avatar-name { font-size:0.85rem; font-weight:600; color:#1e293b; }
+        .avatar-role { font-size:0.72rem; color:#94a3b8; }
+
+        .main { margin-left:240px; flex:1; display:flex; flex-direction:column; }
+        .topbar { background:white; border-bottom:1px solid #e2e8f0; padding:14px 28px; display:flex; align-items:center; gap:16px; position:sticky; top:0; z-index:50; }
+        .topbar-title { font-size:1rem; font-weight:600; color:#1e293b; }
+        .topbar-right { margin-left:auto; display:flex; align-items:center; gap:12px; }
+        .icon-btn { width:38px; height:38px; border-radius:9px; border:1px solid #e2e8f0; background:white; display:flex; align-items:center; justify-content:center; color:#64748b; cursor:pointer; }
+        .btn-back { display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border:1px solid #e2e8f0; border-radius:8px; background:white; color:#475569; font-size:0.85rem; font-weight:500; text-decoration:none; cursor:pointer; }
+        .btn-back:hover { background:#f8fafc; }
+
+        .content { padding:28px; max-width:1000px; }
+
+        .patient-card { background:white; border-radius:14px; border:1px solid #e2e8f0; padding:20px; margin-bottom:20px; display:flex; align-items:flex-start; gap:16px; }
+        .patient-big-avatar { width:52px; height:52px; border-radius:14px; background:linear-gradient(135deg,#2563eb,#1d4ed8); display:flex; align-items:center; justify-content:center; color:white; font-size:1.2rem; font-weight:700; flex-shrink:0; }
+        .patient-info h3 { font-size:1.1rem; font-weight:700; color:#1e293b; }
+        .patient-info p  { font-size:0.85rem; color:#64748b; margin-top:2px; }
+        .patient-tags { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+        .tag { padding:4px 10px; border-radius:6px; font-size:0.78rem; font-weight:500; }
+        .tag-blue   { background:#eff6ff; color:#2563eb; }
+        .tag-orange { background:#fff7ed; color:#ea580c; }
+        .tag-red    { background:#fef2f2; color:#dc2626; }
+
+        .section { background:white; border-radius:14px; border:1px solid #e2e8f0; margin-bottom:20px; overflow:hidden; }
+        .section-header { padding:16px 20px; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:10px; }
+        .section-header h4 { font-size:0.95rem; font-weight:600; color:#1e293b; }
+        .section-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:0.9rem; }
+        .si-blue   { background:#eff6ff; color:#2563eb; }
+        .si-green  { background:#f0fdf4; color:#16a34a; }
+        .si-orange { background:#fff7ed; color:#ea580c; }
+        .section-body { padding:20px; }
+
+        .form-group { margin-bottom:16px; }
+        .form-group label { display:block; font-size:0.82rem; font-weight:600; color:#374151; margin-bottom:6px; }
+
+        .btn-save  { display:inline-flex; align-items:center; gap:6px; padding:9px 18px; background:#f8fafc; color:#475569; border:1px solid #e2e8f0; border-radius:8px; font-size:0.88rem; font-weight:600; cursor:pointer; }
+        .btn-save:hover { background:#f1f5f9; }
+        .btn-close { display:inline-flex; align-items:center; gap:6px; padding:9px 18px; background:#16a34a; color:white; border:none; border-radius:8px; font-size:0.88rem; font-weight:600; cursor:pointer; margin-left:8px; }
+        .btn-close:hover { background:#15803d; }
+        .btn-pdf   { display:inline-flex; align-items:center; gap:6px; padding:9px 18px; background:#2563eb; color:white; border:none; border-radius:8px; font-size:0.88rem; font-weight:600; cursor:pointer; }
+        .btn-pdf:hover { background:#1d4ed8; }
+
+        .closed-badge { display:inline-flex; align-items:center; gap:6px; padding:6px 14px; background:#f0fdf4; color:#16a34a; border-radius:8px; font-size:0.85rem; font-weight:600; }
+
+        .pdf-result { display:flex; align-items:center; gap:10px; padding:12px 16px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; margin-top:12px; }
+        .pdf-result a { color:#16a34a; font-weight:600; text-decoration:none; font-size:0.88rem; }
+
+        .hist-table { width:100%; border-collapse:collapse; }
+        .hist-table th { text-align:left; font-size:0.72rem; font-weight:600; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px; padding:10px 16px; border-bottom:1px solid #f1f5f9; }
+        .hist-table td { padding:12px 16px; border-bottom:1px solid #f8fafc; font-size:0.85rem; }
+        .hist-table tr:last-child td { border-bottom:none; }
+        .hist-table tr:hover td { background:#fafbfc; }
+
+        .empty-state { text-align:center; padding:32px; color:#94a3b8; font-size:0.88rem; }
+    </style>
+</h:head>
+
+<h:body>
+
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon"><i class="fas fa-shield-halved"/></div>
+            <div>
+                <div class="logo-text">MediConnect</div>
+                <div class="logo-sub">Clinic Management</div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.xhtml"  class="nav-item"><i class="fas fa-th-large"/> Dashboard</a>
+            <a href="#"                class="nav-item"><i class="fas fa-user-injured"/> Patients</a>
+            <a href="planning.xhtml"   class="nav-item"><i class="fas fa-calendar-check"/> Appointments</a>
+            <a href="consultation.xhtml" class="nav-item active"><i class="fas fa-stethoscope"/> Consultations</a>
+            <a href="#"                class="nav-item"><i class="fas fa-file-invoice-dollar"/> Billing</a>
+            <div class="nav-section-label">System</div>
+            <a href="#"                class="nav-item"><i class="fas fa-gear"/> Settings</a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="avatar">Dr</div>
+            <div>
+                <div class="avatar-name">Dr. <h:outputText value="#{consultationBean.medecinConnecte.fullName}"/></div>
+                <div class="avatar-role"><h:outputText value="#{consultationBean.medecinConnecte.specialite}"/></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="topbar">
+            <a href="planning.xhtml" class="btn-back">
+                <i class="fas fa-arrow-left"/> Back to Planning
+            </a>
+            <span class="topbar-title" style="margin-left:12px;">Clinical Consultation</span>
+            <div class="topbar-right">
+                <div class="icon-btn"><i class="fas fa-bell"/></div>
+            </div>
+        </div>
+
+        <div class="content">
+            <h:form id="consultForm">
+
+                <p:messages showDetail="true" closable="true"/>
+
+                <!-- PATIENT INFO -->
+                <h:panelGroup rendered="#{consultationBean.patientSelectionne != null}">
+                    <div class="patient-card">
+                        <div class="patient-big-avatar">
+                            <h:outputText value="#{consultationBean.patientSelectionne.prenom.substring(0,1)}#{consultationBean.patientSelectionne.nom.substring(0,1)}"/>
+                        </div>
+                        <div class="patient-info">
+                            <h3><h:outputText value="#{consultationBean.patientSelectionne.fullName}"/></h3>
+                            <p>
+                                <i class="fas fa-phone" style="margin-right:6px;color:#94a3b8;"/>
+                                <h:outputText value="#{consultationBean.patientSelectionne.telephone}"/>
+                                <span style="margin:0 8px;color:#e2e8f0;">|</span>
+                                <i class="fas fa-id-card" style="margin-right:6px;color:#94a3b8;"/>
+                                <h:outputText value="#{consultationBean.patientSelectionne.cin}"/>
+                            </p>
+                            <div class="patient-tags">
+                                <span class="tag tag-blue">
+                                    <i class="fas fa-calendar-day" style="margin-right:4px;"/>
+                                    <h:outputText value="#{consultationBean.patientSelectionne.dateNaissanceFormatee}"/>
+                                </span>
+                                <h:panelGroup rendered="#{not empty consultationBean.patientSelectionne.antecedents}">
+                                    <span class="tag tag-orange">
+                                        <i class="fas fa-clock-rotate-left" style="margin-right:4px;"/>
+                                        Antécédents
+                                    </span>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{not empty consultationBean.patientSelectionne.allergies}">
+                                    <span class="tag tag-red">
+                                        <i class="fas fa-triangle-exclamation" style="margin-right:4px;"/>
+                                        Allergies
+                                    </span>
+                                </h:panelGroup>
+                            </div>
+                        </div>
+                        <h:panelGroup rendered="#{consultationBean.consultationEnCours != null and consultationBean.consultationEnCours.cloturee}" style="margin-left:auto;">
+                            <span class="closed-badge"><i class="fas fa-lock"/> Clôturée</span>
+                        </h:panelGroup>
+                    </div>
+
+                    <!-- ALERTES -->
+                    <h:panelGroup rendered="#{not empty consultationBean.patientSelectionne.antecedents or not empty consultationBean.patientSelectionne.allergies}">
+                        <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;gap:12px;align-items:flex-start;">
+                            <i class="fas fa-triangle-exclamation" style="color:#ea580c;margin-top:2px;"/>
+                            <div>
+                                <div style="font-weight:600;color:#9a3412;font-size:0.88rem;margin-bottom:6px;">Medical Alerts</div>
+                                <h:panelGroup rendered="#{not empty consultationBean.patientSelectionne.antecedents}">
+                                    <div style="font-size:0.83rem;color:#c2410c;margin-bottom:4px;">
+                                        <strong>Antécédents :</strong>
+                                        <h:outputText value="#{consultationBean.patientSelectionne.antecedents}"/>
+                                    </div>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{not empty consultationBean.patientSelectionne.allergies}">
+                                    <div style="font-size:0.83rem;color:#c2410c;">
+                                        <strong>Allergies :</strong>
+                                        <h:outputText value="#{consultationBean.patientSelectionne.allergies}"/>
+                                    </div>
+                                </h:panelGroup>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </h:panelGroup>
+
+                <!-- MESSAGE SI PAS DE CONSULTATION -->
+                <h:panelGroup rendered="#{consultationBean.consultationEnCours == null}">
+                    <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:24px;text-align:center;margin-bottom:20px;">
+                        <i class="fas fa-info-circle" style="color:#ea580c;font-size:1.5rem;display:block;margin-bottom:8px;"/>
+                        <div style="font-weight:600;color:#9a3412;">Aucune consultation en cours</div>
+                        <div style="color:#c2410c;font-size:0.85rem;margin-top:4px;">Veuillez accéder à cette page depuis le planning en cliquant sur "Consulter"</div>
+                        <a href="planning.xhtml" style="display:inline-block;margin-top:12px;padding:8px 16px;background:#2563eb;color:white;border-radius:8px;text-decoration:none;font-size:0.85rem;font-weight:600;">
+                            Aller au Planning
+                        </a>
+                    </div>
+                </h:panelGroup>
+
+                <!-- EXAMEN CLINIQUE -->
+                <h:panelGroup rendered="#{consultationBean.consultationEnCours != null}">
+                    <div class="section">
+                        <div class="section-header">
+                            <div class="section-icon si-blue"><i class="fas fa-stethoscope"/></div>
+                            <h4>Clinical Examination</h4>
+                        </div>
+                        <div class="section-body">
+                            <div class="form-group">
+                                <label>Observations cliniques *</label>
+                                <p:inputTextarea value="#{consultationBean.consultationEnCours.observations}"
+                                                 rows="4" style="width:100%"
+                                                 placeholder="Décrivez les observations cliniques..."
+                                                 disabled="#{consultationBean.consultationEnCours.cloturee}"/>
+                            </div>
+                            <div class="form-group">
+                                <label>Diagnostic *</label>
+                                <p:inputTextarea value="#{consultationBean.consultationEnCours.diagnostic}"
+                                                 rows="3" style="width:100%"
+                                                 placeholder="Saisissez le diagnostic final..."
+                                                 disabled="#{consultationBean.consultationEnCours.cloturee}"/>
+                            </div>
+                            <h:panelGroup rendered="#{not consultationBean.consultationEnCours.cloturee}">
+                                <p:commandButton value="Sauvegarder" styleClass="btn-save"
+                                                 action="#{consultationBean.sauvegarder}"
+                                                 update="consultForm"/>
+                                <p:commandButton value="Cloturer la consultation" styleClass="btn-close"
+                                                 action="#{consultationBean.cloturerConsultation}"
+                                                 onclick="return confirm('Clôturer définitivement ?')"/>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+
+                    <!-- ORDONNANCE -->
+                    <div class="section">
+                        <div class="section-header">
+                            <div class="section-icon si-orange"><i class="fas fa-prescription"/></div>
+                            <h4>Ordonnance Médicale</h4>
+                        </div>
+                        <div class="section-body">
+                            <div class="form-group">
+                                <label>Médicaments prescrits *</label>
+                                <p:inputTextarea value="#{consultationBean.medicamentsOrdonnance}"
+                                                 rows="4" style="width:100%"
+                                                 placeholder="Ex: Amoxicilline 500mg - 1cp 3x/jour pendant 7 jours"/>
+                            </div>
+                            <div class="form-group">
+                                <label>Posologie / Recommandations</label>
+                                <p:inputTextarea value="#{consultationBean.posologie}"
+                                                 rows="2" style="width:100%"
+                                                 placeholder="Recommandations supplémentaires..."/>
+                            </div>
+                            <p:commandButton value="Generer Ordonnance PDF" styleClass="btn-pdf"
+                                             action="#{consultationBean.genererOrdonnance}"
+                                             update="consultForm"/>
+                            <h:panelGroup rendered="#{not empty consultationBean.consultationEnCours.cheminPdfOrdonnance}">
+                                <div class="pdf-result">
+                                    <i class="fas fa-file-pdf" style="color:#16a34a;font-size:1.2rem;"/>
+                                    <div>
+                                        <div style="font-size:0.78rem;color:#64748b;">Ordonnance générée</div>
+                                        <h:outputLink value="#{request.contextPath}/#{consultationBean.consultationEnCours.cheminPdfOrdonnance}"
+                                                      target="_blank">
+                                            Telecharger l'ordonnance
+                                        </h:outputLink>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+
+                    <!-- HISTORIQUE -->
+                    <div class="section">
+                        <div class="section-header">
+                            <div class="section-icon si-green"><i class="fas fa-clock-rotate-left"/></div>
+                            <h4>Historique du Patient</h4>
+                        </div>
+                        <h:panelGroup rendered="#{empty consultationBean.historiqueConsultations}">
+                            <div class="empty-state">
+                                <i class="fas fa-folder-open" style="font-size:2rem;color:#cbd5e1;display:block;margin-bottom:8px;"/>
+                                Aucun historique disponible
+                            </div>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{not empty consultationBean.historiqueConsultations}">
+                            <table class="hist-table">
+                                <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Diagnostic</th>
+                                    <th>Ordonnance</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <ui:repeat value="#{consultationBean.historiqueConsultations}" var="c">
+                                    <tr>
+                                        <td><h:outputText value="#{c.dateVisiteFormatee}"/></td>
+                                        <td><h:outputText value="#{c.diagnostic}"/></td>
+                                        <td>
+                                            <h:outputLink value="#{request.contextPath}/#{c.cheminPdfOrdonnance}"
+                                                          target="_blank"
+                                                          rendered="#{not empty c.cheminPdfOrdonnance}">
+                                                <i class="fas fa-file-pdf" style="color:#2563eb;"/> Voir PDF
+                                            </h:outputLink>
+                                            <h:outputText value="—" rendered="#{empty c.cheminPdfOrdonnance}"
+                                                          style="color:#94a3b8;font-size:0.82rem;"/>
+                                        </td>
+                                    </tr>
+                                </ui:repeat>
+                                </tbody>
+                            </table>
+                        </h:panelGroup>
+                    </div>
+                </h:panelGroup>
+
+            </h:form>
+        </div>
+    </div>
+
+</h:body>
+</html>
