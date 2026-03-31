@@ -1,6 +1,7 @@
 package com.mediconnect.controller;
 
 import com.itextpdf.io.font.constants.StandardFonts;
+import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
@@ -93,9 +94,9 @@ public class DownloadDossierServlet extends HttpServlet {
         Document doc = new Document(pdf);
         doc.setMargins(50, 50, 50, 50);
 
-        PdfFont bold    = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
-        PdfFont regular = PdfFontFactory.createFont(StandardFonts.HELVETICA);
-        PdfFont italic  = PdfFontFactory.createFont(StandardFonts.HELVETICA_OBLIQUE);
+        PdfFont bold    = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD, PdfEncodings.CP1252);
+        PdfFont regular = PdfFontFactory.createFont(StandardFonts.HELVETICA, PdfEncodings.CP1252);
+        PdfFont italic  = PdfFontFactory.createFont(StandardFonts.HELVETICA_OBLIQUE, PdfEncodings.CP1252);
 
         // ── HEADER ──────────────────────────────────────────────────────────
         Table headerTable = new Table(UnitValue.createPercentArray(new float[]{3, 1}))

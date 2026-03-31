@@ -1,5 +1,6 @@
 package com.mediconnect.service;
 
+import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
@@ -58,8 +59,8 @@ public class ConsultationService implements Serializable {
         Document doc = new Document(pdf);
         doc.setMargins(50, 50, 50, 50);
 
-        PdfFont bold = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
-        PdfFont regular = PdfFontFactory.createFont(StandardFonts.HELVETICA);
+        PdfFont bold = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD, PdfEncodings.CP1252);
+        PdfFont regular = PdfFontFactory.createFont(StandardFonts.HELVETICA, PdfEncodings.CP1252);
 
         DeviceRgb primaryBlue = new DeviceRgb(37, 99, 235);
         DeviceRgb lightGray = new DeviceRgb(248, 250, 252);
