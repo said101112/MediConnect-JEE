@@ -278,7 +278,7 @@
                     <span class="user-role">Patient</span>
                 </div>
                 <div style="flex-grow: 1; text-align: right;">
-                    <p:commandLink action="/views/auth/login.xhtml?faces-redirect=true" title="Logout">
+                    <p:commandLink action="#{loginBean.logout}" ajax="false" title="Logout">
                         <i class="pi pi-sign-out" style="color: var(--text-color-secondary); font-size: 1.2rem;"></i>
                     </p:commandLink>
                 </div>
