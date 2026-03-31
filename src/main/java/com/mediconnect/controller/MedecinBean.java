@@ -21,10 +21,14 @@ import java.util.List;
 @ViewScoped
 public class MedecinBean implements Serializable {
 
+
     private static final long serialVersionUID = 1L;
 
     @Inject
     private SessionManager sessionManager;
+
+    @Inject
+    private MedecinService medecinService; // ✅ injection CDI correcte
 
     private Medecin medecinConnecte;
     private List<RendezVous> rdvDuJour;
@@ -34,37 +38,42 @@ public class MedecinBean implements Serializable {
     private LocalDate semaineSelectionnee;
     private LocalDate dateSelectionnee;
 
-    private MedecinService medecinService;
-
     @PostConstruct
     public void init() {
-        medecinService = new MedecinService();
         semaineSelectionnee = LocalDate.now().with(java.time.DayOfWeek.MONDAY);
         dateSelectionnee = LocalDate.now();
 
-        if (sessionManager.getCurrentUser() instanceof Medecin) {
-            medecinConnecte = (Medecin) sessionManager.getCurrentUser();
-            chargerDonnees();
+        try {
+            if (sessionManager != null && sessionManager.getCurrentUser() instanceof Medecin) {
+                medecinConnecte = (Medecin) sessionManager.getCurrentUser();
+                chargerDonnees();
+            } else {
+                System.out.println("⚠️ Aucun médecin connecté.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     public void chargerDonnees() {
-        rdvDuJour = medecinService.getPlanningDuJour(medecinConnecte.getId());
-        rdvDeLaSemaine = medecinService.getPlanningDeLaSemaine(
-                medecinConnecte.getId(), semaineSelectionnee);
-        nombreRdvDuJour = medecinService.getNombreRdvDuJour(medecinConnecte.getId());
+        try {
+            rdvDuJour = medecinService.getPlanningDuJour(medecinConnecte.getId());
+            rdvDeLaSemaine = medecinService.getPlanningDeLaSemaine(
+                    medecinConnecte.getId(), semaineSelectionnee);
+            nombreRdvDuJour = medecinService.getNombreRdvDuJour(medecinConnecte.getId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void semainePrecedente() {
         semaineSelectionnee = semaineSelectionnee.minusWeeks(1);
-        rdvDeLaSemaine = medecinService.getPlanningDeLaSemaine(
-                medecinConnecte.getId(), semaineSelectionnee);
+        chargerDonnees();
     }
 
     public void semaineSuivante() {
         semaineSelectionnee = semaineSelectionnee.plusWeeks(1);
-        rdvDeLaSemaine = medecinService.getPlanningDeLaSemaine(
-                medecinConnecte.getId(), semaineSelectionnee);
+        chargerDonnees();
     }
 
     public void demarrerConsultation(Integer rdvId) {
@@ -113,7 +122,7 @@ public class MedecinBean implements Serializable {
         return formatDate(semaineSelectionnee) + " – " + formatDate(fin);
     }
 
-    // ===== Getters & Setters =====
+// ===== Getters & Setters =====
 
     public Medecin getMedecinConnecte() { return medecinConnecte; }
     public void setMedecinConnecte(Medecin m) { this.medecinConnecte = m; }
@@ -129,4 +138,6 @@ public class MedecinBean implements Serializable {
 
     public LocalDate getDateSelectionnee() { return dateSelectionnee; }
     public void setDateSelectionnee(LocalDate d) { this.dateSelectionnee = d; }
+
+
 }
