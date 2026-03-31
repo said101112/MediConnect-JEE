@@ -161,7 +161,7 @@ public class PrendreRdvBean implements Serializable {
     public void deleteSelectedEvent() {
         if (selectedEvent != null && selectedEvent.getId() != null) {
             try {
-                Long rdvId = Long.parseLong(selectedEvent.getId());
+                Integer rdvId = Integer.parseInt(selectedEvent.getId());
                 rendezVousService.deleteRendezVous(rdvId);
 
                 loadEvents(); // Refresh UI

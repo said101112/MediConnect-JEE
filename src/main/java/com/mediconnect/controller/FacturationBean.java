@@ -17,6 +17,7 @@ public class FacturationBean implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private List<Facture> factures;
+    private Facture selectedFacture;
     private com.mediconnect.service.FactureService factureService;
 
     @PostConstruct
@@ -40,8 +41,19 @@ public class FacturationBean implements Serializable {
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur",
-                            "Une erreur s'est produite lors de l'encaissement."));
-            e.printStackTrace();
+                            "Une erreur s'est produite lors de l'encaissement: " + e.getMessage()));
+        }
+    }
+
+    public void modifierMontant(Facture facture) {
+        try {
+            factureService.updateMontant(facture, facture.getMontantTotal());
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Succès", "Montant mis à jour."));
+            loadFactures();
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", e.getMessage()));
         }
     }
 
@@ -51,5 +63,13 @@ public class FacturationBean implements Serializable {
 
     public void setFactures(List<Facture> factures) {
         this.factures = factures;
+    }
+
+    public Facture getSelectedFacture() {
+        return selectedFacture;
+    }
+
+    public void setSelectedFacture(Facture selectedFacture) {
+        this.selectedFacture = selectedFacture;
     }
 }

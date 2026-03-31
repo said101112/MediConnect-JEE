@@ -64,47 +64,92 @@
             }
         </style>
 
-        <div class="dashboard-grid">
-            <a href="agenda.xhtml" class="stat-card">
-                <div class="stat-icon">
-                    <i class="pi pi-calendar"></i>
+        <h:form id="statsForm">
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #eff6ff; color: #3b82f6;">
+                        <i class="pi pi-calendar"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Total Aujourd'hui</h3>
+                        <p class="value">#{dashboardSecretaireBean.totalToday}</p>
+                    </div>
                 </div>
-                <div class="stat-details">
-                    <h3>Appointments</h3>
-                    <p class="value">Manage RDV</p>
-                </div>
-            </a>
 
-            <a href="gestion_patients.xhtml" class="stat-card">
-                <div class="stat-icon" style="background: #ecfdf5; color: #10b981;">
-                    <i class="pi pi-users"></i>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #fffbe6; color: #d4a017;">
+                        <i class="pi pi-clock"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>En Attente</h3>
+                        <p class="value" style="color: #d4a017;">#{dashboardSecretaireBean.waitingCount}</p>
+                    </div>
                 </div>
-                <div class="stat-details">
-                    <h3>Patients</h3>
-                    <p class="value">Records</p>
-                </div>
-            </a>
 
-            <a href="facturation.xhtml" class="stat-card">
-                <div class="stat-icon" style="background: #fef2f2; color: #ef4444;">
-                    <i class="pi pi-wallet"></i>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #f0fdf4; color: #22c55e;">
+                        <i class="pi pi-check-circle"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Terminés</h3>
+                        <p class="value" style="color: #22c55e;">#{dashboardSecretaireBean.completedToday}</p>
+                    </div>
                 </div>
-                <div class="stat-details">
-                    <h3>Billing</h3>
-                    <p class="value">Invoices &amp; Payments</p>
-                </div>
-            </a>
+            </div>
+        </h:form>
 
-            <a href="#" class="stat-card">
-                <div class="stat-icon" style="background: #fffbeb; color: #f59e0b;">
-                    <i class="pi pi-envelope"></i>
+        <h:form id="waitingRoomForm" style="margin-top: 32px;">
+            <p:growl id="msgs" showDetail="true" />
+            
+            <div class="card" style="background: white; border-radius: 12px; padding: 24px; border: 1px solid var(--surface-border);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="margin: 0; font-size: 1.25rem; font-weight: 600; color: #1e293b;">
+                        <i class="pi pi-list" style="margin-right: 8px; color: var(--primary-color);"></i> Salle d'Attente &amp; Flux du Jour
+                    </h2>
+                    <p:commandButton icon="pi pi-refresh" action="#{dashboardSecretaireBean.loadDashboardData}" 
+                        update="waitingRoomForm statsForm" styleClass="rounded-button ui-button-flat" />
                 </div>
-                <div class="stat-details">
-                    <h3>Messages</h3>
-                    <p class="value">Inbox</p>
-                </div>
-            </a>
-        </div>
+
+                <p:dataTable id="todayRDVTable" var="rdv" value="#{dashboardSecretaireBean.todayAppointments}" 
+                    emptyMessage="Aucun rendez-vous pour aujourd'hui." styleClass="ui-datatable-striped">
+                    
+                    <p:column headerText="Heure" style="width: 100px;">
+                        <h:outputText value="#{rdv.dateHeure.toLocalTime()}" style="font-weight: 600;" />
+                    </p:column>
+                    
+                    <p:column headerText="Patient">
+                        <h:outputText value="#{rdv.patient.fullName}" />
+                        <br/>
+                        <small style="color: #64748b;">CIN: #{rdv.patient.cin}</small>
+                    </p:column>
+                    
+                    <p:column headerText="Médecin">
+                        <h:outputText value="Dr. #{rdv.medecin.nom}" />
+                    </p:column>
+                    
+                    <p:column headerText="Statut" style="width: 150px; text-align: center;">
+                        <p:tag value="#{rdv.statut}" 
+                               severity="#{rdv.statut == 'PLANIFIE' ? 'info' : (rdv.statut == 'EN_ATTENTE' ? 'warning' : (rdv.statut == 'TERMINE' ? 'success' : 'danger'))}"/>
+                    </p:column>
+                    
+                    <p:column headerText="Action" style="width: 200px; text-align: center;">
+                        <p:commandButton value="Arrivé" icon="pi pi-user-check" 
+                            action="#{dashboardSecretaireBean.marquerArrive(rdv)}"
+                            update="waitingRoomForm statsForm"
+                            rendered="#{rdv.statut == 'PLANIFIE'}"
+                            styleClass="ui-button-sm ui-button-warning ui-button-flat" />
+                            
+                        <p:commandButton value="Terminer" icon="pi pi-check" 
+                            action="#{dashboardSecretaireBean.marquerTermine(rdv)}"
+                            update="waitingRoomForm statsForm"
+                            rendered="#{rdv.statut == 'EN_ATTENTE'}"
+                            styleClass="ui-button-sm ui-button-success ui-button-flat" />
+                            
+                        <h:outputText value="-" rendered="#{rdv.statut == 'TERMINE' || rdv.statut == 'ANNULE'}" />
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </h:form>
     </ui:define>
 
 </ui:composition>

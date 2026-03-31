@@ -77,15 +77,73 @@ public class AgendaBean implements Serializable {
             LocalDateTime start = rdv.getDateHeure();
             if (start != null) {
                 LocalDateTime end = start.plusMinutes(rdv.getDureeMinutes() != null ? rdv.getDureeMinutes() : 30);
+                
+                String styleClass = "occupied-slot";
+                if (rdv.getStatut() == com.mediconnect.model.StatutRDV.ANNULE) styleClass = "cancelled-slot";
+                else if (rdv.getStatut() == com.mediconnect.model.StatutRDV.EN_ATTENTE) styleClass = "waiting-slot";
+
                 DefaultScheduleEvent<?> event = DefaultScheduleEvent.builder()
                         .title(title)
                         .startDate(start)
                         .endDate(end)
                         .data(rdv)
-                        .styleClass("occupied-slot")
+                        .styleClass(styleClass)
                         .build();
                 eventModel.addEvent(event);
             }
+        }
+    }
+
+    public void onEventSelect(SelectEvent<org.primefaces.model.ScheduleEvent<?>> selectEvent) {
+        org.primefaces.model.ScheduleEvent<?> event = selectEvent.getObject();
+        newRendezVous = (RendezVous) event.getData();
+        this.selectedDate = newRendezVous.getDateHeure().toLocalDate();
+        this.selectedTimeSlot = String.format("%02d:%02d", 
+                newRendezVous.getDateHeure().getHour(), 
+                newRendezVous.getDateHeure().getMinute());
+        
+        // Refresh patients and physicians to ensure latest data is available
+        patients = rendezVousService.getAllPatients();
+        medecins = rendezVousService.getAllMedecins();
+
+        updateAvailableTimeSlots();
+        // Add current slot to available if it's an edit
+        if (!availableTimeSlots.contains(selectedTimeSlot)) {
+            availableTimeSlots.add(0, selectedTimeSlot);
+        }
+    }
+
+    public void saveEvent() {
+        if (newRendezVous.getId() == null) {
+            addEvent();
+        } else {
+            updateEvent();
+        }
+    }
+
+    public void updateEvent() {
+        try {
+            LocalTime time = LocalTime.parse(selectedTimeSlot);
+            newRendezVous.setDateHeure(LocalDateTime.of(selectedDate, time));
+            rendezVousService.updateRendezVous(newRendezVous);
+            loadEvents();
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Succès", "Rendez-vous mis à jour."));
+        } catch (Exception e) {
+             FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Modification impossible."));
+        }
+    }
+
+    public void cancelEvent() {
+        try {
+            rendezVousService.cancelRendezVous(newRendezVous.getId());
+            loadEvents();
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Succès", "Rendez-vous annulé."));
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Annulation impossible."));
         }
     }
 
@@ -121,6 +179,10 @@ public class AgendaBean implements Serializable {
         // Capture selected date
         this.selectedDate = clickedDate;
         this.selectedTimeSlot = null; // Reset selection
+
+        // Refresh patients and physicians to ensure latest data is available
+        patients = rendezVousService.getAllPatients();
+        medecins = rendezVousService.getAllMedecins();
 
         // Calculate free hours
         updateAvailableTimeSlots();

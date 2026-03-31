@@ -36,4 +36,12 @@ public class PatientService implements Serializable {
         patient.setActive(true);
         userRepository.save(patient);
     }
+
+    public void updatePatient(Patient patient) {
+        userRepository.update(patient);
+    }
+
+    public Patient getPatientById(Long id) {
+        return (Patient) userRepository.findById(id).orElse(null);
+    }
 }

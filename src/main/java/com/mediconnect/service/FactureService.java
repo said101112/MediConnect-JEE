@@ -28,4 +28,16 @@ public class FactureService implements Serializable {
         facture.setStatutPaiement(StatutPaiement.PAYE);
         factureRepository.update(facture);
     }
+
+    public List<Facture> getFacturesByPatient(Long patientId) {
+        return factureRepository.findByPatient(patientId);
+    }
+
+    public void updateMontant(Facture facture, java.math.BigDecimal nouveauMontant) throws Exception {
+        if (facture.getStatutPaiement() == StatutPaiement.PAYE) {
+            throw new Exception("Impossible de modifier une facture déjà payée.");
+        }
+        facture.setMontantTotal(nouveauMontant);
+        factureRepository.update(facture);
+    }
 }

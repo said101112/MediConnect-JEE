@@ -63,7 +63,33 @@ public class RendezVousService implements Serializable {
         rendezVousRepository.save(rdv);
     }
 
-    public void deleteRendezVous(Long id) {
+    public void deleteRendezVous(Integer id) {
         rendezVousRepository.deleteById(id);
+    }
+
+    public void updateRendezVous(RendezVous rdv) {
+        rendezVousRepository.update(rdv);
+    }
+
+    public void cancelRendezVous(Integer id) {
+        List<RendezVous> all = rendezVousRepository.findAll();
+        all.stream()
+           .filter(r -> r.getId().equals(id))
+           .findFirst()
+           .ifPresent(r -> {
+               r.setStatut(StatutRDV.ANNULE);
+               rendezVousRepository.update(r);
+           });
+    }
+
+    public List<RendezVous> getRendezVousByPatient(Long patientId) {
+        return rendezVousRepository.findByPatient(patientId);
+    }
+
+    public List<RendezVous> getTodayRendezVous() {
+        return rendezVousRepository.findAll().stream()
+            .filter(r -> r.getDateHeure() != null && r.getDateHeure().toLocalDate().equals(java.time.LocalDate.now()))
+            .sorted(java.util.Comparator.comparing(RendezVous::getDateHeure))
+            .collect(java.util.stream.Collectors.toList());
     }
 }

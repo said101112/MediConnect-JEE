@@ -37,10 +37,10 @@
             }
         </style>
 
-        <h:form id="form">
-            <p:growl id="messages" showDetail="true" />
+        <p:growl id="messages" showDetail="true" />
 
-            <div class="card">
+        <div class="card">
+            <h:form id="form">
                 <p:dataTable id="facturesTable" var="facture" value="#{facturationBean.factures}" paginator="true"
                     rows="10" emptyMessage="Aucune facture à afficher." styleClass="ui-datatable-striped">
 
@@ -66,15 +66,42 @@
                             styleClass="status-badge status-#{facture.statutPaiement}" />
                     </p:column>
 
-                    <p:column headerText="Action" style="width: 150px; text-align: center;">
+                    <p:column headerText="Actions" style="width: 200px; text-align: center;">
+                        <p:commandButton icon="pi pi-pencil" title="Modifier Montant"
+                            update=":editAmountForm:editAmountDialog" oncomplete="PF('editAmountWV').show();"
+                            disabled="#{facture.statutPaiement eq 'PAYE'}"
+                            styleClass="ui-button-flat ui-button-info" style="margin-right: 8px;">
+                            <f:setPropertyActionListener value="#{facture}" target="#{facturationBean.selectedFacture}" />
+                        </p:commandButton>
+
                         <p:commandButton value="Encaisser" icon="pi pi-check"
-                            action="#{facturationBean.encaisser(facture)}" update="facturesTable messages"
+                            action="#{facturationBean.encaisser(facture)}" update="facturesTable :messages"
                             disabled="#{facture.statutPaiement eq 'PAYE'}"
                             styleClass="#{facture.statutPaiement eq 'PAYE' ? 'ui-button-flat' : 'ui-button-success'}" />
                     </p:column>
                 </p:dataTable>
-            </div>
-        </h:form>
+            </h:form>
+        </div>
+
+        <p:dialog id="editAmountDialog" widgetVar="editAmountWV" header="Ajuster le Montant" modal="true" responsive="true" width="350" appendTo="@(body)">
+            <h:form id="editAmountForm">
+                <div class="ui-fluid">
+                    <div class="field" style="margin-bottom: 20px;">
+                        <p:outputLabel for="amount" value="Nouveau Montant (DH)" />
+                        <p:inputNumber id="amount" value="#{facturationBean.selectedFacture.montantTotal}" 
+                                      symbol=" DH" symbolPosition="s" decimalPlaces="2" />
+                    </div>
+                </div>
+                <div style="text-align: right; margin-top: 15px;">
+                    <p:commandButton value="Enregistrer" icon="pi pi-check" 
+                                     action="#{facturationBean.modifierMontant(facturationBean.selectedFacture)}"
+                                     update=":form:facturesTable :messages"
+                                     oncomplete="if (!args.validationFailed) PF('editAmountWV').hide()" />
+                    <p:commandButton value="Annuler" icon="pi pi-times" onclick="PF('editAmountWV').hide()" 
+                                     styleClass="ui-button-secondary ui-button-flat" type="button" style="margin-left: 8px;"/>
+                </div>
+            </h:form>
+        </p:dialog>
     </ui:define>
 
 </ui:composition>

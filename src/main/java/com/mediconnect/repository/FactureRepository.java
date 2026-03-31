@@ -29,4 +29,13 @@ public class FactureRepository {
             throw e;
         }
     }
+
+    public List<Facture> findByPatient(Long patientId) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("SELECT f FROM Facture f JOIN FETCH f.consultation c WHERE c.patient.id = :patientId",
+                    Facture.class)
+                    .setParameter("patientId", patientId)
+                    .list();
+        }
+    }
 }

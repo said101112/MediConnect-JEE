@@ -8,8 +8,10 @@
     </ui:define>
 
     <ui:define name="topbar-actions">
-        <p:commandButton value="New Patient" icon="pi pi-user-plus" onclick="PF('patientDialog').show();" type="button"
-            styleClass="ui-button-primary" style="padding: 0.5rem 1rem;" />
+        <h:form>
+            <p:commandButton value="New Patient" icon="pi pi-user-plus" onclick="PF('patientDialog').show();" type="button"
+                styleClass="ui-button-primary" style="padding: 0.5rem 1rem;" />
+        </h:form>
     </ui:define>
 
     <ui:define name="content">
@@ -23,10 +25,10 @@
             }
         </style>
 
-        <h:form id="form">
-            <p:growl id="messages" showDetail="true" />
+        <p:growl id="messages" showDetail="true" />
 
-            <div class="card">
+        <div class="card">
+            <h:form id="form">
                 <p:dataTable id="patientsTable" var="patient" value="#{patientBean.patients}" paginator="true" rows="10"
                     emptyMessage="Aucun patient trouvé." styleClass="ui-datatable-striped">
 
@@ -45,50 +47,130 @@
                     <p:column headerText="CIN">
                         <h:outputText value="#{patient.cin}" />
                     </p:column>
-                    <p:column headerText="Action" style="width: 100px; text-align: center;">
-                        <p:commandButton icon="pi pi-eye" title="Voir Dossier"
-                            styleClass="rounded-button ui-button-flat ui-button-plain" />
+                    <p:column headerText="Actions" style="width: 15rem; text-align: center;">
+                        <p:commandButton icon="pi pi-pencil" title="Modifier" action="#{patientBean.prepareEdit(patient)}"
+                            update=":editPatientForm:editPatientDetail" oncomplete="PF('editPatientDialog').show();"
+                            styleClass="rounded-button ui-button-flat" />
+                        
+                        <p:commandButton icon="pi pi-file" title="Dossier Administratif" action="#{patientBean.prepareDossier(patient)}"
+                            update=":dossierDialogForm:dossierDetail" oncomplete="PF('dossierDialog').show();"
+                            styleClass="rounded-button ui-button-flat ui-button-help" />
                     </p:column>
                 </p:dataTable>
-            </div>
+            </h:form>
+        </div>
 
-            <p:dialog header="Ajouter un nouveau patient" widgetVar="patientDialog" modal="true" showEffect="fade"
-                hideEffect="fade" resizable="false">
+        <!-- Dialogue Ajout -->
+        <p:dialog header="Ajouter un nouveau patient" widgetVar="patientDialog" modal="true" showEffect="fade"
+            hideEffect="fade" resizable="false" appendTo="@(body)">
+            <h:form id="addPatientForm">
                 <p:outputPanel id="patientDetail" style="text-align:center;">
                     <h:panelGrid columns="2" cellpadding="8" style="text-align:left;">
-
-                        <h:outputLabel for="nom" value="Nom:" style="font-weight: 500;" />
+                        <h:outputLabel for="nom" value="Nom:" />
                         <p:inputText id="nom" value="#{patientBean.newPatient.nom}" required="true" />
 
-                        <h:outputLabel for="prenom" value="Prénom:" style="font-weight: 500;" />
+                        <h:outputLabel for="prenom" value="Prénom:" />
                         <p:inputText id="prenom" value="#{patientBean.newPatient.prenom}" required="true" />
 
-                        <h:outputLabel for="cin" value="CIN:" style="font-weight: 500;" />
+                        <h:outputLabel for="cin" value="CIN:" />
                         <p:inputText id="cin" value="#{patientBean.newPatient.cin}" required="true" />
 
-                        <h:outputLabel for="email" value="Email:" style="font-weight: 500;" />
+                        <h:outputLabel for="email" value="Email:" />
                         <p:inputText id="email" value="#{patientBean.newPatient.email}" required="true" />
 
-                        <h:outputLabel for="telephone" value="Téléphone:" style="font-weight: 500;" />
+                        <h:outputLabel for="telephone" value="Téléphone:" />
                         <p:inputText id="telephone" value="#{patientBean.newPatient.telephone}" />
 
-                        <h:outputLabel for="dob" value="Date Nais.:" style="font-weight: 500;" />
+                        <h:outputLabel for="dob" value="Date Nais.:" />
                         <p:datePicker id="dob" value="#{patientBean.newPatient.dateNaissance}" pattern="yyyy-MM-dd" />
-
-                        <h:outputLabel for="antecedents" value="Antécédents:" style="font-weight: 500;" />
-                        <p:inputTextarea id="antecedents" value="#{patientBean.newPatient.antecedents}" rows="3"
-                            cols="22" />
-
                     </h:panelGrid>
                 </p:outputPanel>
-                <f:facet name="footer">
+                <div style="text-align: right; margin-top: 15px;">
                     <p:commandButton value="Enregistrer" action="#{patientBean.savePatient}"
-                        update="patientsTable messages patientDetail"
+                        update=":form:patientsTable :messages patientDetail"
                         oncomplete="if (!args.validationFailed) PF('patientDialog').hide();"
                         styleClass="ui-button-primary" />
-                </f:facet>
-            </p:dialog>
-        </h:form>
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <!-- Dialogue Edition -->
+        <p:dialog header="Modifier le patient" widgetVar="editPatientDialog" modal="true" showEffect="fade"
+            hideEffect="fade" resizable="false" appendTo="@(body)">
+            <h:form id="editPatientForm">
+                <p:outputPanel id="editPatientDetail" style="text-align:center;">
+                    <h:panelGrid columns="2" cellpadding="8" style="text-align:left;" rendered="#{not empty patientBean.selectedPatient}">
+                        <h:outputLabel value="Nom:" />
+                        <p:inputText value="#{patientBean.selectedPatient.nom}" required="true" />
+
+                        <h:outputLabel value="Prénom:" />
+                        <p:inputText value="#{patientBean.selectedPatient.prenom}" required="true" />
+
+                        <h:outputLabel value="Téléphone:" />
+                        <p:inputText value="#{patientBean.selectedPatient.telephone}" />
+
+                        <h:outputLabel value="Adresse:" />
+                        <p:inputText value="#{patientBean.selectedPatient.adresse}" />
+                    </h:panelGrid>
+                </p:outputPanel>
+                <div style="text-align: right; margin-top: 15px;">
+                    <p:commandButton value="Mettre à jour" action="#{patientBean.updatePatient}"
+                        update=":form:patientsTable :messages"
+                        oncomplete="if (!args.validationFailed) PF('editPatientDialog').hide();"
+                        styleClass="ui-button-primary" />
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <!-- Dialogue Dossier Administratif (CONFIDENTIEL) -->
+        <p:dialog header="Dossier Administratif" widgetVar="dossierDialog" modal="true" width="800" responsive="true" appendTo="@(body)">
+            <h:form id="dossierDialogForm">
+                <p:outputPanel id="dossierDetail">
+                    <p:tabView rendered="#{not empty patientBean.selectedPatient}">
+                        <p:tab title="Historique RDV">
+                            <p:dataTable var="rdv" value="#{patientBean.selectedPatientRDVs}">
+                                <p:column headerText="Date">
+                                    <h:outputText value="#{rdv.dateHeure}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" type="localDateTime"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Médecin">
+                                    <h:outputText value="#{rdv.medecin.fullName}" />
+                                </p:column>
+                                <p:column headerText="Motif">
+                                    <h:outputText value="#{rdv.motif}" />
+                                </p:column>
+                                <p:column headerText="Statut">
+                                    <p:tag value="#{rdv.statut}" 
+                                           severity="#{rdv.statut == 'TERMINE' ? 'success' : (rdv.statut == 'ANNULE' ? 'danger' : 'info')}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                        <p:tab title="Facturation">
+                            <p:dataTable var="fac" value="#{patientBean.selectedPatientFactures}">
+                                <p:column headerText="Date">
+                                    <h:outputText value="#{fac.dateFacture}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy" type="localDateTime"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Montant">
+                                    <h:outputText value="#{fac.montantTotal}">
+                                        <f:convertNumber type="currency" currencySymbol="DH" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Statut">
+                                    <p:tag value="#{fac.statutPaiement}" 
+                                           severity="#{fac.statutPaiement == 'PAYE' ? 'success' : 'warning'}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                    </p:tabView>
+                    <div style="margin-top: 1rem; color: #64748b; font-size: 0.9rem;">
+                        <i class="pi pi-info-circle"></i> Les notes médicales et diagnostics sont uniquement accessibles par les médecins.
+                    </div>
+                </p:outputPanel>
+            </h:form>
+        </p:dialog>
     </ui:define>
 
 </ui:composition>

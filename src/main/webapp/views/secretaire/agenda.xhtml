@@ -8,8 +8,10 @@
     </ui:define>
 
     <ui:define name="topbar-actions">
-        <p:commandButton value="New Appointment" icon="pi pi-plus" onclick="PF('eventDialog').show();" type="button"
-            styleClass="ui-button-primary" style="padding: 0.5rem 1rem;" />
+        <h:form>
+            <p:commandButton value="New Appointment" icon="pi pi-plus" onclick="PF('eventDialog').show();" type="button"
+                styleClass="ui-button-primary" style="padding: 0.5rem 1rem;" />
+        </h:form>
     </ui:define>
 
     <ui:define name="content">
@@ -51,16 +53,16 @@
             }
         </style>
 
-        <h:form id="form">
-            <p:growl id="messages" showDetail="true" />
+        <p:growl id="messages" showDetail="true" />
 
+        <h:form id="form">
             <div class="medecin-select-container">
                 <h:outputLabel for="medecin" value="Sélectionner le médecin : " style="font-weight: 600;" />
                 <p:selectOneMenu id="medecin" value="#{agendaBean.selectedMedecinId}">
                     <f:selectItem itemLabel="Sélectionnez un médecin" itemValue="#{null}" noSelectionOption="true" />
                     <f:selectItems value="#{agendaBean.medecins}" var="med" itemLabel="#{med.fullName}"
                         itemValue="#{med.id}" />
-                    <p:ajax listener="#{agendaBean.onMedecinChange}" update="schedule form:messages" />
+                    <p:ajax listener="#{agendaBean.onMedecinChange}" update="schedule :messages" />
                 </p:selectOneMenu>
             </div>
 
@@ -68,22 +70,30 @@
                 <p:schedule id="schedule" value="#{agendaBean.eventModel}" widgetVar="myschedule" timeZone="UTC"
                     clientTimeZone="local">
                     <p:ajax event="dateSelect" listener="#{agendaBean.onDateSelect}"
-                        update=":eventDialogForm:eventDetails messages"
+                        update=":eventDialogForm:eventDetails :messages"
                         oncomplete="if (args.showDialog) PF('eventDialog').show();" />
+                    
+                    <p:ajax event="eventSelect" listener="#{agendaBean.onEventSelect}"
+                        update=":eventDialogForm:eventDetails :messages"
+                        oncomplete="PF('eventDialog').show();" />
                 </p:schedule>
             </div>
         </h:form>
 
         <p:dialog widgetVar="eventDialog" header="Détails du Rendez-vous" showEffect="clip" hideEffect="clip"
-            modal="true" width="500">
+            modal="true" width="500" appendTo="@(body)">
             <h:form id="eventDialogForm">
                 <p:outputPanel id="eventDetails">
                     <p:messages id="dlgMessages" showDetail="true" closable="true" />
                     <h:panelGrid columns="2" cellpadding="8" style="width:100%">
 
-                        <h:outputLabel for="patientList" value="Patient:" style="font-weight: 500;" />
+                        <h:outputLabel value="Patient:" style="font-weight: 500;" />
+                        <h:panelGroup rendered="#{agendaBean.newRendezVous.id != null}">
+                            <h:outputText value="#{agendaBean.newRendezVous.patient.fullName}" style="font-weight: bold; color: var(--primary-color);" />
+                        </h:panelGroup>
                         <p:selectOneMenu id="patientList" value="#{agendaBean.newRendezVous.patient.id}" filter="true"
-                            filterMatchMode="contains" required="true" style="width:100%">
+                            filterMatchMode="contains" required="true" style="width:100%"
+                            rendered="#{agendaBean.newRendezVous.id == null}">
                             <f:selectItem itemLabel="Choisir un patient" itemValue="#{null}" noSelectionOption="true" />
                             <f:selectItems value="#{agendaBean.patients}" var="pat"
                                 itemLabel="#{pat.fullName} - #{pat.cin}" itemValue="#{pat.id}" />
@@ -108,15 +118,29 @@
                             <f:selectItems value="#{agendaBean.availableTimeSlots}" var="slot" itemLabel="#{slot}"
                                 itemValue="#{slot}" />
                         </p:selectOneMenu>
+                        
+                        <h:outputLabel value="Statut:" style="font-weight: 500;" rendered="#{agendaBean.newRendezVous.id != null}" />
+                        <p:tag value="#{agendaBean.newRendezVous.statut}" severity="info" rendered="#{agendaBean.newRendezVous.id != null}" />
 
                     </h:panelGrid>
                 </p:outputPanel>
 
-                <div style="text-align: right; margin-top: 15px; border-top: 1px solid #e5e7eb; padding-top: 15px;">
-                    <p:commandButton value="Enregistrer" update=":form:messages :form:schedule eventDetails"
-                        action="#{agendaBean.addEvent}"
-                        oncomplete="if (!args.validationFailed) PF('eventDialog').hide();"
-                        styleClass="ui-button-primary" />
+                <div style="text-align: right; margin-top: 15px; border-top: 1px solid #e5e7eb; padding-top: 15px; display: flex; justify-content: space-between;">
+                    <p:commandButton value="Annuler ce RDV" icon="pi pi-times" 
+                        update=":form:schedule :messages"
+                        action="#{agendaBean.cancelEvent}"
+                        rendered="#{agendaBean.newRendezVous.id != null}"
+                        oncomplete="PF('eventDialog').hide();"
+                        styleClass="ui-button-danger ui-button-flat" />
+                    
+                    <h:panelGroup>
+                        <p:commandButton value="Fermer" onclick="PF('eventDialog').hide();" type="button" styleClass="ui-button-secondary ui-button-flat" />
+                        <p:commandButton value="#{agendaBean.newRendezVous.id == null ? 'Enregistrer' : 'Mettre à jour'}" 
+                            update=":form:schedule :messages eventDetails"
+                            action="#{agendaBean.saveEvent}"
+                            oncomplete="if (!args.validationFailed) PF('eventDialog').hide();"
+                            styleClass="ui-button-primary" style="margin-left: 8px;" />
+                    </h:panelGroup>
                 </div>
             </h:form>
         </p:dialog>
