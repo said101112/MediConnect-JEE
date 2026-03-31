@@ -37,6 +37,9 @@ public class Patient extends User {
     @Column(name = "allergies", columnDefinition = "TEXT")
     private String allergies;
 
+    @Column(name = "groupe_sanguin", length = 5)
+    private String groupeSanguin;
+
     // Default Constructor
     public Patient() {
         super();
@@ -112,5 +115,13 @@ public class Patient extends User {
 
     public void setAllergies(String allergies) {
         this.allergies = allergies;
+    }
+
+    public String getGroupeSanguin() {
+        return groupeSanguin;
+    }
+
+    public void setGroupeSanguin(String groupeSanguin) {
+        this.groupeSanguin = groupeSanguin;
     }
 }
