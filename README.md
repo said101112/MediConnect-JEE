@@ -3,6 +3,11 @@
 **MediConnect** est une solution complète de gestion pour cabinets médicaux, conçue pour fluidifier les interactions entre médecins, secrétaires et patients. L'application repose sur une architecture robuste Jakarta EE 10, offrant sécurité, confidentialité et une expérience utilisateur moderne.
 
 ---
+## 👥 Réalisé par
+
+- Said Nichan
+- Salma Marzouk
+- Riyad Moukhliss
 
 ## 🌟 Fonctionnalités Principales
 
