@@ -11,8 +11,14 @@ public class ConsultationRepository {
 
     public Optional<Consultation> findById(Integer id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Consultation c = session.get(Consultation.class, id);
-            return Optional.ofNullable(c);
+            return session.createQuery(
+                    "SELECT c FROM Consultation c " +
+                    "JOIN FETCH c.patient " +
+                    "JOIN FETCH c.medecin " +
+                    "LEFT JOIN FETCH c.rendezVous " +
+                    "WHERE c.id = :id", Consultation.class)
+                    .setParameter("id", id)
+                    .uniqueResultOptional();
         }
     }
 
@@ -48,6 +54,8 @@ public class ConsultationRepository {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery(
                             "SELECT c FROM Consultation c " +
+                                    "JOIN FETCH c.patient " +
+                                    "JOIN FETCH c.medecin " +
                                     "WHERE c.rendezVous.id = :rdvId", Consultation.class)
                     .setParameter("rdvId", rdvId)
                     .uniqueResultOptional();

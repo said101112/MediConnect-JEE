@@ -121,9 +121,9 @@
             <a href="#"                class="nav-item"><i class="fas fa-user-injured"/> Patients</a>
             <a href="planning.xhtml"   class="nav-item"><i class="fas fa-calendar-check"/> Appointments</a>
             <a href="historique.xhtml" class="nav-item"><i class="fas fa-stethoscope"/> Consultations</a>
-            <a href="#"                class="nav-item"><i class="fas fa-file-invoice-dollar"/> Billing</a>
+            <a href="facturation.xhtml" class="nav-item"><i class="fas fa-file-invoice-dollar"/> Billing</a>
             <div class="nav-section-label">System</div>
-            <a href="#"                class="nav-item"><i class="fas fa-gear"/> Settings</a>
+            <a href="settings.xhtml"   class="nav-item"><i class="fas fa-gear"/> Settings</a>
         </nav>
         <div class="sidebar-footer">
             <h:form id="logoutForm" style="width: 100%;">
@@ -152,11 +152,6 @@
             </div>
             <div class="topbar-right">
                 <div class="icon-btn"><i class="fas fa-bell"/><span class="badge-dot"/></div>
-                <div class="icon-btn"><i class="fas fa-comment"/></div>
-                <h:form>
-                    <h:commandButton value="+ New Record" styleClass="btn-new"
-                                     action="/views/medecin/planning.xhtml?faces-redirect=true"/>
-                </h:form>
             </div>
         </div>
 
@@ -249,30 +244,7 @@
 
                     <div style="display:flex;flex-direction:column;gap:20px;">
 
-                        <div class="card">
-                            <div class="card-header"><h3>Quick Actions</h3></div>
-                            <a href="planning.xhtml" class="qa-item">
-                                <div class="qa-icon"><i class="fas fa-calendar-check"/></div>
-                                <div>
-                                    <div class="qa-title">View Planning</div>
-                                    <div class="qa-sub">Check today's schedule</div>
-                                </div>
-                            </a>
-                            <a href="consultation.xhtml" class="qa-item">
-                                <div class="qa-icon"><i class="fas fa-stethoscope"/></div>
-                                <div>
-                                    <div class="qa-title">New Consultation</div>
-                                    <div class="qa-sub">Start a medical visit</div>
-                                </div>
-                            </a>
-                            <a href="#" class="qa-item">
-                                <div class="qa-icon"><i class="fas fa-file-medical"/></div>
-                                <div>
-                                    <div class="qa-title">New Prescription</div>
-                                    <div class="qa-sub">Create medical order</div>
-                                </div>
-                            </a>
-                        </div>
+
 
                         <div class="card">
                             <div class="card-header"><h3>Recent Activity</h3></div>

@@ -10,8 +10,24 @@ public class FactureRepository {
 
     public List<Facture> findAll() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("SELECT f FROM Facture f JOIN FETCH f.consultation c JOIN FETCH c.patient",
+            return session.createQuery("SELECT f FROM Facture f " +
+                                     "JOIN FETCH f.consultation c " +
+                                     "JOIN FETCH c.patient p " +
+                                     "LEFT JOIN FETCH c.rendezVous r " +
+                                     "ORDER BY f.dateFacture DESC",
                     Facture.class).list();
+        }
+    }
+
+    public void save(Facture facture) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.persist(facture);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            throw e;
         }
     }
 

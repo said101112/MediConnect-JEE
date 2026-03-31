@@ -207,15 +207,39 @@ public class AgendaBean implements Serializable {
         }
 
         List<LocalTime> allSlots = new ArrayList<>();
-        // Morning
-        for (int h = 9; h < 12; h++) {
-            allSlots.add(LocalTime.of(h, 0));
-            allSlots.add(LocalTime.of(h, 30));
+        
+        // Fetch doctor configuration
+        Medecin selectedMedecin = medecins.stream()
+                .filter(m -> m.getId().equals(selectedMedecinId))
+                .findFirst().orElse(null);
+        
+        LocalTime start = LocalTime.of(9, 0);
+        LocalTime end = LocalTime.of(18, 0);
+        
+        if (selectedMedecin != null) {
+            // 1. Check if doctor works on this day
+            String dayName = selectedDate.getDayOfWeek().getDisplayName(java.time.format.TextStyle.FULL, java.util.Locale.FRENCH);
+            // Capitalize first letter to match "Lundi", "Mardi", etc.
+            dayName = dayName.substring(0, 1).toUpperCase() + dayName.substring(1);
+            
+            String workingDays = selectedMedecin.getJoursTravailles();
+            if (workingDays != null && !workingDays.isEmpty() && !workingDays.contains(dayName)) {
+                return; // Not a working day
+            }
+
+            try {
+                if (selectedMedecin.getHeureDebut() != null) start = LocalTime.parse(selectedMedecin.getHeureDebut());
+                if (selectedMedecin.getHeureFin() != null) end = LocalTime.parse(selectedMedecin.getHeureFin());
+            } catch (Exception e) {
+                // Keep defaults if parse fails
+            }
         }
-        // Afternoon
-        for (int h = 14; h < 18; h++) {
-            allSlots.add(LocalTime.of(h, 0));
-            allSlots.add(LocalTime.of(h, 30));
+
+        // Generate slots with 30min intervals
+        LocalTime current = start;
+        while (current.isBefore(end)) {
+            allSlots.add(current);
+            current = current.plusMinutes(30);
         }
 
         List<RendezVous> rdvs = rendezVousService.getRendezVousByMedecin(selectedMedecinId);

@@ -29,13 +29,29 @@
 
         <div class="card">
             <h:form id="form">
-                <p:dataTable id="patientsTable" var="patient" value="#{patientBean.patients}" paginator="true" rows="10"
-                    emptyMessage="Aucun patient trouvé." styleClass="ui-datatable-striped">
+                <p:dataTable id="patientsTable" var="patient" value="#{patientBean.patients}" 
+                    filteredValue="#{patientBean.filteredPatients}"
+                    widgetVar="patientsTable"
+                    paginator="true" rows="10"
+                    emptyMessage="Aucun patient trouvé." 
+                    styleClass="ui-datatable-striped"
+                    globalFilterOnly="false">
 
-                    <p:column headerText="Nom">
+                    <f:facet name="header">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-weight: bold; font-size: 1.1rem;">Liste des Patients</span>
+                            <span class="filter-container ui-input-icon-left">
+                                <i class="pi pi-search"></i>
+                                <p:inputText id="globalFilter" onkeyup="PF('patientsTable').filter()" 
+                                    style="width:300px; padding-left: 30px;" placeholder="Rechercher partout..." />
+                            </span>
+                        </div>
+                    </f:facet>
+
+                    <p:column headerText="Nom" filterBy="#{patient.nom}" filterMatchMode="contains" filterStyle="display:none">
                         <h:outputText value="#{patient.nom}" style="font-weight: 500;" />
                     </p:column>
-                    <p:column headerText="Prénom">
+                    <p:column headerText="Prénom" filterBy="#{patient.prenom}" filterMatchMode="contains" filterStyle="display:none">
                         <h:outputText value="#{patient.prenom}" />
                     </p:column>
                     <p:column headerText="Email">
@@ -44,7 +60,7 @@
                     <p:column headerText="Téléphone">
                         <h:outputText value="#{patient.telephone}" />
                     </p:column>
-                    <p:column headerText="CIN">
+                    <p:column headerText="CIN" filterBy="#{patient.cin}" filterMatchMode="contains" filterStyle="display:none">
                         <h:outputText value="#{patient.cin}" />
                     </p:column>
                     <p:column headerText="Actions" style="width: 15rem; text-align: center;">

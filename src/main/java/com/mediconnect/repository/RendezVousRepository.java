@@ -15,7 +15,13 @@ public class RendezVousRepository {
 
     public Optional<RendezVous> findById(Integer id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return Optional.ofNullable(session.get(RendezVous.class, id));
+            return session.createQuery(
+                    "SELECT r FROM RendezVous r " +
+                    "JOIN FETCH r.patient " +
+                    "JOIN FETCH r.medecin " +
+                    "WHERE r.id = :id", RendezVous.class)
+                    .setParameter("id", id)
+                    .uniqueResultOptional();
         }
     }
 

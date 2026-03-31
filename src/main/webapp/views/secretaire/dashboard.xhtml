@@ -110,17 +110,33 @@
                         update="waitingRoomForm statsForm" styleClass="rounded-button ui-button-flat" />
                 </div>
 
-                <p:dataTable id="todayRDVTable" var="rdv" value="#{dashboardSecretaireBean.todayAppointments}" 
+                <p:dataTable id="todayRDVTable" var="rdv" value="#{dashboardSecretaireBean.todayAppointments}"
+                    filteredValue="#{dashboardSecretaireBean.filteredAppointments}"
+                    widgetVar="todayRDVTable"
                     emptyMessage="Aucun rendez-vous pour aujourd'hui." styleClass="ui-datatable-striped">
                     
+                    <f:facet name="header">
+                        <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px;">
+                            <span class="ui-input-icon-left">
+                                <i class="pi pi-search"></i>
+                                <p:inputText id="globalFilter" onkeyup="PF('todayRDVTable').filter()" 
+                                            style="width:250px; border-radius: 20px; padding-left: 30px;" 
+                                            placeholder="Chercher un patient (Nom/CIN)..." />
+                            </span>
+                        </div>
+                    </f:facet>
+
                     <p:column headerText="Heure" style="width: 100px;">
                         <h:outputText value="#{rdv.dateHeure.toLocalTime()}" style="font-weight: 600;" />
                     </p:column>
                     
-                    <p:column headerText="Patient">
+                    <p:column headerText="Patient" filterBy="#{rdv.patient.fullName}" filterMatchMode="contains" filterStyle="display:none">
                         <h:outputText value="#{rdv.patient.fullName}" />
                         <br/>
                         <small style="color: #64748b;">CIN: #{rdv.patient.cin}</small>
+                        <h:panelGroup style="display:none">
+                            <h:outputText value="#{rdv.patient.cin}" />
+                        </h:panelGroup>
                     </p:column>
                     
                     <p:column headerText="Médecin">

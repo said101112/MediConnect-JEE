@@ -15,13 +15,15 @@
     <h:outputStylesheet library="primefaces" name="primeicons/primeicons.css" />
     <style>
         :root {
-            --primary-color: #2563eb;
+            --primary-color: #0f1923;
+            --primary-lt: #f7f5f0;
+            --accent: #c8873a;
             --primary-color-text: #ffffff;
-            --surface-ground: #f8fafc;
+            --surface-ground: #f7f5f0;
             --surface-section: #ffffff;
             --surface-border: #e2e8f0;
-            --text-color: #334155;
-            --text-color-secondary: #64748b;
+            --text-color: #0f1923;
+            --text-color-secondary: #4a5568;
             --sidebar-width: 260px;
         }
 
@@ -56,22 +58,22 @@
         }
 
         .sidebar-logo-icon {
-            width: 32px;
-            height: 32px;
-            background: var(--primary-color);
-            border-radius: 8px;
+            width: 38px;
+            height: 38px;
+            background: #0f1923;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-weight: bold;
             font-size: 18px;
         }
 
         .sidebar-logo-text {
             font-size: 20px;
             font-weight: 700;
-            color: var(--primary-color);
+            color: #c8873a;
+            font-family: 'DM Serif Display', serif;
         }
 
         .sidebar-menu {
@@ -239,7 +241,7 @@
 <h:body>
     <div class="layout-sidebar">
         <a href="dashboard.xhtml" class="sidebar-logo">
-            <div class="sidebar-logo-icon">M</div>
+            <div class="sidebar-logo-icon"><i class="pi pi-shield"></i></div>
             <span class="sidebar-logo-text">MediConnect</span>
         </a>
 
@@ -295,11 +297,6 @@
             </div>
 
             <div class="topbar-right">
-                <div class="search-bar">
-                    <i class="pi pi-search"></i>
-                    <input type="text" placeholder="Search patient, doctor, or ID..." />
-                </div>
-
                 <ui:insert name="topbar-actions">
                     <!-- Default empty, can be overridden -->
                 </ui:insert>

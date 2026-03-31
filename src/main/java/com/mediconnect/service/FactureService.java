@@ -29,6 +29,15 @@ public class FactureService implements Serializable {
         factureRepository.update(facture);
     }
 
+    public void genererFacture(com.mediconnect.model.Consultation consultation) {
+        Facture facture = new Facture();
+        facture.setConsultation(consultation);
+        // Default amount for a consultation: 300 DH
+        facture.setMontantTotal(new java.math.BigDecimal("300.00"));
+        facture.setStatutPaiement(StatutPaiement.NON_PAYE);
+        factureRepository.save(facture);
+    }
+
     public List<Facture> getFacturesByPatient(Long patientId) {
         return factureRepository.findByPatient(patientId);
     }

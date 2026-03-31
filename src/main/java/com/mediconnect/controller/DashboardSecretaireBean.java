@@ -3,6 +3,7 @@ package com.mediconnect.controller;
 import com.mediconnect.model.RendezVous;
 import com.mediconnect.model.StatutRDV;
 import com.mediconnect.service.RendezVousService;
+import com.mediconnect.service.ConsultationService;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -21,12 +22,15 @@ public class DashboardSecretaireBean implements Serializable {
     private long totalToday;
     private long waitingCount;
     private long completedToday;
+    private List<RendezVous> filteredAppointments;
 
     private RendezVousService rendezVousService;
+    private ConsultationService consultationService;
 
     @PostConstruct
     public void init() {
         rendezVousService = new RendezVousService();
+        consultationService = new ConsultationService();
         loadDashboardData();
     }
 
@@ -56,14 +60,21 @@ public class DashboardSecretaireBean implements Serializable {
 
     public void marquerTermine(RendezVous rdv) {
         try {
-            rdv.setStatut(StatutRDV.TERMINE);
-            rendezVousService.updateRendezVous(rdv);
+            // Find the associated consultation if it exists
+            var consultationOpt = consultationService.findByRendezVous(rdv.getId());
+            if (consultationOpt.isPresent()) {
+                consultationService.cloturerConsultation(consultationOpt.get());
+            } else {
+                // If no consultation is started, just terminate the RDV
+                rdv.setStatut(StatutRDV.TERMINE);
+                rendezVousService.updateRendezVous(rdv);
+            }
             loadDashboardData();
             FacesContext.getCurrentInstance().addMessage(null, 
-                new FacesMessage(FacesMessage.SEVERITY_INFO, "Succès", "Consultation terminée pour " + rdv.getPatient().getFullName()));
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "Succès", "Rendez-vous terminé pour " + rdv.getPatient().getFullName()));
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, 
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Action impossible."));
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Action impossible : " + e.getMessage()));
         }
     }
 
@@ -81,5 +92,16 @@ public class DashboardSecretaireBean implements Serializable {
 
     public long getCompletedToday() {
         return completedToday;
+    }
+    public void setTodayAppointments(List<RendezVous> todayAppointments) {
+        this.todayAppointments = todayAppointments;
+    }
+
+    public List<RendezVous> getFilteredAppointments() {
+        return filteredAppointments;
+    }
+
+    public void setFilteredAppointments(List<RendezVous> filteredAppointments) {
+        this.filteredAppointments = filteredAppointments;
     }
 }

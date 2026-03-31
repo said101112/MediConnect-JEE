@@ -27,6 +27,15 @@ public class Medecin extends User {
     @Column(name = "matricule", unique = true, nullable = false, length = 50)
     private String matricule;
 
+    @Column(name = "heure_debut", length = 10)
+    private String heureDebut = "08:30";
+
+    @Column(name = "heure_fin", length = 10)
+    private String heureFin = "17:30";
+
+    @Column(name = "jours_travailles", length = 100)
+    private String joursTravailles = "Lundi, Mardi, Mercredi, Jeudi, Vendredi";
+
     // Default Constructor
     public Medecin() {
         super();
@@ -79,4 +88,13 @@ public class Medecin extends User {
     public void setMatricule(String matricule) {
         this.matricule = matricule;
     }
+
+    public String getHeureDebut() { return heureDebut; }
+    public void setHeureDebut(String h) { this.heureDebut = h; }
+
+    public String getHeureFin() { return heureFin; }
+    public void setHeureFin(String h) { this.heureFin = h; }
+
+    public String getJoursTravailles() { return joursTravailles; }
+    public void setJoursTravailles(String j) { this.joursTravailles = j; }
 }

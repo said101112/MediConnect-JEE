@@ -92,7 +92,7 @@ public class MedecinBean implements Serializable {
     }
 
     public String ouvrirConsultation(Integer rdvId) {
-        return "/medecin/consultation.xhtml?rdvId=" + rdvId + "&faces-redirect=true";
+        return "/views/medecin/consultation.xhtml?rdvId=" + rdvId + "&faces-redirect=true";
     }
 
     public String getCouleurStatut(StatutRDV statut) {

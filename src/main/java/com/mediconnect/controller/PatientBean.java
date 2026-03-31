@@ -20,6 +20,7 @@ public class PatientBean implements Serializable {
     private Patient newPatient;
     private Patient selectedPatient;
     private List<Patient> patients;
+    private List<Patient> filteredPatients;
     private List<com.mediconnect.model.RendezVous> selectedPatientRDVs;
     private List<com.mediconnect.model.Facture> selectedPatientFactures;
 
@@ -110,6 +111,14 @@ public class PatientBean implements Serializable {
 
     public List<Patient> getPatients() {
         return patients;
+    }
+
+    public List<Patient> getFilteredPatients() {
+        return filteredPatients;
+    }
+
+    public void setFilteredPatients(List<Patient> filteredPatients) {
+        this.filteredPatients = filteredPatients;
     }
 
     public void setPatients(List<Patient> patients) {

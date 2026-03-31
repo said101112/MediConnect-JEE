@@ -1,104 +1,156 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
-    xmlns:ui="jakarta.faces.facelets" xmlns:p="http://primefaces.org/ui" template="layout.xhtml">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="layout.xhtml">
 
-    <ui:define name="title">Billing - Secrétaire</ui:define>
+    <ui:define name="title">Workspace - Facturation</ui:define>
 
     <ui:define name="topbar-title">
-        <i class="pi pi-wallet" style="color: var(--primary-color);"></i> Billing
+        <i class="pi pi-wallet" style="margin-right: 12px; color: #2563eb;"></i> Facturation &amp; Paiements
     </ui:define>
 
     <ui:define name="content">
         <style>
-            .card {
-                background: white;
-                border-radius: 12px;
-                padding: 24px;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-                border: 1px solid var(--surface-border);
-            }
+            .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+            .stat-card { background: white; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 4px; }
+            .stat-header { font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+            .stat-value { font-size: 1.5rem; font-weight: 700; color: #1e293b; }
+            
+            .card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; }
+            .card-header { padding: 18px 20px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+            .card-header h3 { font-size: 1rem; font-weight: 600; margin: 0; }
 
-            .status-badge {
-                padding: 6px 12px;
-                border-radius: 20px;
-                font-weight: 600;
-                font-size: 12px;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-            }
+            .pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+            .pill::before { content:''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+            .pill-paye { background: #f0fdf4; color: #16a34a; }
+            .pill-impaye { background: #fff7ed; color: #ea580c; }
 
-            .status-PAYE {
-                background-color: #d1fae5;
-                color: #065f46;
-            }
+            .patient-cell { display: flex; align-items: center; gap: 10px; }
+            .p-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: white; background: #2563eb; flex-shrink: 0; }
 
-            .status-NON_PAYE {
-                background-color: #fee2e2;
-                color: #991b1b;
-            }
+            .btn-action { margin-left: 5px; }
         </style>
 
         <p:growl id="messages" showDetail="true" />
 
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">Volume Global</div>
+                <div class="stat-value">#{facturationBean.factures.size()}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">Total Encaissé</div>
+                <div class="stat-value" style="color: #16a34a;">
+                    #{facturationBean.factures.stream().filter(f -> f.statutPaiement.name() == 'PAYE').count()}
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">Chiffre d'Affaires</div>
+                <div class="stat-value">
+                    <h:outputText value="#{facturationBean.totalMontant}">
+                        <f:convertNumber maxFractionDigits="0" />
+                    </h:outputText> DH
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">À Percevoir</div>
+                <div class="stat-value" style="color: #ea580c;">
+                    #{facturationBean.factures.stream().filter(f -> f.statutPaiement.name() == 'NON_PAYE').count()}
+                </div>
+            </div>
+        </div>
+
         <div class="card">
             <h:form id="form">
-                <p:dataTable id="facturesTable" var="facture" value="#{facturationBean.factures}" paginator="true"
-                    rows="10" emptyMessage="Aucune facture à afficher." styleClass="ui-datatable-striped">
+                <p:dataTable id="facturesTable" var="facture" value="#{facturationBean.factures}" 
+                             paginator="true" rows="10" 
+                             styleClass="ui-datatable-striped" 
+                             emptyMessage="Aucune facture à traiter.">
 
-                    <p:column headerText="Date">
-                        <h:outputText value="#{facture.dateFacture}" />
+                    <p:column headerText="Date / Réf" style="width: 150px;">
+                        <div style="font-weight: 600;">
+                            <h:outputText value="#{facture.dateFacture}">
+                                <f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy HH:mm" />
+                            </h:outputText>
+                        </div>
+                        <small style="color: #94a3b8;">#INV-#{facture.id}</small>
                     </p:column>
 
                     <p:column headerText="Patient">
-                        <h:outputText value="#{facture.consultation.patient.fullName}" style="font-weight: 500;" />
+                        <div class="patient-cell">
+                            <div class="p-avatar">
+                                <h:outputText value="#{facture.consultation.patient.prenom.substring(0,1)}#{facture.consultation.patient.nom.substring(0,1)}"/>
+                            </div>
+                            <div>
+                                <div style="font-weight: 600;">#{facture.consultation.patient.fullName}</div>
+                                <small style="color: #94a3b8;">CIN: #{facture.consultation.patient.cin}</small>
+                            </div>
+                        </div>
                     </p:column>
 
-                    <p:column headerText="Motif / Consultation">
-                        <h:outputText value="#{facture.consultation.rendezVous.motif}" />
+                    <p:column headerText="Médecin">
+                        <div style="font-size: 0.9rem;">Dr. #{facture.consultation.medecin.fullName}</div>
+                        <small style="color: #94a3b8;">#{facture.consultation.medecin.specialite}</small>
                     </p:column>
 
-                    <p:column headerText="Montant">
-                        <h:outputText value="#{facture.montantTotal} DH"
-                            style="font-weight:700; color: var(--primary-color);" />
+                    <p:column headerText="Montant" style="width: 120px;">
+                        <h:outputText value="#{facture.montantTotal}" style="font-weight: 700; color: #1e293b;">
+                            <f:convertNumber minFractionDigits="2" />
+                        </h:outputText> DH
                     </p:column>
 
-                    <p:column headerText="Statut">
-                        <h:outputText value="#{facture.statutPaiement}"
-                            styleClass="status-badge status-#{facture.statutPaiement}" />
+                    <p:column headerText="État" style="width: 120px; text-align: center;">
+                        <h:panelGroup rendered="#{facture.statutPaiement.name() == 'PAYE'}">
+                            <span class="pill pill-paye">Payé</span>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{facture.statutPaiement.name() == 'NON_PAYE'}">
+                            <span class="pill pill-impaye">Attente</span>
+                        </h:panelGroup>
                     </p:column>
 
-                    <p:column headerText="Actions" style="width: 200px; text-align: center;">
-                        <p:commandButton icon="pi pi-pencil" title="Modifier Montant"
-                            update=":editAmountForm:editAmountDialog" oncomplete="PF('editAmountWV').show();"
-                            disabled="#{facture.statutPaiement eq 'PAYE'}"
-                            styleClass="ui-button-flat ui-button-info" style="margin-right: 8px;">
-                            <f:setPropertyActionListener value="#{facture}" target="#{facturationBean.selectedFacture}" />
-                        </p:commandButton>
+                    <p:column headerText="Action" style="width: 220px; text-align: center;">
+                        <h:panelGroup rendered="#{facture.statutPaiement.name() == 'NON_PAYE'}" style="display: flex; gap: 8px; justify-content: center;">
+                            <p:commandLink update=":editAmountForm" oncomplete="PF('editAmountWV').show();"
+                                           styleClass="ui-button ui-button-info ui-button-flat p-0" style="padding: 5px !important;"
+                                           title="Ajuster">
+                                <i class="pi pi-pencil"></i>
+                                <f:setPropertyActionListener value="#{facture}" target="#{facturationBean.selectedFacture}" />
+                            </p:commandLink>
 
-                        <p:commandButton value="Encaisser" icon="pi pi-check"
-                            action="#{facturationBean.encaisser(facture)}" update="facturesTable :messages"
-                            disabled="#{facture.statutPaiement eq 'PAYE'}"
-                            styleClass="#{facture.statutPaiement eq 'PAYE' ? 'ui-button-flat' : 'ui-button-success'}" />
+                            <p:commandButton value="Encaisser" icon="pi pi-check"
+                                             action="#{facturationBean.encaisser(facture)}"
+                                             update=":form:facturesTable :messages"
+                                             styleClass="ui-button-sm ui-button-success" />
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{facture.statutPaiement.name() == 'PAYE'}" >
+                             <span style="color: #16a34a; font-weight: 600; font-size: 0.85rem;">
+                                 <i class="pi pi-check" style="margin-right: 5px;"></i>Confirmé
+                             </span>
+                        </h:panelGroup>
                     </p:column>
                 </p:dataTable>
             </h:form>
         </div>
 
-        <p:dialog id="editAmountDialog" widgetVar="editAmountWV" header="Ajuster le Montant" modal="true" responsive="true" width="350" appendTo="@(body)">
+        <p:dialog id="editAmountDialog" widgetVar="editAmountWV" header="Ajuster le Montant" 
+                  modal="true" responsive="true" width="350" appendTo="@(body)">
             <h:form id="editAmountForm">
-                <div class="ui-fluid">
+                <div class="ui-fluid" style="margin-top: 10px;">
                     <div class="field" style="margin-bottom: 20px;">
-                        <p:outputLabel for="amount" value="Nouveau Montant (DH)" />
+                        <p:outputLabel for="amount" value="Nouveau Montant (DH)" style="font-weight: 600; margin-bottom: 8px; display: block;" />
                         <p:inputNumber id="amount" value="#{facturationBean.selectedFacture.montantTotal}" 
                                       symbol=" DH" symbolPosition="s" decimalPlaces="2" />
                     </div>
                 </div>
-                <div style="text-align: right; margin-top: 15px;">
-                    <p:commandButton value="Enregistrer" icon="pi pi-check" 
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <p:commandButton value="Annuler" onclick="PF('editAmountWV').hide()" 
+                                     styleClass="ui-button-secondary ui-button-flat" type="button" />
+                    <p:commandButton value="Valider" icon="pi pi-check" 
                                      action="#{facturationBean.modifierMontant(facturationBean.selectedFacture)}"
                                      update=":form:facturesTable :messages"
                                      oncomplete="if (!args.validationFailed) PF('editAmountWV').hide()" />
-                    <p:commandButton value="Annuler" icon="pi pi-times" onclick="PF('editAmountWV').hide()" 
-                                     styleClass="ui-button-secondary ui-button-flat" type="button" style="margin-left: 8px;"/>
                 </div>
             </h:form>
         </p:dialog>

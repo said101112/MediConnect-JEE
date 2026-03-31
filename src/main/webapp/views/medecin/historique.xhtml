@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <title>MediConnect – Historique des Consultations</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',sans-serif; background:#f8fafc; color:#1e293b; display:flex; min-height:100vh; }
+
+        .sidebar { width:240px; background:#fff; border-right:1px solid #e2e8f0; display:flex; flex-direction:column; position:fixed; height:100vh; z-index:100; }
+        .sidebar-logo { display:flex; align-items:center; gap:10px; padding:20px; border-bottom:1px solid #f1f5f9; }
+        .logo-icon { width:38px; height:38px; background:#2563eb; border-radius:10px; display:flex; align-items:center; justify-content:center; color:white; font-size:18px; }
+        .logo-text { font-weight:700; font-size:1rem; color:#1e293b; }
+        .logo-sub  { font-size:0.72rem; color:#94a3b8; }
+        .sidebar-nav { flex:1; padding:16px 12px; }
+        .nav-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; color:#64748b; text-decoration:none; font-size:0.9rem; font-weight:500; transition:all 0.15s; margin-bottom:2px; }
+        .nav-item:hover { background:#f1f5f9; color:#1e293b; }
+        .nav-item.active { background:#eff6ff; color:#2563eb; }
+        .nav-item i { width:18px; text-align:center; }
+        .nav-section-label { font-size:0.68rem; font-weight:600; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; padding:12px 8px 6px; }
+        .sidebar-footer { padding:16px 20px; border-top:1px solid #f1f5f9; display:flex; align-items:center; gap:10px; }
+        .avatar { width:36px; height:36px; background:linear-gradient(135deg,#2563eb,#1d4ed8); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:0.85rem; flex-shrink:0; }
+        .avatar-name { font-size:0.85rem; font-weight:600; color:#1e293b; }
+        .avatar-role { font-size:0.72rem; color:#94a3b8; }
+
+        .main { margin-left:240px; flex:1; display:flex; flex-direction:column; }
+        .topbar { background:white; border-bottom:1px solid #e2e8f0; padding:14px 28px; display:flex; align-items:center; gap:16px; position:sticky; top:0; z-index:50; }
+        .topbar-title { font-size:1rem; font-weight:600; color:#1e293b; }
+        .topbar-right { margin-left:auto; display:flex; align-items:center; gap:12px; }
+        .icon-btn { width:38px; height:38px; border-radius:9px; border:1px solid #e2e8f0; background:white; display:flex; align-items:center; justify-content:center; color:#64748b; cursor:pointer; }
+
+        .content { padding:28px; }
+
+        .card { background:white; border-radius:14px; border:1px solid #e2e8f0; overflow:hidden; }
+        .card-header { padding:18px 20px; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; justify-content:space-between; }
+        .card-header h3 { font-size:1.1rem; font-weight:600; }
+
+        .search-container { padding:16px 20px; background:#fafbfc; border-bottom:1px solid #f1f5f9; display:flex; gap:12px; align-items:center; }
+        .search-input { flex:1; max-width:400px; position:relative; }
+        .search-input i { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:0.9rem; }
+        .search-input input { width:100%; padding:10px 12px 10px 38px; border-radius:10px; border:1px solid #e2e8f0; font-size:0.88rem; outline:none; transition:border-color 0.15s; }
+        .search-input input:focus { border-color:#2563eb; }
+
+        .consult-table { width:100%; border-collapse:collapse; }
+        .consult-table th { text-align:left; font-size:0.72rem; font-weight:600; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px; padding:14px 20px; border-bottom:1px solid #f1f5f9; }
+        .consult-table td { padding:16px 20px; border-bottom:1px solid #f8fafc; font-size:0.88rem; vertical-align:middle; }
+        .consult-table tr:last-child td { border-bottom:none; }
+        .consult-table tr:hover td { background:#fafbfc; }
+
+        .patient-cell { display:flex; align-items:center; gap:10px; }
+        .p-avatar { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700; color:white; background:#2563eb; flex-shrink:0; }
+        .p-name { font-weight:600; color:#1e293b; }
+        .p-info { font-size:0.78rem; color:#64748b; }
+
+        .status-pill { padding:4px 10px; border-radius:20px; font-size:0.75rem; font-weight:600; display:inline-flex; align-items:center; gap:5px; }
+        .sp-closed { background:#f0fdf4; color:#16a34a; }
+        .sp-open   { background:#fff7ed; color:#ea580c; }
+        .sp-closed::before { content:''; width:6px; height:6px; border-radius:50%; background:#16a34a; }
+        .sp-open::before   { content:''; width:6px; height:6px; border-radius:50%; background:#ea580c; }
+
+        .btn-action { color:#2563eb; font-size:0.85rem; font-weight:500; text-decoration:none; display:inline-flex; align-items:center; gap:5px; padding:6px 12px; border-radius:6px; transition:background 0.15s; }
+        .btn-action:hover { background:#eff6ff; }
+        .btn-icon { font-size:1.1rem; }
+
+        .empty-state { text-align:center; padding:60px 20px; color:#94a3b8; }
+        .empty-state i { font-size:3rem; color:#e2e8f0; margin-bottom:16px; }
+    </style>
+</h:head>
+
+<h:body>
+
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon"><i class="fas fa-shield-halved"/></div>
+            <div>
+                <div class="logo-text">MediConnect</div>
+                <div class="logo-sub">Clinic Management</div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.xhtml"  class="nav-item"><i class="fas fa-th-large"/> Dashboard</a>
+            <a href="#"                class="nav-item"><i class="fas fa-user-injured"/> Patients</a>
+            <a href="planning.xhtml"   class="nav-item"><i class="fas fa-calendar-check"/> Appointments</a>
+            <a href="historique.xhtml" class="nav-item active"><i class="fas fa-stethoscope"/> Consultations</a>
+            <a href="facturation.xhtml" class="nav-item"><i class="fas fa-file-invoice-dollar"/> Billing</a>
+            <div class="nav-section-label">System</div>
+            <a href="settings.xhtml"   class="nav-item"><i class="fas fa-gear"/> Settings</a>
+        </nav>
+        <div class="sidebar-footer">
+            <h:form id="logoutFormHist" style="width: 100%;">
+                <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
+                    <div class="avatar">Dr</div>
+                    <div style="flex: 1;">
+                        <div class="avatar-name">Dr. <h:outputText value="#{consultationBean.medecinConnecte.fullName}"/></div>
+                        <div class="avatar-role"><h:outputText value="#{consultationBean.medecinConnecte.specialite}"/></div>
+                    </div>
+                    <p:commandLink action="#{loginBean.logout}" ajax="false" title="Déconnexion"
+                                   style="color: #64748b; transition: color 0.2s;" 
+                                   onmouseover="this.style.color='#ef4444'" 
+                                   onmouseout="this.style.color='#64748b'">
+                        <i class="fas fa-sign-out-alt" style="font-size: 1.1rem;"></i>
+                    </p:commandLink>
+                </div>
+            </h:form>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="topbar">
+            <span class="topbar-title">Consultation History</span>
+            <div class="topbar-right">
+                <div class="icon-btn"><i class="fas fa-bell"/></div>
+            </div>
+        </div>
+
+        <div class="content">
+            <h:form id="historyForm">
+                <p:growl id="msgs" showDetail="true"/>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Dossiers Médicaux &amp; Visites</h3>
+                    </div>
+                    
+                    <!-- RECHERCHE PARMI LES CONSULTATIONS (Facultatif mais utile) -->
+                    <div class="search-container">
+                        <div class="search-input">
+                            <i class="fas fa-magnifying-glass"/>
+                            <p:inputText placeholder="Rechercher par patient, diagnostic..." 
+                                         id="filterInput" />
+                        </div>
+                    </div>
+
+                    <h:panelGroup rendered="#{empty consultationBean.historiqueConsultations}">
+                        <div class="empty-state">
+                            <i class="fas fa-folder-open"/>
+                            <h2>Aucune consultation trouvée</h2>
+                            <p>Les consultations terminées ou en cours apparaîtront ici.</p>
+                        </div>
+                    </h:panelGroup>
+
+                    <h:panelGroup rendered="#{not empty consultationBean.historiqueConsultations}">
+                        <table class="consult-table">
+                            <thead>
+                                <tr>
+                                    <th>Date Visite</th>
+                                    <th>Patient</th>
+                                    <th>Diagnostic</th>
+                                    <th>État</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ui:repeat value="#{consultationBean.historiqueConsultations}" var="c">
+                                    <tr>
+                                        <td>
+                                            <div style="font-weight:600;"><h:outputText value="#{c.dateVisiteFormatee}"/></div>
+                                            <div style="font-size:0.75rem;color:#94a3b8;">Ref: #C-#{c.id}</div>
+                                        </td>
+                                        <td>
+                                            <div class="patient-cell">
+                                                <div class="p-avatar">
+                                                    <h:outputText value="#{c.patient.prenom.substring(0,1)}#{c.patient.nom.substring(0,1)}"/>
+                                                </div>
+                                                <div>
+                                                    <div class="p-name"><h:outputText value="#{c.patient.fullName}"/></div>
+                                                    <div class="p-info">CIN: #{c.patient.cin}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{c.diagnostic}" rendered="#{not empty c.diagnostic}"/>
+                                            <h:outputText value="Pas de diagnostic saisi" rendered="#{empty c.diagnostic}" style="color:#94a3b8;font-style:italic;"/>
+                                        </td>
+                                        <td>
+                                            <h:panelGroup rendered="#{c.cloturee}">
+                                                <span class="status-pill sp-closed">Clôturée</span>
+                                            </h:panelGroup>
+                                            <h:panelGroup rendered="#{not c.cloturee}">
+                                                <span class="status-pill sp-open">En cours</span>
+                                            </h:panelGroup>
+                                        </td>
+                                        <td>
+                                            <div style="display:flex;gap:8px;">
+                                                <h:commandLink action="#{consultationBean.setConsultationEnCours(c)}" 
+                                                               actionListener="#{medecinBean.ouvrirConsultation(c.rendezVous.id)}"
+                                                               styleClass="btn-action" title="Modifier/Voir">
+                                                    <i class="fas fa-pen-to-square btn-icon"/> Voir
+                                                </h:commandLink>
+                                                
+                                                <h:outputLink value="#{request.contextPath}/#{c.cheminPdfOrdonnance}" 
+                                                              target="_blank" styleClass="btn-action" title="Ordonnance"
+                                                              rendered="#{not empty c.cheminPdfOrdonnance}">
+                                                    <i class="fas fa-file-pdf btn-icon" style="color:#ef4444;"/> PDF
+                                                </h:outputLink>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </ui:repeat>
+                            </tbody>
+                        </table>
+                    </h:panelGroup>
+                </div>
+            </h:form>
+        </div>
+    </div>
+
+</h:body>
+</html>

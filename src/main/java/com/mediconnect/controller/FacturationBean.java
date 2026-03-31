@@ -8,6 +8,7 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Named
@@ -55,6 +56,14 @@ public class FacturationBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", e.getMessage()));
         }
+    }
+
+    public BigDecimal getTotalMontant() {
+        if (factures == null) return BigDecimal.ZERO;
+        return factures.stream()
+                .filter(f -> f.getMontantTotal() != null)
+                .map(Facture::getMontantTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public List<Facture> getFactures() {

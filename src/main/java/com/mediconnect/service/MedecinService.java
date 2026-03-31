@@ -60,4 +60,8 @@ public class MedecinService implements Serializable {
     public void annulerRdv(Integer rdvId) {
         rendezVousRepository.updateStatut(rdvId, StatutRDV.ANNULE);
     }
+
+    public void update(Medecin medecin) {
+        medecinRepository.update(medecin);
+    }
 }

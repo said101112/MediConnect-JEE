@@ -16,10 +16,12 @@ public class ConsultationService implements Serializable {
 
     private final ConsultationRepository consultationRepository;
     private final RendezVousRepository rendezVousRepository;
+    private final FactureService factureService;
 
     public ConsultationService() {
         this.consultationRepository = new ConsultationRepository();
         this.rendezVousRepository = new RendezVousRepository();
+        this.factureService = new FactureService();
     }
 
     public Consultation ouvrirConsultation(Integer rdvId) throws Exception {
@@ -62,6 +64,9 @@ public class ConsultationService implements Serializable {
             rendezVousRepository.updateStatut(
                     consultation.getRendezVous().getId(), StatutRDV.TERMINE);
         }
+        
+        // Auto-generate bill for the secretary
+        factureService.genererFacture(consultation);
     }
 
     public void enregistrerOrdonnancePdf(Integer consultationId, String cheminPdf) throws Exception {
@@ -82,6 +87,10 @@ public class ConsultationService implements Serializable {
 
     public Optional<Consultation> findById(Integer id) {
         return consultationRepository.findById(id);
+    }
+
+    public Optional<Consultation> findByRendezVous(Integer rdvId) {
+        return consultationRepository.findByRendezVous(rdvId);
     }
 
     public long getNombreConsultations(Long medecinId) {
