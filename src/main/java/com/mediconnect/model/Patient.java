@@ -37,80 +37,45 @@ public class Patient extends User {
     @Column(name = "allergies", columnDefinition = "TEXT")
     private String allergies;
 
-    // Default Constructor
     public Patient() {
         super();
     }
 
-    // Getters and Setters
-
-    @Override
-    public String getNom() {
-        return nom;
+    public String getDateNaissanceFormatee() {
+        if (dateNaissance == null) return "";
+        return String.format("%02d/%02d/%d",
+                dateNaissance.getDayOfMonth(),
+                dateNaissance.getMonthValue(),
+                dateNaissance.getYear());
     }
 
     @Override
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
+    public String getNom() { return nom; }
+    @Override
+    public void setNom(String nom) { this.nom = nom; }
 
     @Override
-    public String getPrenom() {
-        return prenom;
-    }
+    public String getPrenom() { return prenom; }
+    @Override
+    public void setPrenom(String prenom) { this.prenom = prenom; }
 
     @Override
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
-    }
-
+    public String getTelephone() { return telephone; }
     @Override
-    public String getTelephone() {
-        return telephone;
-    }
+    public void setTelephone(String telephone) { this.telephone = telephone; }
 
-    @Override
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
-    }
+    public String getCin() { return cin; }
+    public void setCin(String cin) { this.cin = cin; }
 
-    public String getCin() {
-        return cin;
-    }
+    public LocalDate getDateNaissance() { return dateNaissance; }
+    public void setDateNaissance(LocalDate dateNaissance) { this.dateNaissance = dateNaissance; }
 
-    public void setCin(String cin) {
-        this.cin = cin;
-    }
+    public String getAdresse() { return adresse; }
+    public void setAdresse(String adresse) { this.adresse = adresse; }
 
-    public LocalDate getDateNaissance() {
-        return dateNaissance;
-    }
+    public String getAntecedents() { return antecedents; }
+    public void setAntecedents(String antecedents) { this.antecedents = antecedents; }
 
-    public void setDateNaissance(LocalDate dateNaissance) {
-        this.dateNaissance = dateNaissance;
-    }
-
-    public String getAdresse() {
-        return adresse;
-    }
-
-    public void setAdresse(String adresse) {
-        this.adresse = adresse;
-    }
-
-    public String getAntecedents() {
-        return antecedents;
-    }
-
-    public void setAntecedents(String antecedents) {
-        this.antecedents = antecedents;
-    }
-
-    public String getAllergies() {
-        return allergies;
-    }
-
-    public void setAllergies(String allergies) {
-        this.allergies = allergies;
-    }
+    public String getAllergies() { return allergies; }
+    public void setAllergies(String allergies) { this.allergies = allergies; }
 }

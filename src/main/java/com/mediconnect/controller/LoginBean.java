@@ -16,9 +16,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Optional;
 
-/**
- * Managed Bean for handling user login and logout actions.
- */
 @Named("loginBean")
 @RequestScoped
 public class LoginBean implements Serializable {
@@ -37,11 +34,6 @@ public class LoginBean implements Serializable {
         this.authService = new AuthService();
     }
 
-    /**
-     * Perform login action.
-     * Authenticates the user and redirects to the appropriate dashboard based on
-     * their role.
-     */
     public void login() {
         Optional<User> userOpt = authService.authenticate(email, password);
 
@@ -49,7 +41,6 @@ public class LoginBean implements Serializable {
             User user = userOpt.get();
             sessionManager.setCurrentUser(user);
 
-            // Redirect to role-specific dashboard
             String redirectUrl = getDashboardUrl(user.getRole());
             redirect(redirectUrl);
         } else {
@@ -60,10 +51,6 @@ public class LoginBean implements Serializable {
         }
     }
 
-    /**
-     * Perform logout action.
-     * Invalidates the session and redirects to the login page.
-     */
     public void logout() {
         FacesContext context = FacesContext.getCurrentInstance();
         ExternalContext externalContext = context.getExternalContext();
@@ -74,23 +61,18 @@ public class LoginBean implements Serializable {
         redirect(externalContext.getRequestContextPath() + "/login.xhtml");
     }
 
-    /**
-     * Get the dashboard URL based on user role.
-     */
     private String getDashboardUrl(Role role) {
         ExternalContext ext = FacesContext.getCurrentInstance().getExternalContext();
         String contextPath = ext.getRequestContextPath();
 
-        return switch (role) {
-            case MEDECIN -> contextPath + "/views/medecin/dashboard.xhtml";
-            case SECRETAIRE -> contextPath + "/views/secretaire/dashboard.xhtml";
-            case PATIENT -> contextPath + "/views/patient/dashboard.xhtml";
-        };
+        switch (role) {
+            case MEDECIN:    return contextPath + "/views/medecin/dashboard.xhtml";
+            case SECRETAIRE: return contextPath + "/views/secretaire/dashboard.xhtml";
+            case PATIENT:    return contextPath + "/views/patient/dashboard.xhtml";
+            default:         return contextPath + "/login.xhtml";
+        }
     }
 
-    /**
-     * Redirect to the given URL.
-     */
     private void redirect(String url) {
         try {
             ExternalContext ext = FacesContext.getCurrentInstance().getExternalContext();
@@ -102,21 +84,9 @@ public class LoginBean implements Serializable {
         }
     }
 
-    // ==================== Getters & Setters ====================
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 }

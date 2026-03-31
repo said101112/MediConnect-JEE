@@ -4,5 +4,7 @@ public enum StatutRDV {
     PLANIFIE,
     EN_ATTENTE,
     ANNULE,
-    TERMINE
+    TERMINE,
+    EN_COURS,
+
 }
