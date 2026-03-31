@@ -1,0 +1,446 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="http://primefaces.org/ui"
+    template="layout.xhtml">
+
+    <ui:define name="title">Mon Dossier Médical - MediConnect</ui:define>
+
+    <ui:define name="topbar-title">
+        <i class="pi pi-folder-open" style="color: #7c3aed;"></i> Mon Dossier Médical
+    </ui:define>
+
+    <ui:define name="content">
+        <style>
+            /* ── Layout ───────────────────────────────── */
+            .dossier-layout {
+                display: grid;
+                grid-template-columns: 320px 1fr;
+                gap: 24px;
+                align-items: start;
+            }
+
+            /* ── Cards ────────────────────────────────── */
+            .card {
+                background: white;
+                border-radius: 16px;
+                border: 1px solid var(--surface-border);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+                overflow: hidden;
+                margin-bottom: 20px;
+            }
+            .card-header {
+                padding: 16px 24px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                border-bottom: 1px solid var(--surface-border);
+                font-weight: 700;
+                font-size: 15px;
+            }
+            .card-header i { font-size: 18px; }
+            .card-body { padding: 20px 24px; }
+
+            /* ── Patient identity card ────────────────── */
+            .patient-avatar {
+                width: 72px; height: 72px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #7c3aed, #2563eb);
+                color: white;
+                display: flex; align-items: center; justify-content: center;
+                font-size: 28px; font-weight: 700;
+                margin: 0 auto 12px;
+            }
+            .patient-name {
+                text-align: center;
+                font-size: 18px; font-weight: 700;
+                color: var(--text-color);
+            }
+            .patient-email {
+                text-align: center;
+                font-size: 13px;
+                color: var(--text-color-secondary);
+                margin-bottom: 20px;
+            }
+            .info-row {
+                display: flex;
+                align-items: flex-start;
+                gap: 10px;
+                padding: 10px 0;
+                border-bottom: 1px solid #f1f5f9;
+                font-size: 13px;
+            }
+            .info-row:last-child { border-bottom: none; }
+            .info-row i { color: var(--primary-color); font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+            .info-label { color: var(--text-color-secondary); min-width: 90px; flex-shrink: 0; }
+            .info-value { color: var(--text-color); font-weight: 500; }
+
+            /* ── Blood type badge ─────────────────────── */
+            .blood-type-section {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                padding: 14px 0;
+                border-bottom: 1px solid #f1f5f9;
+                margin-bottom: 4px;
+            }
+            .blood-badge {
+                width: 56px; height: 56px;
+                border-radius: 14px;
+                display: flex; align-items: center; justify-content: center;
+                font-size: 18px; font-weight: 800;
+                flex-shrink: 0;
+                letter-spacing: -0.5px;
+            }
+            .blood-badge.O  { background: #d1fae5; color: #059669; }
+            .blood-badge.A  { background: #dbeafe; color: #2563eb; }
+            .blood-badge.B  { background: #ede9fe; color: #7c3aed; }
+            .blood-badge.AB { background: #fee2e2; color: #dc2626; }
+            .blood-badge.unknown { background: #f1f5f9; color: #64748b; }
+            .blood-label small { display: block; font-size: 11px; color: var(--text-color-secondary); }
+            .blood-label strong { font-size: 15px; color: var(--text-color); }
+
+            /* ── Medical text sections ────────────────── */
+            .medical-section { margin-bottom: 20px; }
+            .medical-section h4 {
+                font-size: 13px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin: 0 0 8px;
+            }
+            .medical-section h4.allergies { color: #dc2626; }
+            .medical-section h4.antecedents { color: #7c3aed; }
+            .medical-text {
+                background: #f8fafc;
+                border-left: 3px solid var(--border-accent, #e2e8f0);
+                padding: 10px 14px;
+                border-radius: 0 8px 8px 0;
+                font-size: 13px;
+                line-height: 1.7;
+                color: var(--text-color);
+                white-space: pre-wrap;
+            }
+            .medical-text.allergies-text { --border-accent: #fca5a5; border-left-color: #fca5a5; }
+            .medical-text.antecedents-text { --border-accent: #c4b5fd; border-left-color: #c4b5fd; }
+            .empty-text {
+                color: var(--text-color-secondary);
+                font-style: italic;
+                font-size: 13px;
+            }
+
+            /* ── Stats row ────────────────────────────── */
+            .stats-row {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+            .stat-mini {
+                background: white;
+                border: 1px solid var(--surface-border);
+                border-radius: 12px;
+                padding: 14px 16px;
+                text-align: center;
+            }
+            .stat-mini .num {
+                font-size: 28px;
+                font-weight: 800;
+                line-height: 1;
+            }
+            .stat-mini .lbl {
+                font-size: 11px;
+                color: var(--text-color-secondary);
+                margin-top: 4px;
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+            }
+
+            /* ── Consultation timeline ────────────────── */
+            .timeline { display: flex; flex-direction: column; gap: 14px; }
+            .consultation-card {
+                background: white;
+                border: 1px solid var(--surface-border);
+                border-left: 4px solid var(--primary-color);
+                border-radius: 0 12px 12px 0;
+                padding: 16px 20px;
+                transition: box-shadow 0.2s, transform 0.2s;
+            }
+            .consultation-card:hover {
+                box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+                transform: translateX(3px);
+            }
+            .consultation-card.cloturee { border-left-color: #10b981; }
+            .consultation-card.en-cours { border-left-color: #f59e0b; }
+            .consult-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 8px;
+            }
+            .consult-title { font-weight: 700; font-size: 14px; color: var(--text-color); }
+            .consult-date { font-size: 12px; color: var(--text-color-secondary); }
+            .consult-doctor {
+                font-size: 13px;
+                color: var(--text-color-secondary);
+                margin-bottom: 10px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .status-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                font-size: 11px;
+                font-weight: 600;
+                padding: 2px 10px;
+                border-radius: 20px;
+            }
+            .status-badge.done { background: #d1fae5; color: #059669; }
+            .status-badge.pending { background: #fef3c7; color: #d97706; }
+            .consult-diagnostic {
+                background: #f8fafc;
+                border-radius: 6px;
+                padding: 8px 12px;
+                font-size: 12px;
+                color: var(--text-color);
+                margin-bottom: 8px;
+            }
+            .consult-diagnostic strong { color: var(--primary-color); }
+            .consult-prescriptions {
+                font-size: 12px;
+                color: var(--text-color-secondary);
+                line-height: 1.6;
+            }
+            .consult-prescriptions strong { color: #7c3aed; }
+
+            /* ── Download button ──────────────────────── */
+            .btn-download-dossier {
+                display: inline-flex;
+                align-items: center;
+                gap: 10px;
+                background: linear-gradient(135deg, #7c3aed, #2563eb);
+                color: white !important;
+                border: none;
+                border-radius: 12px;
+                padding: 13px 28px;
+                font-size: 14px;
+                font-weight: 700;
+                cursor: pointer;
+                font-family: 'Inter', sans-serif;
+                box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+                transition: transform 0.15s, box-shadow 0.2s;
+                width: 100%;
+                justify-content: center;
+                margin-top: 8px;
+            }
+            .btn-download-dossier:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(124, 58, 237, 0.5);
+            }
+
+            @media (max-width: 900px) {
+                .dossier-layout { grid-template-columns: 1fr; }
+            }
+        </style>
+
+        <!-- Summary stats bar -->
+        <div class="stats-row">
+            <div class="stat-mini">
+                <div class="num" style="color: #7c3aed;">#{dossierMedicalBean.age}</div>
+                <div class="lbl">Ans</div>
+            </div>
+            <div class="stat-mini">
+                <div class="num" style="color: #2563eb;">#{dossierMedicalBean.consultationCount}</div>
+                <div class="lbl">Consultations</div>
+            </div>
+            <div class="stat-mini">
+                <div class="num" style="color: #10b981;">
+                    #{empty dossierMedicalBean.patient.groupeSanguin ? '—' : dossierMedicalBean.patient.groupeSanguin}
+                </div>
+                <div class="lbl">Groupe Sanguin</div>
+            </div>
+        </div>
+
+        <div class="dossier-layout">
+
+            <!-- ═══ LEFT COLUMN: identity + medical profile ═══ -->
+            <div>
+
+                <!-- Identity Card -->
+                <div class="card">
+                    <div class="card-header" style="color: #7c3aed;">
+                        <i class="pi pi-user" style="color: #7c3aed;"></i> Identité
+                    </div>
+                    <div class="card-body">
+                        <div class="patient-avatar">
+                            #{dossierMedicalBean.getInitiale(dossierMedicalBean.patient.prenom)}
+                        </div>
+                        <div class="patient-name">
+                            #{dossierMedicalBean.patient.prenom} #{dossierMedicalBean.patient.nom}
+                        </div>
+                        <div class="patient-email">#{dossierMedicalBean.patient.email}</div>
+
+                        <div class="info-row">
+                            <i class="pi pi-id-card"></i>
+                            <span class="info-label">CIN</span>
+                            <span class="info-value">#{empty dossierMedicalBean.patient.cin ? '—' : dossierMedicalBean.patient.cin}</span>
+                        </div>
+                        <div class="info-row">
+                            <i class="pi pi-calendar"></i>
+                            <span class="info-label">Naissance</span>
+                            <span class="info-value">
+                                #{dossierMedicalBean.formatDate(dossierMedicalBean.patient.dateNaissance)}
+                                (#{dossierMedicalBean.age} ans)
+                            </span>
+                        </div>
+                        <div class="info-row">
+                            <i class="pi pi-phone"></i>
+                            <span class="info-label">Téléphone</span>
+                            <span class="info-value">#{empty dossierMedicalBean.patient.telephone ? '—' : dossierMedicalBean.patient.telephone}</span>
+                        </div>
+                        <div class="info-row">
+                            <i class="pi pi-map-marker"></i>
+                            <span class="info-label">Adresse</span>
+                            <span class="info-value">#{empty dossierMedicalBean.patient.adresse ? '—' : dossierMedicalBean.patient.adresse}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medical Profile Card -->
+                <div class="card">
+                    <div class="card-header" style="color: #dc2626;">
+                        <i class="pi pi-heart" style="color: #dc2626;"></i> Profil Médical
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Blood type -->
+                        <div class="blood-type-section">
+                            <div class="blood-badge #{empty dossierMedicalBean.patient.groupeSanguin ? 'unknown' :
+                                (dossierMedicalBean.patient.groupeSanguin.startsWith('AB') ? 'AB' :
+                                (dossierMedicalBean.patient.groupeSanguin.startsWith('A')  ? 'A'  :
+                                (dossierMedicalBean.patient.groupeSanguin.startsWith('B')  ? 'B'  : 'O')))}">
+                                #{empty dossierMedicalBean.patient.groupeSanguin ? '?' : dossierMedicalBean.patient.groupeSanguin}
+                            </div>
+                            <div class="blood-label">
+                                <small>Groupe Sanguin</small>
+                                <strong>#{empty dossierMedicalBean.patient.groupeSanguin ? 'Non renseigné' : dossierMedicalBean.patient.groupeSanguin}</strong>
+                            </div>
+                        </div>
+
+                        <!-- Allergies -->
+                        <div class="medical-section" style="margin-top: 16px;">
+                            <h4 class="allergies">
+                                <i class="pi pi-exclamation-triangle"></i> Allergies
+                            </h4>
+                            <ui:fragment rendered="#{not empty dossierMedicalBean.patient.allergies}">
+                                <div class="medical-text allergies-text">#{dossierMedicalBean.patient.allergies}</div>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{empty dossierMedicalBean.patient.allergies}">
+                                <span class="empty-text">Aucune allergie connue.</span>
+                            </ui:fragment>
+                        </div>
+
+                        <!-- Antécédents -->
+                        <div class="medical-section">
+                            <h4 class="antecedents">
+                                <i class="pi pi-list"></i> Antécédents Médicaux
+                            </h4>
+                            <ui:fragment rendered="#{not empty dossierMedicalBean.patient.antecedents}">
+                                <div class="medical-text antecedents-text">#{dossierMedicalBean.patient.antecedents}</div>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{empty dossierMedicalBean.patient.antecedents}">
+                                <span class="empty-text">Aucun antécédent médical renseigné.</span>
+                            </ui:fragment>
+                        </div>
+
+                        <!-- Download button -->
+                        <h:form>
+                            <p:commandButton
+                                styleClass="btn-download-dossier"
+                                icon="pi pi-download"
+                                value="Télécharger mon Dossier PDF"
+                                action="#{dossierMedicalBean.telechargerDossier()}"
+                                ajax="false"/>
+                        </h:form>
+                    </div>
+                </div>
+
+            </div><!-- end left column -->
+
+            <!-- ═══ RIGHT COLUMN: consultation history ═══ -->
+            <div>
+                <div class="card">
+                    <div class="card-header" style="color: #059669;">
+                        <i class="pi pi-clock" style="color: #059669;"></i>
+                        Historique des Consultations
+                        <span style="margin-left: auto; background:#d1fae5; color:#059669;
+                            font-size:12px; padding:2px 10px; border-radius:20px; font-weight:600;">
+                            #{dossierMedicalBean.consultationCount}
+                        </span>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Empty state -->
+                        <ui:fragment rendered="#{empty dossierMedicalBean.consultations}">
+                            <div style="text-align:center; padding: 40px 0; color: var(--text-color-secondary);">
+                                <i class="pi pi-inbox" style="font-size: 40px; opacity: 0.3;"></i>
+                                <p style="margin-top: 12px;">Aucune consultation enregistrée.</p>
+                            </div>
+                        </ui:fragment>
+
+                        <!-- Timeline -->
+                        <div class="timeline">
+                            <ui:repeat value="#{dossierMedicalBean.consultations}" var="c">
+                                <div class="consultation-card #{c.cloturee ? 'cloturee' : 'en-cours'}">
+
+                                    <div class="consult-header">
+                                        <span class="consult-title">
+                                            <i class="pi pi-file-edit"></i>
+                                            Consultation N°#{c.id}
+                                        </span>
+                                        <span class="status-badge #{c.cloturee ? 'done' : 'pending'}">
+                                            <i class="pi #{c.cloturee ? 'pi-check-circle' : 'pi-clock'}"></i>
+                                            #{c.cloturee ? 'Clôturée' : 'En cours'}
+                                        </span>
+                                    </div>
+
+                                    <div class="consult-date">
+                                        <i class="pi pi-calendar"></i>
+                                        #{dossierMedicalBean.formatDateTime(c.dateVisite)}
+                                    </div>
+
+                                    <div class="consult-doctor">
+                                        <i class="pi pi-user"></i>
+                                        Dr. #{c.medecin.prenom} #{c.medecin.nom}
+                                        — <em>#{c.medecin.specialite}</em>
+                                    </div>
+
+                                    <ui:fragment rendered="#{not empty c.diagnostic}">
+                                        <div class="consult-diagnostic">
+                                            <strong>Diagnostic :</strong> #{c.diagnostic}
+                                        </div>
+                                    </ui:fragment>
+
+                                    <ui:fragment rendered="#{not empty c.observations}">
+                                        <div class="consult-prescriptions">
+                                            <strong>Prescriptions :</strong><br/>
+                                            #{c.observations}
+                                        </div>
+                                    </ui:fragment>
+
+                                </div>
+                            </ui:repeat>
+                        </div>
+
+                    </div>
+                </div>
+            </div><!-- end right column -->
+
+        </div><!-- end dossier-layout -->
+
+    </ui:define>
+
+</ui:composition>

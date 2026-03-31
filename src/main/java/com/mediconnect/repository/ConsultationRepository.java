@@ -22,75 +22,79 @@ public class ConsultationRepository {
         }
     }
 
-    // Toutes les consultations d'un médecin
+    /**
+     * Trouver toutes les consultations d'un médecin.
+     */
     public List<Consultation> findByMedecin(Long medecinId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery(
                             "SELECT c FROM Consultation c " +
-                                    "LEFT JOIN FETCH c.patient " +
-                                    "LEFT JOIN FETCH c.rendezVous " +
-                                    "WHERE c.medecin.id = :medecinId " +
-                                    "ORDER BY c.dateVisite DESC", Consultation.class)
+                            "JOIN FETCH c.patient " +
+                            "LEFT JOIN FETCH c.rendezVous " +
+                            "WHERE c.medecin.id = :medecinId " +
+                            "ORDER BY c.dateVisite DESC", Consultation.class)
                     .setParameter("medecinId", medecinId)
                     .list();
         }
     }
 
-    // Toutes les consultations d'un patient
+    /**
+     * Trouver toutes les consultations d'un patient.
+     */
     public List<Consultation> findByPatient(Long patientId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery(
                             "SELECT c FROM Consultation c " +
-                                    "LEFT JOIN FETCH c.medecin " +
-                                    "WHERE c.patient.id = :patientId " +
-                                    "ORDER BY c.dateVisite DESC", Consultation.class)
+                            "JOIN FETCH c.medecin " +
+                            "LEFT JOIN FETCH c.rendezVous " +
+                            "WHERE c.patient.id = :patientId " +
+                            "ORDER BY c.dateVisite DESC", Consultation.class)
                     .setParameter("patientId", patientId)
                     .list();
         }
     }
 
-    // Trouver la consultation liée à un RDV
+    /**
+     * Trouver la consultation liée à un RDV particulier.
+     */
     public Optional<Consultation> findByRendezVous(Integer rdvId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery(
                             "SELECT c FROM Consultation c " +
-                                    "JOIN FETCH c.patient " +
-                                    "JOIN FETCH c.medecin " +
-                                    "WHERE c.rendezVous.id = :rdvId", Consultation.class)
+                            "JOIN FETCH c.patient " +
+                            "JOIN FETCH c.medecin " +
+                            "WHERE c.rendezVous.id = :rdvId", Consultation.class)
                     .setParameter("rdvId", rdvId)
                     .uniqueResultOptional();
         }
     }
 
     public void save(Consultation consultation) {
-        var session = HibernateUtil.getSessionFactory().openSession();
-        var transaction = session.beginTransaction();
-        try {
-            session.persist(consultation);
-            transaction.commit();
-        } catch (Exception e) {
-            transaction.rollback();
-            throw e;
-        } finally {
-            session.close();
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            var transaction = session.beginTransaction();
+            try {
+                session.persist(consultation);
+                transaction.commit();
+            } catch (Exception e) {
+                transaction.rollback();
+                throw e;
+            }
         }
     }
 
     public void update(Consultation consultation) {
-        var session = HibernateUtil.getSessionFactory().openSession();
-        var transaction = session.beginTransaction();
-        try {
-            session.merge(consultation);
-            transaction.commit();
-        } catch (Exception e) {
-            transaction.rollback();
-            throw e;
-        } finally {
-            session.close();
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            var transaction = session.beginTransaction();
+            try {
+                session.merge(consultation);
+                transaction.commit();
+            } catch (Exception e) {
+                transaction.rollback();
+                throw e;
+            }
         }
     }
 
-    // Compter les consultations d'un médecin
     public long countByMedecin(Long medecinId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery(
