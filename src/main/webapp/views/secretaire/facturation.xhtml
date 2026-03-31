@@ -1,0 +1,80 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets" xmlns:p="http://primefaces.org/ui" template="layout.xhtml">
+
+    <ui:define name="title">Billing - Secrétaire</ui:define>
+
+    <ui:define name="topbar-title">
+        <i class="pi pi-wallet" style="color: var(--primary-color);"></i> Billing
+    </ui:define>
+
+    <ui:define name="content">
+        <style>
+            .card {
+                background: white;
+                border-radius: 12px;
+                padding: 24px;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+                border: 1px solid var(--surface-border);
+            }
+
+            .status-badge {
+                padding: 6px 12px;
+                border-radius: 20px;
+                font-weight: 600;
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .status-PAYE {
+                background-color: #d1fae5;
+                color: #065f46;
+            }
+
+            .status-NON_PAYE {
+                background-color: #fee2e2;
+                color: #991b1b;
+            }
+        </style>
+
+        <h:form id="form">
+            <p:growl id="messages" showDetail="true" />
+
+            <div class="card">
+                <p:dataTable id="facturesTable" var="facture" value="#{facturationBean.factures}" paginator="true"
+                    rows="10" emptyMessage="Aucune facture à afficher." styleClass="ui-datatable-striped">
+
+                    <p:column headerText="Date">
+                        <h:outputText value="#{facture.dateFacture}" />
+                    </p:column>
+
+                    <p:column headerText="Patient">
+                        <h:outputText value="#{facture.consultation.patient.fullName}" style="font-weight: 500;" />
+                    </p:column>
+
+                    <p:column headerText="Motif / Consultation">
+                        <h:outputText value="#{facture.consultation.rendezVous.motif}" />
+                    </p:column>
+
+                    <p:column headerText="Montant">
+                        <h:outputText value="#{facture.montantTotal} DH"
+                            style="font-weight:700; color: var(--primary-color);" />
+                    </p:column>
+
+                    <p:column headerText="Statut">
+                        <h:outputText value="#{facture.statutPaiement}"
+                            styleClass="status-badge status-#{facture.statutPaiement}" />
+                    </p:column>
+
+                    <p:column headerText="Action" style="width: 150px; text-align: center;">
+                        <p:commandButton value="Encaisser" icon="pi pi-check"
+                            action="#{facturationBean.encaisser(facture)}" update="facturesTable messages"
+                            disabled="#{facture.statutPaiement eq 'PAYE'}"
+                            styleClass="#{facture.statutPaiement eq 'PAYE' ? 'ui-button-flat' : 'ui-button-success'}" />
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </h:form>
+    </ui:define>
+
+</ui:composition>
