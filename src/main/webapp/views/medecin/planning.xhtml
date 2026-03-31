@@ -123,11 +123,21 @@
             <a href="#"                class="nav-item"><i class="fas fa-gear"/> Settings</a>
         </nav>
         <div class="sidebar-footer">
-            <div class="avatar">Dr</div>
-            <div>
-                <div class="avatar-name">Dr. <h:outputText value="#{medecinBean.medecinConnecte.fullName}"/></div>
-                <div class="avatar-role"><h:outputText value="#{medecinBean.medecinConnecte.specialite}"/></div>
-            </div>
+            <h:form id="logoutFormPlus" style="width: 100%;">
+                <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
+                    <div class="avatar">Dr</div>
+                    <div style="flex: 1;">
+                        <div class="avatar-name">Dr. <h:outputText value="#{medecinBean.medecinConnecte.fullName}"/></div>
+                        <div class="avatar-role"><h:outputText value="#{medecinBean.medecinConnecte.specialite}"/></div>
+                    </div>
+                    <p:commandLink action="#{loginBean.logout}" ajax="false" title="Déconnexion"
+                                   style="color: #64748b; transition: color 0.2s;" 
+                                   onmouseover="this.style.color='#ef4444'" 
+                                   onmouseout="this.style.color='#64748b'">
+                        <i class="fas fa-sign-out-alt" style="font-size: 1.1rem;"></i>
+                    </p:commandLink>
+                </div>
+            </h:form>
         </div>
     </div>
 
