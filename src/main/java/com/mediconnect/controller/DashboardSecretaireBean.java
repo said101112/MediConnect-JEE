@@ -11,6 +11,8 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
+import com.mediconnect.model.Consultation;
 
 @Named
 @ViewScoped
@@ -61,7 +63,7 @@ public class DashboardSecretaireBean implements Serializable {
     public void marquerTermine(RendezVous rdv) {
         try {
             // Find the associated consultation if it exists
-            var consultationOpt = consultationService.findByRendezVous(rdv.getId());
+            Optional<Consultation> consultationOpt = consultationService.findByRendezVous(rdv.getId());
             if (consultationOpt.isPresent()) {
                 consultationService.cloturerConsultation(consultationOpt.get());
             } else {

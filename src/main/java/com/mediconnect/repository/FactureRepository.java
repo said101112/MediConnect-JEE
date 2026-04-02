@@ -13,6 +13,7 @@ public class FactureRepository {
             return session.createQuery("SELECT f FROM Facture f " +
                                      "JOIN FETCH f.consultation c " +
                                      "JOIN FETCH c.patient p " +
+                                     "JOIN FETCH c.medecin m " +
                                      "LEFT JOIN FETCH c.rendezVous r " +
                                      "ORDER BY f.dateFacture DESC",
                     Facture.class).list();
@@ -48,7 +49,11 @@ public class FactureRepository {
 
     public List<Facture> findByPatient(Long patientId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("SELECT f FROM Facture f JOIN FETCH f.consultation c WHERE c.patient.id = :patientId",
+            return session.createQuery("SELECT f FROM Facture f " +
+                                     "JOIN FETCH f.consultation c " +
+                                     "JOIN FETCH c.patient p " +
+                                     "JOIN FETCH c.medecin m " +
+                                     "WHERE c.patient.id = :patientId",
                     Facture.class)
                     .setParameter("patientId", patientId)
                     .list();

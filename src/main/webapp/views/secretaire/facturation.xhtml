@@ -90,13 +90,17 @@
             <div class="card">
                 <div class="card-header">
                     <h3>Consultation Invoices</h3>
+                    <div style="display: flex; gap: 12px;">
+                         <p:inputText id="globalFilter" placeholder="Rechercher facture..." style="width: 250px; border-radius: 20px; padding-left: 15px; font-size: 0.85rem;" />
+                    </div>
                 </div>
                 <table class="appt-table">
                     <thead>
                         <tr>
                             <th>Date Visite</th>
                             <th>Patient</th>
-                            <th>Motif</th>
+                            <th>Médecin &amp; Motif</th>
+                            <th>Résultat (Diag)</th>
                             <th>Montant</th>
                             <th>État</th>
                             <th>Action</th>
@@ -125,9 +129,13 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <h:outputText value="#{facture.consultation.rendezVous.motif}"/>
-                                    <br/>
-                                    <small style="color:#94a3b8;">Dr. #{facture.consultation.medecin.fullName}</small>
+                                    <div style="font-weight: 500;">Dr. #{facture.consultation.medecin.fullName}</div>
+                                    <div style="font-size: 0.78rem; color: #64748b;">#{facture.consultation.rendezVous.motif}</div>
+                                </td>
+                                <td>
+                                    <h:outputText value="#{empty facture.consultation.diagnostic ? '—' : (facture.consultation.diagnostic.length() > 30 ? facture.consultation.diagnostic.substring(0,27).concat('...') : facture.consultation.diagnostic)}" 
+                                                 title="#{facture.consultation.diagnostic}" 
+                                                 style="font-style: italic; color: #64748b; font-size: 0.82rem;"/>
                                 </td>
                                 <td style="font-weight:700;">
                                     <h:outputText value="#{facture.montantTotal}"><f:convertNumber minFractionDigits="2"/></h:outputText> DH
@@ -137,13 +145,13 @@
                                         <span class="pill pill-paye">Payé</span>
                                     </h:panelGroup>
                                     <h:panelGroup rendered="#{facture.statutPaiement.name() == 'NON_PAYE'}">
-                                        <span class="pill pill-impaye">À percevoir</span>
+                                        <span class="pill pill-impaye">En attente</span>
                                     </h:panelGroup>
                                 </td>
                                 <td>
                                     <h:panelGroup rendered="#{facture.statutPaiement.name() == 'NON_PAYE'}" style="display: flex; gap: 8px;">
                                         <p:commandLink update=":editAmountForm" oncomplete="PF('editAmountWV').show();"
-                                                       title="Ajuster" style="color: #64748b; font-size: 1.1rem;">
+                                                       title="Ajuster" style="color: #64748b; font-size: 1.1rem; padding-top: 4px;">
                                             <i class="pi pi-pencil"></i>
                                             <f:setPropertyActionListener value="#{facture}" target="#{facturationBean.selectedFacture}" />
                                         </p:commandLink>
@@ -155,14 +163,14 @@
                                     </h:panelGroup>
                                     <h:panelGroup rendered="#{facture.statutPaiement.name() == 'PAYE'}" >
                                          <span style="color: #16a34a; font-weight: 600; font-size: 0.85rem;">
-                                             <i class="pi pi-check" style="margin-right: 5px;"></i>Confirmé
+                                             <i class="pi pi-check" style="margin-right: 5px;"></i>Validé
                                          </span>
                                     </h:panelGroup>
                                 </td>
                             </tr>
                         </ui:repeat>
                         <h:panelGroup rendered="#{empty facturationBean.factures}">
-                            <tr><td colspan="6" style="text-align:center; padding:40px; color:#94a3b8;">Aucune donnée de facturation.</td></tr>
+                            <tr><td colspan="7" style="text-align:center; padding:40px; color:#94a3b8;">Aucune donnée de facturation.</td></tr>
                         </h:panelGroup>
                     </tbody>
                 </table>

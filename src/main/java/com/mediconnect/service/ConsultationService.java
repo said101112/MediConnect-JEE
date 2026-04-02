@@ -105,8 +105,32 @@ public class ConsultationService implements Serializable {
         return consultationRepository.findByPatient(patientId);
     }
 
+    /**
+     * Alias utilisé par le dossier médical pour lister les ordonnances.
+     */
+    public List<Consultation> getOrdonnancesByPatient(Long patientId) {
+        return consultationRepository.findByPatient(patientId);
+    }
+
     public Optional<Consultation> findById(Integer id) {
         return consultationRepository.findById(id);
+    }
+
+    public Optional<Consultation> findByRendezVous(Integer rdvId) {
+        return consultationRepository.findByRendezVous(rdvId);
+    }
+
+    /**
+     * Enregistre le chemin du fichier PDF de l'ordonnance dans la base de données.
+     */
+    public void enregistrerOrdonnancePdf(Integer consultationId, String cheminPdf) throws Exception {
+        Optional<Consultation> opt = consultationRepository.findById(consultationId);
+        if (opt.isEmpty()) {
+            throw new Exception("Consultation introuvable.");
+        }
+        Consultation c = opt.get();
+        c.setCheminPdfOrdonnance(cheminPdf);
+        consultationRepository.update(c);
     }
 
     public long getNombreConsultations(Long medecinId) {

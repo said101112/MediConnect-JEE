@@ -54,7 +54,7 @@ public class DownloadOrdonnanceServlet extends HttpServlet {
             return;
         }
 
-        Consultation consultation = consultationService.findById(consultationId);
+        Consultation consultation = consultationService.findById(consultationId).orElse(null);
         if (consultation == null) {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Ordonnance introuvable.");
             return;
