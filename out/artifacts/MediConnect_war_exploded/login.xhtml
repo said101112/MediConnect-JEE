@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+    xmlns:p="http://primefaces.org/ui" xmlns:ui="jakarta.faces.facelets">
+
+<h:head>
+    <title>MediConnect - Connexion</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- BoxIcons for the beautiful icons in input fields -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet' />
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Hospital background image with blur */
+            background: url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&amp;w=2053&amp;auto=format&amp;fit=crop') no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
+        }
+
+        /* Overlay to blur the background image slightly and darken it */
+        .bg-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 41, 59, 0.4);
+            /* Dark blueish tint */
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 0;
+        }
+
+        .login-wrapper {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 440px;
+            padding: 20px;
+        }
+
+        /* Login Card */
+        .login-card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            /* For the bottom banner */
+        }
+
+        .login-content {
+            padding: 40px;
+        }
+
+        /* Brand / Logo Area */
+        .brand-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .brand-icon {
+            width: 32px;
+            height: 32px;
+            background: #2563eb;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-icon svg {
+            width: 18px;
+            height: 18px;
+            fill: white;
+        }
+
+        .brand-header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .welcome-text {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .welcome-text h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+
+        .welcome-text p {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 8px;
+        }
+
+        /* Custom Input Wrapper */
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i.left-icon {
+            position: absolute;
+            left: 14px;
+            font-size: 18px;
+            color: #94a3b8;
+            z-index: 2;
+        }
+
+        /* Override PrimeFaces Default Styles */
+        .ui-inputtext,
+        .ui-password input {
+            width: 100% !important;
+            padding: 12px 14px 12px 42px !important;
+            /* Space for left icon */
+            background: #ffffff !important;
+            border: 1px solid #cbd5e1 !important;
+            border-radius: 8px !important;
+            color: #0f172a !important;
+            font-size: 14px !important;
+            box-shadow: none !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .ui-inputtext:focus,
+        .ui-password input:focus {
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+        }
+
+        .ui-password {
+            width: 100% !important;
+        }
+
+        body .ui-password .ui-inputfield {
+            padding-right: 40px !important;
+            /* Space for toggle mask eye */
+        }
+
+        body .ui-input-icon-right>i,
+        body .ui-password>i {
+            color: #94a3b8 !important;
+            right: 14px !important;
+            margin-top: -9px !important;
+        }
+
+        /* Remember Me and Forgot Password Row */
+        .form-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            font-size: 13px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #475569;
+        }
+
+        .forgot-pass {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .forgot-pass:hover {
+            text-decoration: underline;
+        }
+
+        /* PrimeFaces Checkbox tweak */
+        body .ui-chkbox .ui-chkbox-box {
+            width: 18px !important;
+            height: 18px !important;
+            border: 1px solid #cbd5e1 !important;
+            border-radius: 4px !important;
+            background: #fff !important;
+            box-shadow: none !important;
+        }
+
+        body .ui-chkbox .ui-chkbox-box.ui-state-active {
+            border-color: #2563eb !important;
+            background: #2563eb !important;
+        }
+
+        /* Login Button */
+        .login-btn-wrapper {
+            position: relative;
+        }
+
+        .login-btn {
+            width: 100% !important;
+            background: #2563eb !important;
+            border: none !important;
+            padding: 12px !important;
+            color: white !important;
+            font-size: 15px !important;
+            font-weight: 600 !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
+            transition: background 0.2s !important;
+        }
+
+        .login-btn:hover {
+            background: #1d4ed8 !important;
+        }
+
+        .login-btn .ui-button-text {
+            padding: 0 !important;
+        }
+
+        /* Separator Line */
+        .separator {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 24px 0;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        .separator::before,
+        .separator::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .separator:not(:empty)::before {
+            margin-right: 12px;
+        }
+
+        .separator:not(:empty)::after {
+            margin-left: 12px;
+        }
+
+        /* Sign up text */
+        .signup-text {
+            text-align: center;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .signup-text a {
+            color: #2563eb;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        /* Messaging Styling */
+        body .ui-messages {
+            margin: 0 0 20px 0 !important;
+        }
+
+        body .ui-messages>div {
+            border-radius: 8px !important;
+            padding: 12px !important;
+            border: 1px solid transparent !important;
+        }
+
+        /* Error messages */
+        body .ui-messages .ui-messages-error {
+            background: #fef2f2 !important;
+            border-color: #fecaca !important;
+            color: #dc2626 !important;
+        }
+
+        body .ui-messages .ui-messages-error-icon {
+            display: none;
+        }
+
+        /* Success messages */
+        body .ui-messages .ui-messages-info {
+            background: #ecfdf5 !important;
+            border-color: #a7f3d0 !important;
+            color: #059669 !important;
+        }
+
+        body .ui-messages .ui-messages-info-icon {
+            display: none;
+        }
+
+        body .ui-messages .ui-messages-error-summary,
+        body .ui-messages .ui-messages-info-summary {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        body .ui-messages .ui-messages-error-detail,
+        body .ui-messages .ui-messages-info-detail {
+            font-size: 13px;
+            margin-left: 4px;
+        }
+
+        /* Bottom Banner (HIPAA) */
+        .card-footer {
+            background: #f8fafc;
+            border-top: 1px solid #f1f5f9;
+            padding: 16px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .card-footer i {
+            color: #10b981;
+            font-size: 14px;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <div class="bg-overlay"></div>
+
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="login-content">
+
+                <!-- Logo and Brand -->
+                <div class="brand-header">
+                    <div class="brand-icon">
+                        <svg viewBox="0 0 24 24">
+                            <!-- A simple medical/triangle app icon -->
+                            <path d="M12 3L2 21h20L12 3zm0 3.83L18.46 19H5.54L12 6.83z M11 12h2v4h-2zm0-2h2v1h-2z"
+                                fill="white" stroke="white" stroke-width="1" />
+                        </svg>
+                    </div>
+                    <h1>MediConnect</h1>
+                </div>
+
+                <!-- Welcome Text -->
+                <div class="welcome-text">
+                    <h2>Bon retour</h2>
+                    <p>Veuillez saisir vos coordonnées pour vous connecter</p>
+                </div>
+
+                <h:form id="loginForm">
+                    <p:messages id="messages" showDetail="true" closable="true" />
+
+                    <!-- Email Input -->
+                    <div class="form-group">
+                        <label for="email">Adresse email</label>
+                        <div class="input-wrapper">
+                            <i class='bx bx-envelope left-icon'></i>
+                            <p:inputText id="email" value="#{loginBean.email}" placeholder="nom@entreprise.com"
+                                required="true" requiredMessage="L'email est requis." />
+                        </div>
+                    </div>
+
+                    <!-- Password Input -->
+                    <div class="form-group">
+                        <label for="password">Mot de passe</label>
+                        <div class="input-wrapper">
+                            <i class='bx bx-lock-alt left-icon'></i>
+                            <p:password id="password" value="#{loginBean.password}" placeholder="••••••••"
+                                required="true" requiredMessage="Le mot de passe est requis." feedback="false"
+                                toggleMask="true" />
+                        </div>
+                    </div>
+
+                    <!-- Remember Me and Forgot Password -->
+                    <div class="form-options">
+                        <div class="remember-me">
+                            <p:selectBooleanCheckbox id="remember" />
+                            <label for="loginForm:remember" style="margin:0; font-weight:400;">Se souvenir de
+                                moi</label>
+                        </div>
+                        <a href="#" class="forgot-pass">Mot de passe oublié ?</a>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="login-btn-wrapper">
+                        <p:commandButton value="Se connecter &amp;rarr;" escape="false" action="#{loginBean.login}"
+                            update="messages" styleClass="login-btn" ajax="false" />
+                    </div>
+                </h:form>
+
+                <div class="separator">
+                    Protégé par MediSecure™
+                </div>
+
+                <div class="signup-text">
+                    Vous n'avez pas de compte ? <a href="signup.xhtml">Inscrivez-vous gratuitement</a>
+                </div>
+            </div>
+
+            <!-- HIPAA Footer -->
+            <div class="card-footer">
+                <i class='bx bxs-check-shield'></i> <span>CONFORME HIPAA ET CHIFFRÉ</span>
+            </div>
+        </div>
+    </div>
+</h:body>
+
+</html>

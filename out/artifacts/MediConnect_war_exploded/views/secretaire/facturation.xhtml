@@ -1,0 +1,202 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="layout.xhtml">
+
+    <ui:define name="title">Workspace - Facturation</ui:define>
+
+    <ui:define name="topbar-title">
+        <i class="pi pi-wallet" style="margin-right: 12px; color: #2563eb;"></i> Billing Dashboard
+    </ui:define>
+
+    <ui:define name="content">
+        <style>
+            .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+            .stat-card { background: white; border-radius: 14px; padding: 20px; border: 1px solid #e2e8f0; }
+            .stat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+            .stat-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+            .si-blue   { background: #eff6ff; color: #2563eb; }
+            .si-green  { background: #f0fdf4; color: #16a34a; }
+            .si-orange { background: #fff7ed; color: #ea580c; }
+            .si-purple { background: #faf5ff; color: #9333ea; }
+            .stat-number { font-size: 1.7rem; font-weight: 700; color: #1e293b; }
+            .stat-label  { font-size: 0.82rem; color: #94a3b8; margin-top: 2px; }
+
+            .card { background: white; border-radius: 14px; border: 1px solid #e2e8f0; overflow: hidden; }
+            .card-header { padding: 18px 20px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; }
+            .card-header h3 { font-size: 1rem; font-weight: 600; }
+
+            .appt-table { width: 100%; border-collapse: collapse; }
+            .appt-table th { text-align: left; font-size: 0.72rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; padding: 14px 20px; border-bottom: 1px solid #f1f5f9; }
+            .appt-table td { padding: 16px 20px; border-bottom: 1px solid #f8fafc; font-size: 0.88rem; vertical-align: middle; }
+            .appt-table tr:hover td { background: #fafbfc; }
+
+            .patient-cell { display: flex; align-items: center; gap: 10px; }
+            .p-avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: white; background: #2563eb; flex-shrink: 0; }
+            .p-name { font-weight: 600; color: #1e293b; }
+            .p-info { font-size: 0.78rem; color: #64748b; }
+
+            .pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+            .pill::before { content:''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+            .pill-paye { background: #f0fdf4; color: #16a34a; }
+            .pill-impaye { background: #fff7ed; color: #ea580c; }
+        </style>
+
+        <p:growl id="messages" showDetail="true" />
+
+        <h:form id="form">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <div class="stat-icon si-blue"><i class="pi pi-file-excel"/></div>
+                    </div>
+                    <div class="stat-number">#{facturationBean.factures.size()}</div>
+                    <div class="stat-label">Total Invoices</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <div class="stat-icon si-green"><i class="pi pi-check-circle"/></div>
+                    </div>
+                    <div class="stat-number">
+                        #{facturationBean.factures.stream().filter(f -> f.statutPaiement.name() == 'PAYE').count()}
+                    </div>
+                    <div class="stat-label">Paid Invoices</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <div class="stat-icon si-orange"><i class="pi pi-clock"/></div>
+                    </div>
+                    <div class="stat-number">
+                        #{facturationBean.factures.stream().filter(f -> f.statutPaiement.name() == 'NON_PAYE').count()}
+                    </div>
+                    <div class="stat-label">Pending Payment</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <div class="stat-icon si-purple"><i class="pi pi-wallet"/></div>
+                    </div>
+                    <div class="stat-number">
+                        <h:outputText value="#{facturationBean.totalMontant}">
+                            <f:convertNumber maxFractionDigits="0" groupingUsed="true"/>
+                        </h:outputText>
+                        <span style="font-size: 0.9rem; margin-left: 4px;">MAD</span>
+                    </div>
+                    <div class="stat-label">Total Revenue</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Consultation Invoices</h3>
+                    <div style="display: flex; gap: 12px;">
+                         <p:inputText id="globalFilter" placeholder="Rechercher facture..." style="width: 250px; border-radius: 20px; padding-left: 15px; font-size: 0.85rem;" />
+                    </div>
+                </div>
+                <table class="appt-table">
+                    <thead>
+                        <tr>
+                            <th>Date Visite</th>
+                            <th>Patient</th>
+                            <th>Médecin &amp; Motif</th>
+                            <th>Résultat (Diag)</th>
+                            <th>Montant</th>
+                            <th>État</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ui:repeat value="#{facturationBean.factures}" var="facture">
+                            <tr>
+                                <td>
+                                    <div style="font-weight:600;">
+                                        <h:outputText value="#{facture.dateFacture}">
+                                            <f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy HH:mm" />
+                                        </h:outputText>
+                                    </div>
+                                    <div style="font-size:0.75rem;color:#94a3b8;">#INV-#{facture.id}</div>
+                                </td>
+                                <td>
+                                    <div class="patient-cell">
+                                        <div class="p-avatar">
+                                            <h:outputText value="#{facture.consultation.patient.prenom.substring(0,1)}#{facture.consultation.patient.nom.substring(0,1)}"/>
+                                        </div>
+                                        <div>
+                                            <div class="p-name"><h:outputText value="#{facture.consultation.patient.fullName}"/></div>
+                                            <div class="p-info">CIN: #{facture.consultation.patient.cin}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="font-weight: 500;">Dr. #{facture.consultation.medecin.fullName}</div>
+                                    <div style="font-size: 0.78rem; color: #64748b;">#{facture.consultation.rendezVous.motif}</div>
+                                </td>
+                                <td>
+                                    <h:outputText value="#{empty facture.consultation.diagnostic ? '—' : (facture.consultation.diagnostic.length() > 30 ? facture.consultation.diagnostic.substring(0,27).concat('...') : facture.consultation.diagnostic)}" 
+                                                 title="#{facture.consultation.diagnostic}" 
+                                                 style="font-style: italic; color: #64748b; font-size: 0.82rem;"/>
+                                </td>
+                                <td style="font-weight:700;">
+                                    <h:outputText value="#{facture.montantTotal}"><f:convertNumber minFractionDigits="2"/></h:outputText> DH
+                                </td>
+                                <td>
+                                    <h:panelGroup rendered="#{facture.statutPaiement.name() == 'PAYE'}">
+                                        <span class="pill pill-paye">Payé</span>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{facture.statutPaiement.name() == 'NON_PAYE'}">
+                                        <span class="pill pill-impaye">En attente</span>
+                                    </h:panelGroup>
+                                </td>
+                                <td>
+                                    <h:panelGroup rendered="#{facture.statutPaiement.name() == 'NON_PAYE'}" style="display: flex; gap: 8px;">
+                                        <p:commandLink update=":editAmountForm" oncomplete="PF('editAmountWV').show();"
+                                                       title="Ajuster" style="color: #64748b; font-size: 1.1rem; padding-top: 4px;">
+                                            <i class="pi pi-pencil"></i>
+                                            <f:setPropertyActionListener value="#{facture}" target="#{facturationBean.selectedFacture}" />
+                                        </p:commandLink>
+
+                                        <p:commandButton value="Encaisser" 
+                                                         action="#{facturationBean.encaisser(facture)}"
+                                                         update=":form :messages"
+                                                         styleClass="ui-button-sm ui-button-success" />
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{facture.statutPaiement.name() == 'PAYE'}" >
+                                         <span style="color: #16a34a; font-weight: 600; font-size: 0.85rem;">
+                                             <i class="pi pi-check" style="margin-right: 5px;"></i>Validé
+                                         </span>
+                                    </h:panelGroup>
+                                </td>
+                            </tr>
+                        </ui:repeat>
+                        <h:panelGroup rendered="#{empty facturationBean.factures}">
+                            <tr><td colspan="7" style="text-align:center; padding:40px; color:#94a3b8;">Aucune donnée de facturation.</td></tr>
+                        </h:panelGroup>
+                    </tbody>
+                </table>
+            </div>
+        </h:form>
+
+        <p:dialog id="editAmountDialog" widgetVar="editAmountWV" header="Ajuster le Montant" 
+                  modal="true" responsive="true" width="350" appendTo="@(body)">
+            <h:form id="editAmountForm">
+                <div class="ui-fluid" style="margin-top: 10px;">
+                    <div class="field" style="margin-bottom: 20px;">
+                        <p:outputLabel for="amount" value="Nouveau Montant (DH)" style="font-weight: 600; margin-bottom: 8px; display: block;" />
+                        <p:inputNumber id="amount" value="#{facturationBean.selectedFacture.montantTotal}" 
+                                      symbol=" DH" symbolPosition="s" decimalPlaces="2" />
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <p:commandButton value="Annuler" onclick="PF('editAmountWV').hide()" 
+                                     styleClass="ui-button-secondary ui-button-flat" type="button" />
+                    <p:commandButton value="Actualiser" icon="pi pi-check" 
+                                     action="#{facturationBean.modifierMontant(facturationBean.selectedFacture)}"
+                                     update=":form :messages"
+                                     oncomplete="if (!args.validationFailed) PF('editAmountWV').hide()" />
+                </div>
+            </h:form>
+        </p:dialog>
+    </ui:define>
+
+</ui:composition>

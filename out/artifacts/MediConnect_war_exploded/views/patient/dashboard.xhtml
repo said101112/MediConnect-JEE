@@ -1,0 +1,120 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets" xmlns:p="http://primefaces.org/ui" template="layout.xhtml">
+
+    <ui:define name="title">Dashboard - Patient</ui:define>
+
+    <ui:define name="topbar-title">
+        <i class="pi pi-home" style="color: var(--primary-color);"></i> Dashboard
+    </ui:define>
+
+    <ui:define name="content">
+        <style>
+            .dashboard-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 24px;
+            }
+
+            .stat-card {
+                background: white;
+                border-radius: 12px;
+                padding: 24px;
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+                transition: transform 0.2s;
+                cursor: pointer;
+                text-decoration: none;
+                color: inherit;
+                border: 1px solid var(--surface-border);
+            }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            }
+
+            .stat-icon {
+                width: 60px;
+                height: 60px;
+                border-radius: 16px;
+                background: #eff6ff;
+                color: var(--primary-color);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 28px;
+            }
+
+            .stat-details h3 {
+                margin: 0;
+                font-size: 14px;
+                color: var(--text-color-secondary);
+                font-weight: 500;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .stat-details .value {
+                margin: 4px 0 0 0;
+                font-size: 24px;
+                font-weight: 700;
+                color: var(--text-color);
+            }
+        </style>
+
+        <div class="dashboard-grid">
+            <a href="prendre_rdv.xhtml" class="stat-card">
+                <div class="stat-icon">
+                    <i class="pi pi-calendar-plus"></i>
+                </div>
+                <div class="stat-details">
+                    <h3>Nouveau Rendez-vous</h3>
+                    <p class="value">Planifier</p>
+                </div>
+            </a>
+
+            <a href="historique.xhtml" class="stat-card">
+                <div class="stat-icon" style="background: #ecfdf5; color: #10b981;">
+                    <i class="pi pi-history"></i>
+                </div>
+                <div class="stat-details">
+                    <h3>Historique</h3>
+                    <p class="value">Mes Consultations</p>
+                </div>
+            </a>
+
+            <a href="ordonnances.xhtml" class="stat-card">
+                <div class="stat-icon" style="background: #fef2f2; color: #ef4444;">
+                    <i class="pi pi-file"></i>
+                </div>
+                <div class="stat-details">
+                    <h3>Ordonnances</h3>
+                    <p class="value">Mes Documents</p>
+                </div>
+            </a>
+
+            <a href="#" class="stat-card">
+                <div class="stat-icon" style="background: #fffbeb; color: #f59e0b;">
+                    <i class="pi pi-comments"></i>
+                </div>
+                <div class="stat-details">
+                    <h3>Messagerie</h3>
+                    <p class="value">Contact</p>
+                </div>
+            </a>
+
+            <a href="dossier_medical.xhtml" class="stat-card">
+                <div class="stat-icon" style="background: #f5f3ff; color: #7c3aed;">
+                    <i class="pi pi-folder-open"></i>
+                </div>
+                <div class="stat-details">
+                    <h3>Dossier Médical</h3>
+                    <p class="value">Mon Profil</p>
+                </div>
+            </a>
+        </div>
+    </ui:define>
+
+</ui:composition>

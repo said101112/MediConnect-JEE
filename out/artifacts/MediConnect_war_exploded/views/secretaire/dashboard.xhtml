@@ -1,0 +1,171 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets" xmlns:p="http://primefaces.org/ui" template="layout.xhtml">
+
+    <ui:define name="title">Dashboard - Secrétaire</ui:define>
+
+    <ui:define name="topbar-title">
+        <i class="pi pi-th-large" style="color: var(--primary-color);"></i> Dashboard
+    </ui:define>
+
+    <ui:define name="content">
+        <style>
+            .dashboard-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 24px;
+            }
+
+            .stat-card {
+                background: white;
+                border-radius: 12px;
+                padding: 24px;
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+                transition: transform 0.2s;
+                cursor: pointer;
+                text-decoration: none;
+                color: inherit;
+                border: 1px solid var(--surface-border);
+            }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            }
+
+            .stat-icon {
+                width: 60px;
+                height: 60px;
+                border-radius: 16px;
+                background: #eff6ff;
+                color: var(--primary-color);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 28px;
+            }
+
+            .stat-details h3 {
+                margin: 0;
+                font-size: 14px;
+                color: var(--text-color-secondary);
+                font-weight: 500;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .stat-details .value {
+                margin: 4px 0 0 0;
+                font-size: 24px;
+                font-weight: 700;
+                color: var(--text-color);
+            }
+        </style>
+
+        <h:form id="statsForm">
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #eff6ff; color: #3b82f6;">
+                        <i class="pi pi-calendar"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Total Aujourd'hui</h3> 
+                        <p class="value">#{dashboardSecretaireBean.totalToday}</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #fffbe6; color: #d4a017;">
+                        <i class="pi pi-clock"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>En Attente</h3>
+                        <p class="value" style="color: #d4a017;">#{dashboardSecretaireBean.waitingCount}</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #f0fdf4; color: #22c55e;">
+                        <i class="pi pi-check-circle"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Terminés</h3>
+                        <p class="value" style="color: #22c55e;">#{dashboardSecretaireBean.completedToday}</p>
+                    </div>
+                </div>
+            </div>
+        </h:form>
+
+        <h:form id="waitingRoomForm" style="margin-top: 32px;">
+            <p:growl id="msgs" showDetail="true" />
+            
+            <div class="card" style="background: white; border-radius: 12px; padding: 24px; border: 1px solid var(--surface-border);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="margin: 0; font-size: 1.25rem; font-weight: 600; color: #1e293b;">
+                        <i class="pi pi-list" style="margin-right: 8px; color: var(--primary-color);"></i> Salle d'Attente &amp; Flux du Jour
+                    </h2>
+                    <p:commandButton icon="pi pi-refresh" action="#{dashboardSecretaireBean.loadDashboardData}" 
+                        update="waitingRoomForm statsForm" styleClass="rounded-button ui-button-flat" />
+                </div>
+
+                <p:dataTable id="todayRDVTable" var="rdv" value="#{dashboardSecretaireBean.todayAppointments}"
+                    filteredValue="#{dashboardSecretaireBean.filteredAppointments}"
+                    widgetVar="todayRDVTable"
+                    emptyMessage="Aucun rendez-vous pour aujourd'hui." styleClass="ui-datatable-striped">
+                    
+                    <f:facet name="header">
+                        <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px;">
+                            <span class="ui-input-icon-left">
+                                <i class="pi pi-search"></i>
+                                <p:inputText id="globalFilter" onkeyup="PF('todayRDVTable').filter()" 
+                                            style="width:250px; border-radius: 20px; padding-left: 30px;" 
+                                            placeholder="Chercher un patient (Nom/CIN)..." />
+                            </span>
+                        </div>
+                    </f:facet>
+
+                    <p:column headerText="Heure" style="width: 100px;">
+                        <h:outputText value="#{rdv.dateHeure.toLocalTime()}" style="font-weight: 600;" />
+                    </p:column>
+                    
+                    <p:column headerText="Patient" filterBy="#{rdv.patient.fullName}" filterMatchMode="contains" filterStyle="display:none">
+                        <h:outputText value="#{rdv.patient.fullName}" />
+                        <br/>
+                        <small style="color: #64748b;">CIN: #{rdv.patient.cin}</small>
+                        <h:panelGroup style="display:none">
+                            <h:outputText value="#{rdv.patient.cin}" />
+                        </h:panelGroup>
+                    </p:column>
+                    
+                    <p:column headerText="Médecin">
+                        <h:outputText value="Dr. #{rdv.medecin.nom}" />
+                    </p:column>
+                    
+                    <p:column headerText="Statut" style="width: 150px; text-align: center;">
+                        <p:tag value="#{rdv.statut}" 
+                               severity="#{rdv.statut == 'PLANIFIE' ? 'info' : (rdv.statut == 'EN_ATTENTE' ? 'warning' : (rdv.statut == 'TERMINE' ? 'success' : 'danger'))}"/>
+                    </p:column>
+                    
+                    <p:column headerText="Action" style="width: 200px; text-align: center;">
+                        <p:commandButton value="Arrivé" icon="pi pi-user-check" 
+                            action="#{dashboardSecretaireBean.marquerArrive(rdv)}"
+                            update="waitingRoomForm statsForm"
+                            rendered="#{rdv.statut == 'PLANIFIE'}"
+                            styleClass="ui-button-sm ui-button-warning ui-button-flat" />
+                            
+                        <p:commandButton value="Terminer" icon="pi pi-check" 
+                            action="#{dashboardSecretaireBean.marquerTermine(rdv)}"
+                            update="waitingRoomForm statsForm"
+                            rendered="#{rdv.statut == 'EN_ATTENTE'}"
+                            styleClass="ui-button-sm ui-button-success ui-button-flat" />
+                            
+                        <h:outputText value="-" rendered="#{rdv.statut == 'TERMINE' || rdv.statut == 'ANNULE'}" />
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

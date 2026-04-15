@@ -1,0 +1,42 @@
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+    <session-factory>
+
+        <!-- Connexion JDBC -->
+        <property name="connection.driver_class">org.postgresql.Driver</property>
+        <property name="connection.url">jdbc:postgresql://localhost:5432/mediconnect?useUnicode=true&amp;characterEncoding=UTF-8</property>
+        <property name="connection.username">postgres</property>
+        <property name="connection.password">said1234</property>
+
+        <!-- Afficher les requêtes SQL dans la console -->
+        <property name="show_sql">true</property>
+        <property name="format_sql">true</property>
+
+        <!-- Mode de gestion du contexte de session -->
+        <property name="current_session_context_class">thread</property>
+
+        <!-- Pool de connexions : de type apache DBCP (facultatif si standalone) -->
+        <property name="hibernate.dbcp.initialSize">5</property>
+
+        <!-- Cache : désactivé pour le cours -->
+        <property name="hibernate.cache.use_second_level_cache">false</property>
+        <property name="hibernate.cache.use_query_cache">false</property>
+
+        <!-- Gestion du schéma -->
+        <property name="hbm2ddl.auto">update</property>
+
+        <!-- Mapping des entités -->
+        <mapping class="com.mediconnect.model.User"/>
+        <mapping class="com.mediconnect.model.Patient"/>
+        <mapping class="com.mediconnect.model.Medecin"/>
+        <mapping class="com.mediconnect.model.Secretaire"/>
+        <mapping class="com.mediconnect.model.Disponibilite"/>
+        <mapping class="com.mediconnect.model.RendezVous"/>
+        <mapping class="com.mediconnect.model.Consultation"/>
+        <mapping class="com.mediconnect.model.Facture"/>
+
+    </session-factory>
+</hibernate-configuration>

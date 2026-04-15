@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>MediConnect – L'avenir de votre clinique</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <style>
+        :root{--blue:#1a56db;--blue-dark:#1240a8;--blue-light:#eef3ff;--teal:#0ea5a0;--dark:#0f172a;--gray:#64748b;--light:#f8fafc;--white:#ffffff;--border:#e8edf5;}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        html{scroll-behavior:smooth;}
+        body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--dark);background:var(--white);overflow-x:hidden;}
+
+        /* NAV */
+        nav{position:fixed;top:0;width:100%;background:rgba(255,255,255,0.0);backdrop-filter:blur(0px);z-index:1000;padding:0 6%;display:flex;align-items:center;height:68px;transition:all 0.4s;}
+        nav.scrolled{background:rgba(255,255,255,0.94);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);box-shadow:0 4px 30px rgba(0,0,0,0.05);}
+        .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+        .logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--blue),#2d6ef7);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-size:17px;box-shadow:0 4px 14px rgba(26,86,219,0.3);}
+        .logo-name{font-weight:800;font-size:1.15rem;color:white;letter-spacing:-0.3px;transition:color 0.4s;}
+        nav.scrolled .logo-name{color:var(--dark);}
+        .nav-links{display:flex;gap:34px;margin-left:40px;}
+        .nav-links a{color:rgba(255,255,255,0.85);text-decoration:none;font-size:0.9rem;font-weight:500;transition:color 0.2s;position:relative;}
+        nav.scrolled .nav-links a{color:var(--gray);}
+        .nav-links a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;background:var(--blue);border-radius:2px;transition:width 0.3s;}
+        .nav-links a:hover::after{width:100%;}
+        .nav-links a:hover{color:white;}
+        nav.scrolled .nav-links a:hover{color:var(--dark);}
+        .nav-right{margin-left:auto;display:flex;align-items:center;gap:12px;}
+        .btn-ghost{padding:9px 20px;border:1px solid rgba(255,255,255,0.35);border-radius:10px;color:white;text-decoration:none;font-size:0.88rem;font-weight:600;transition:all 0.3s;backdrop-filter:blur(10px);}
+        .btn-ghost:hover{background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.6);}
+        nav.scrolled .btn-ghost{border-color:var(--border);color:var(--dark);backdrop-filter:none;}
+        nav.scrolled .btn-ghost:hover{background:var(--blue-light);border-color:#b8c8f0;}
+        .btn-solid{padding:9px 22px;background:var(--blue);border-radius:10px;color:white;text-decoration:none;font-size:0.88rem;font-weight:700;transition:all 0.3s;box-shadow:0 4px 14px rgba(26,86,219,0.35);}
+        .btn-solid:hover{background:var(--blue-dark);transform:translateY(-1px);box-shadow:0 8px 20px rgba(26,86,219,0.4);}
+
+        /* HERO VIDEO */
+        .hero{position:relative;height:100vh;min-height:620px;overflow:hidden;}
+        .hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+        .hero-video-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:linear-gradient(135deg,#0a1628 0%,#0d2550 40%,#0a3060 70%,#061830 100%);}
+        /* Fallback animé si pas de vidéo */
+        .hero-particles{position:absolute;inset:0;width:100%;height:100%;}
+        .hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(5,15,40,0.55) 0%,rgba(5,15,40,0.3) 40%,rgba(5,15,40,0.75) 100%);}
+        .hero-content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 6%;color:white;z-index:2;}
+        .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.22);backdrop-filter:blur(12px);color:white;font-size:0.78rem;font-weight:600;padding:8px 18px;border-radius:50px;margin-bottom:28px;animation:fadeDown 0.8s ease forwards;}
+        .badge-dot{width:7px;height:7px;background:#22c55e;border-radius:50%;animation:pulseDot 2s infinite;}
+        @keyframes pulseDot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.7);}}
+        .hero-content h1{font-size:clamp(2.6rem,5.5vw,4.4rem);font-weight:800;line-height:1.1;letter-spacing:-2px;margin-bottom:22px;animation:fadeUp 0.9s 0.1s ease both;}
+        .hero-content h1 .hl{background:linear-gradient(135deg,#60a5fa,#38d9d5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .hero-sub{font-size:1.05rem;color:rgba(255,255,255,0.72);max-width:560px;line-height:1.78;margin-bottom:40px;animation:fadeUp 0.9s 0.2s ease both;}
+        .hero-cta{animation:fadeUp 0.9s 0.3s ease both;}
+        .btn-hero-main{padding:15px 36px;background:white;color:var(--blue);border-radius:12px;font-size:1rem;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:10px;transition:all 0.3s;box-shadow:0 6px 24px rgba(0,0,0,0.25);}
+        .btn-hero-main:hover{transform:translateY(-3px);box-shadow:0 14px 36px rgba(0,0,0,0.3);}
+
+        /* SCROLL INDICATOR */
+        .scroll-ind{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);z-index:3;display:flex;flex-direction:column;align-items:center;gap:8px;color:rgba(255,255,255,0.45);font-size:0.72rem;font-weight:500;letter-spacing:1px;text-transform:uppercase;animation:fadeUp 1s 0.7s ease both;}
+        .scroll-mouse{width:24px;height:38px;border:2px solid rgba(255,255,255,0.3);border-radius:12px;display:flex;justify-content:center;padding-top:6px;}
+        .scroll-mouse::before{content:'';width:4px;height:8px;background:rgba(255,255,255,0.6);border-radius:2px;animation:scrollWheel 2s infinite;}
+        @keyframes scrollWheel{0%{opacity:1;transform:translateY(0);}100%{opacity:0;transform:translateY(12px);}}
+
+        /* HERO STATS STRIP */
+        .hero-stats{position:absolute;bottom:0;left:0;right:0;z-index:3;background:rgba(255,255,255,0.08);border-top:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(24px);padding:22px 6%;display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+        .hstat{text-align:center;position:relative;}
+        .hstat:not(:last-child)::after{content:'';position:absolute;right:0;top:15%;height:70%;width:1px;background:rgba(255,255,255,0.1);}
+        .hstat-num{font-size:1.8rem;font-weight:800;color:white;letter-spacing:-1px;}
+        .hstat-lbl{font-size:0.75rem;color:rgba(255,255,255,0.45);margin-top:4px;font-weight:500;}
+
+        @keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+        @keyframes fadeDown{from{opacity:0;transform:translateY(-16px);}to{opacity:1;transform:translateY(0);}}
+        .reveal{opacity:0;transform:translateY(28px);transition:opacity 0.7s ease,transform 0.7s ease;}
+        .reveal.visible{opacity:1;transform:translateY(0);}
+        .reveal-left{opacity:0;transform:translateX(-32px);transition:opacity 0.7s ease,transform 0.7s ease;}
+        .reveal-left.visible{opacity:1;transform:translateX(0);}
+        .reveal-right{opacity:0;transform:translateX(32px);transition:opacity 0.7s ease,transform 0.7s ease;}
+        .reveal-right.visible{opacity:1;transform:translateX(0);}
+
+        /* TRUSTED */
+        .trusted{background:var(--light);border-bottom:1px solid var(--border);padding:26px 6%;}
+        .trusted-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:36px;flex-wrap:wrap;}
+        .trusted-lbl{font-size:0.75rem;font-weight:700;color:#94a3b8;white-space:nowrap;text-transform:uppercase;letter-spacing:1.2px;}
+        .trusted-logos{display:flex;gap:44px;align-items:center;flex-wrap:wrap;}
+        .trusted-logo{font-weight:700;font-size:0.9rem;color:#b8c8df;}
+
+        /* SECTION */
+        .section{max-width:1100px;margin:0 auto;padding:100px 6%;}
+        .section-tag{display:inline-flex;align-items:center;gap:6px;background:var(--blue-light);border:1px solid #c7d9fb;color:var(--blue);font-size:0.73rem;font-weight:700;padding:6px 14px;border-radius:50px;margin-bottom:18px;text-transform:uppercase;letter-spacing:1px;}
+        .section-title{font-size:clamp(1.9rem,3.5vw,2.7rem);font-weight:800;letter-spacing:-1px;margin-bottom:14px;line-height:1.18;color:var(--dark);}
+        .section-sub{color:var(--gray);font-size:0.95rem;line-height:1.75;max-width:520px;}
+
+        /* BENTO */
+        .bento{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:56px;}
+        .bento-card{background:white;border:1px solid var(--border);border-radius:22px;padding:32px;transition:all 0.35s;position:relative;overflow:hidden;}
+        .bento-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--blue-light),transparent 60%);opacity:0;transition:opacity 0.35s;}
+        .bento-card:hover{border-color:#b8ccf5;box-shadow:0 12px 40px rgba(26,86,219,0.09);transform:translateY(-5px);}
+        .bento-card:hover::before{opacity:1;}
+        .bento-wide{grid-column:span 2;}
+        .bento-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:20px;position:relative;z-index:1;}
+        .bi-blue{background:var(--blue-light);color:var(--blue);}
+        .bi-teal{background:#e6faf9;color:var(--teal);}
+        .bi-purple{background:#f3eeff;color:#7c3aed;}
+        .bi-amber{background:#fef9ec;color:#d97706;}
+        .bento-card h3{font-size:1.05rem;font-weight:700;margin-bottom:9px;color:var(--dark);position:relative;z-index:1;}
+        .bento-card p{font-size:0.87rem;color:var(--gray);line-height:1.7;position:relative;z-index:1;}
+        .bento-pill{display:inline-block;background:var(--blue-light);color:var(--blue);font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:20px;margin-top:14px;position:relative;z-index:1;}
+        .bento-num{position:absolute;bottom:20px;right:24px;font-size:3.2rem;font-weight:800;color:rgba(26,86,219,0.05);}
+
+        /* HOW */
+        .how-bg{background:var(--light);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+        .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:68px;position:relative;}
+        .steps::before{content:'';position:absolute;top:34px;left:20%;right:20%;height:1px;background:linear-gradient(90deg,transparent,var(--border),var(--border),transparent);}
+        .step{text-align:center;padding:0 28px;}
+        .step-circle{width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:1.2rem;font-weight:800;position:relative;z-index:1;}
+        .sc1{background:var(--blue-light);color:var(--blue);border:2px solid #b8ccf5;}
+        .sc2{background:#e6faf9;color:var(--teal);border:2px solid #99e4e1;}
+        .sc3{background:#f3eeff;color:#7c3aed;border:2px solid #d0b8f5;}
+        .step h3{font-size:1rem;font-weight:700;margin-bottom:10px;color:var(--dark);}
+        .step p{font-size:0.87rem;color:var(--gray);line-height:1.7;}
+
+        /* ACTORS */
+        .actors-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:60px;}
+        .actor{border-radius:26px;padding:40px 32px;text-align:center;border:1px solid var(--border);background:white;transition:all 0.4s;position:relative;overflow:hidden;}
+        .actor::after{content:'';position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--blue),#60a5fa);transform:scaleX(0);transform-origin:left;transition:transform 0.4s;}
+        .actor:hover{box-shadow:0 16px 50px rgba(0,0,0,0.07);transform:translateY(-6px);}
+        .actor:hover::after{transform:scaleX(1);}
+        .actor-icon{width:72px;height:72px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 20px;}
+        .ai-blue{background:var(--blue-light);color:var(--blue);}
+        .ai-teal{background:#e6faf9;color:var(--teal);}
+        .ai-purple{background:#f3eeff;color:#7c3aed;}
+        .actor h3{font-size:1.15rem;font-weight:800;margin-bottom:10px;color:var(--dark);}
+        .actor p{font-size:0.87rem;color:var(--gray);line-height:1.7;margin-bottom:26px;}
+        .btn-actor{display:inline-flex;align-items:center;gap:7px;padding:10px 22px;border-radius:10px;font-size:0.87rem;font-weight:700;text-decoration:none;transition:all 0.2s;}
+        .ba-blue{background:var(--blue-light);color:var(--blue);}
+        .ba-blue:hover{background:#d4e3fb;}
+        .ba-teal{background:#e6faf9;color:var(--teal);}
+        .ba-teal:hover{background:#c8f5f3;}
+        .ba-purple{background:#f3eeff;color:#7c3aed;}
+        .ba-purple:hover{background:#e4d5ff;}
+
+        /* SECURITY */
+        .sec-wrapper{background:var(--dark);color:white;}
+        .sec-inner{max-width:1100px;margin:0 auto;padding:100px 6%;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+        .sec-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(26,86,219,0.15);border:1px solid rgba(26,86,219,0.3);color:#7aaeff;font-size:0.73rem;font-weight:700;padding:6px 14px;border-radius:50px;margin-bottom:18px;text-transform:uppercase;letter-spacing:1px;}
+        .sec-title{font-size:clamp(1.8rem,3vw,2.5rem);font-weight:800;letter-spacing:-1px;margin-bottom:14px;line-height:1.18;}
+        .sec-sub{color:rgba(255,255,255,0.45);font-size:0.95rem;line-height:1.75;margin-bottom:44px;}
+        .sec-items{display:flex;flex-direction:column;gap:26px;}
+        .sec-item{display:flex;gap:16px;align-items:flex-start;}
+        .sec-ic{width:44px;height:44px;border-radius:12px;background:rgba(26,86,219,0.12);border:1px solid rgba(26,86,219,0.25);display:flex;align-items:center;justify-content:center;color:#7aaeff;flex-shrink:0;font-size:1rem;}
+        .sec-item h4{font-size:0.92rem;font-weight:700;margin-bottom:5px;}
+        .sec-item p{font-size:0.84rem;color:rgba(255,255,255,0.4);line-height:1.65;}
+        .sec-visual{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:28px;padding:48px 36px;}
+        .cert-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:36px;}
+        .cert-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:18px;display:flex;align-items:center;gap:12px;}
+        .cert-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;}
+        .ci-green{background:rgba(34,197,94,0.15);color:#22c55e;}
+        .ci-blue{background:rgba(26,86,219,0.2);color:#7aaeff;}
+        .ci-amber{background:rgba(245,158,11,0.15);color:#fbbf24;}
+        .ci-teal{background:rgba(14,165,160,0.15);color:#2dd4bf;}
+        .cert-card h5{font-size:0.8rem;font-weight:700;margin-bottom:2px;color:white;}
+        .cert-card p{font-size:0.72rem;color:rgba(255,255,255,0.3);}
+        .shield-ring{width:110px;height:110px;border-radius:50%;background:rgba(26,86,219,0.1);border:2px solid rgba(26,86,219,0.2);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-size:2.4rem;color:#7aaeff;animation:pulseRing 3s infinite;}
+        @keyframes pulseRing{0%,100%{box-shadow:0 0 0 0 rgba(26,86,219,0.2);}50%{box-shadow:0 0 0 18px rgba(26,86,219,0);}}
+
+        /* TESTIMONIALS */
+        .test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:60px;}
+        .test-card{background:white;border:1px solid var(--border);border-radius:20px;padding:28px;transition:all 0.3s;}
+        .test-card:hover{box-shadow:0 12px 36px rgba(0,0,0,0.07);transform:translateY(-4px);border-color:#c8d9f5;}
+        .test-stars{display:flex;gap:3px;margin-bottom:16px;}
+        .star{width:16px;height:16px;background:var(--blue);border-radius:3px;display:flex;align-items:center;justify-content:center;}
+        .star i{color:white;font-size:0.6rem;}
+        .test-text{font-size:0.88rem;color:var(--gray);line-height:1.78;margin-bottom:22px;font-style:italic;}
+        .test-author{display:flex;align-items:center;gap:12px;}
+        .test-avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.82rem;color:white;flex-shrink:0;}
+        .ta1{background:linear-gradient(135deg,var(--blue),#60a5fa);}
+        .ta2{background:linear-gradient(135deg,var(--teal),#22d3ee);}
+        .ta3{background:linear-gradient(135deg,#7c3aed,#a78bfa);}
+        .test-name{font-size:0.88rem;font-weight:700;color:var(--dark);}
+        .test-role{font-size:0.78rem;color:#94a3b8;}
+
+        /* CTA */
+        .cta-section{background:linear-gradient(135deg,var(--blue) 0%,#2d6ef7 50%,#1a85d6 100%);padding:100px 6%;text-align:center;position:relative;overflow:hidden;}
+        .cta-section::before{content:'';position:absolute;top:-100px;right:-100px;width:400px;height:400px;border-radius:50%;background:rgba(255,255,255,0.05);}
+        .cta-section::after{content:'';position:absolute;bottom:-80px;left:-80px;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,0.04);}
+        .cta-inner{position:relative;z-index:1;max-width:680px;margin:0 auto;}
+        .cta-badge{display:inline-block;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;font-size:0.73rem;font-weight:700;padding:6px 16px;border-radius:50px;margin-bottom:24px;text-transform:uppercase;letter-spacing:1px;}
+        .cta-section h2{font-size:clamp(2rem,4vw,3rem);font-weight:800;color:white;letter-spacing:-1px;margin-bottom:16px;line-height:1.18;}
+        .cta-section p{color:rgba(255,255,255,0.7);font-size:1rem;margin-bottom:40px;line-height:1.7;}
+        .cta-buttons{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+        .btn-cta-white{padding:14px 30px;background:white;color:var(--blue);border-radius:12px;font-size:0.95rem;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all 0.3s;box-shadow:0 4px 20px rgba(0,0,0,0.15);}
+        .btn-cta-white:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,0,0,0.2);}
+        .btn-cta-outline{padding:14px 28px;background:transparent;border:2px solid rgba(255,255,255,0.4);color:white;border-radius:12px;font-size:0.95rem;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all 0.3s;}
+        .btn-cta-outline:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.7);}
+
+        /* FOOTER */
+        footer{background:#060f1e;color:#64748b;padding:60px 6% 28px;}
+        .footer-inner{max-width:1100px;margin:0 auto;}
+        .footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px;}
+        .footer-brand p{font-size:0.85rem;line-height:1.8;margin-top:14px;max-width:260px;color:#475569;}
+        .footer-col h4{font-size:0.72rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:18px;}
+        .footer-col a{display:block;color:#475569;text-decoration:none;font-size:0.87rem;margin-bottom:10px;transition:color 0.2s;}
+        .footer-col a:hover{color:white;}
+        .footer-bottom{border-top:1px solid #0f172a;padding-top:24px;display:flex;align-items:center;justify-content:space-between;font-size:0.82rem;}
+        .footer-social{display:flex;gap:10px;}
+        .soc{width:36px;height:36px;border-radius:9px;background:#0f172a;border:1px solid #1e293b;display:flex;align-items:center;justify-content:center;color:#475569;text-decoration:none;font-size:0.82rem;transition:all 0.2s;}
+        .soc:hover{background:var(--blue);border-color:var(--blue);color:white;}
+
+        @media(max-width:900px){
+            .nav-links{display:none;}
+            .bento,.actors-grid,.test-grid,.steps,.footer-top{grid-template-columns:1fr;}
+            .bento-wide{grid-column:span 1;}
+            .sec-inner{grid-template-columns:1fr;}
+            .steps::before{display:none;}
+            .hero-stats{grid-template-columns:repeat(2,1fr);}
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+    <a href="#" class="nav-logo">
+        <div class="logo-icon"><i class="fas fa-shield-halved"></i></div>
+        <span class="logo-name">MediConnect</span>
+    </a>
+    <div class="nav-links">
+        <a href="#fonctionnalites">Fonctionnalités</a>
+        <a href="#acteurs">Pour qui ?</a>
+        <a href="#securite">Sécurité</a>
+        <a href="#temoignages">Témoignages</a>
+    </div>
+    <div class="nav-right">
+        <a href="login.xhtml" class="btn-ghost">Connexion</a>
+        <a href="login.xhtml" class="btn-solid">Essai gratuit →</a>
+    </div>
+</nav>
+
+<!-- HERO AVEC VIDEO AUTOPLAY -->
+<section class="hero">
+
+    <!-- ============================================================
+         VIDÉO HERO — AUTOPLAY MUET EN BOUCLE
+         Remplacez "votre-video.mp4" par le chemin de votre fichier vidéo.
+         La vidéo se lance automatiquement, sans son, en boucle.
+         ============================================================ -->
+    <video class="hero-video" autoplay muted loop playsinline
+           poster=""
+           onerror="this.style.display='none'">
+        <source src="votre-video.mp4" type="video/mp4"/>
+    </video>
+
+    <!-- Fallback animé affiché si pas de vidéo -->
+    <div class="hero-video-poster" id="videoPoster"></div>
+    <canvas class="hero-particles" id="heroCanvas"></canvas>
+
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+        <div class="hero-badge">
+            <span class="badge-dot"></span>
+            Nouveau &middot; Module Téléconsultation HD disponible
+        </div>
+        <h1>L'avenir de votre clinique,<br/><span class="hl">centralisé &amp; sécurisé</span></h1>
+        <p class="hero-sub">Informatisation, automation et sécurité de pointe pour une gestion de santé moderne. Gagnez 30% de temps administratif dès le premier mois.</p>
+        <div class="hero-cta">
+            <a href="login.xhtml" class="btn-hero-main">
+                <i class="fas fa-rocket"></i>
+                Commencer l'essai gratuit
+            </a>
+        </div>
+    </div>
+
+    <div class="scroll-ind">
+        <div class="scroll-mouse"></div>
+    </div>
+
+    <div class="hero-stats">
+        <div class="hstat">
+            <div class="hstat-num" data-count="98" data-suffix="%">98%</div>
+            <div class="hstat-lbl">Satisfaction clients</div>
+        </div>
+        <div class="hstat">
+            <div class="hstat-num" data-count="30" data-prefix="-" data-suffix="%">-30%</div>
+            <div class="hstat-lbl">Temps administratif</div>
+        </div>
+        <div class="hstat">
+            <div class="hstat-num" data-count="2" data-suffix="M+">2M+</div>
+            <div class="hstat-lbl">Dossiers médicaux gérés</div>
+        </div>
+        <div class="hstat">
+            <div class="hstat-num">24/7</div>
+            <div class="hstat-lbl">Support disponible</div>
+        </div>
+    </div>
+</section>
+
+<!-- TRUSTED -->
+<div class="trusted">
+    <div class="trusted-inner">
+        <span class="trusted-lbl">Fait confiance par</span>
+        <div class="trusted-logos">
+            <span class="trusted-logo">CHU Casablanca</span>
+            <span class="trusted-logo">Clinique Al Amine</span>
+            <span class="trusted-logo">Polyclinique Atlas</span>
+            <span class="trusted-logo">Centre Médical Ibn Sina</span>
+            <span class="trusted-logo">Groupe Santé Plus</span>
+        </div>
+    </div>
+</div>
+
+<!-- FEATURES -->
+<section id="fonctionnalites">
+    <div class="section">
+        <div class="reveal">
+            <div class="section-tag"><i class="fas fa-bolt"></i> Fonctionnalités</div>
+            <h2 class="section-title">Tout ce dont votre clinique<br/>a besoin, en un seul endroit</h2>
+            <p class="section-sub">Des outils pensés pour simplifier chaque aspect de votre pratique médicale au quotidien.</p>
+        </div>
+        <div class="bento">
+            <div class="bento-card bento-wide reveal">
+                <div class="bento-icon bi-blue"><i class="fas fa-folder-medical"></i></div>
+                <h3>Dossier Patient Intelligent</h3>
+                <p>Accédez instantanément à l'historique complet de chaque patient : antécédents, ordonnances, résultats d'examens et consultations passées. Un dossier 100% digital, sécurisé et accessible depuis n'importe quel appareil connecté.</p>
+                <span class="bento-pill">Intelligence Artificielle intégrée</span>
+                <div class="bento-num">01</div>
+            </div>
+            <div class="bento-card reveal">
+                <div class="bento-icon bi-teal"><i class="fas fa-calendar-check"></i></div>
+                <h3>Smart Scheduling</h3>
+                <p>Planification intelligente avec rappels automatiques. Réduisez les absences de 40% sans effort supplémentaire.</p>
+                <span class="bento-pill">Automatisé</span>
+                <div class="bento-num">02</div>
+            </div>
+            <div class="bento-card reveal">
+                <div class="bento-icon bi-purple"><i class="fas fa-prescription"></i></div>
+                <h3>E-Prescription</h3>
+                <p>Ordonnances numériques sécurisées avec vérification automatique des interactions médicamenteuses.</p>
+                <div class="bento-num">03</div>
+            </div>
+            <div class="bento-card reveal">
+                <div class="bento-icon bi-amber"><i class="fas fa-video"></i></div>
+                <h3>Télémédecine HD</h3>
+                <p>Consultations à distance fluides avec facturation directe intégrée et qualité vidéo optimale.</p>
+                <span class="bento-pill">Nouveau</span>
+                <div class="bento-num">04</div>
+            </div>
+            <div class="bento-card reveal">
+                <div class="bento-icon bi-blue"><i class="fas fa-chart-line"></i></div>
+                <h3>Analytiques en temps réel</h3>
+                <p>Tableaux de bord pour piloter votre activité et suivre vos performances médicales au quotidien.</p>
+                <div class="bento-num">05</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-bg">
+    <div class="section">
+        <div class="reveal" style="text-align:center;">
+            <div class="section-tag"><i class="fas fa-route"></i> Comment ça marche</div>
+            <h2 class="section-title">Opérationnel en 3 étapes simples</h2>
+            <p class="section-sub" style="margin:0 auto;">Sans formation complexe. Démarrez en quelques minutes seulement.</p>
+        </div>
+        <div class="steps">
+            <div class="step reveal">
+                <div class="step-circle sc1">01</div>
+                <h3>Créez votre compte</h3>
+                <p>Inscription en 2 minutes, configuration instantanée de votre profil et de votre cabinet médical.</p>
+            </div>
+            <div class="step reveal">
+                <div class="step-circle sc2">02</div>
+                <h3>Importez vos données</h3>
+                <p>Migration automatique de tous vos dossiers depuis n'importe quel système existant, sans perte.</p>
+            </div>
+            <div class="step reveal">
+                <div class="step-circle sc3">03</div>
+                <h3>Exercez sereinement</h3>
+                <p>Concentrez-vous sur vos patients. MediConnect gère tout l'administratif à votre place.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ACTORS -->
+<section id="acteurs">
+    <div class="section">
+        <div class="reveal">
+            <div class="section-tag"><i class="fas fa-users"></i> Pour qui ?</div>
+            <h2 class="section-title">Conçu pour chaque acteur de soins</h2>
+            <p class="section-sub">Une interface dédiée et optimisée pour chaque rôle dans votre établissement de santé.</p>
+        </div>
+        <div class="actors-grid">
+            <div class="actor reveal">
+                <div class="actor-icon ai-blue"><i class="fas fa-user-doctor"></i></div>
+                <h3>Médecins</h3>
+                <p>Interface épurée, accès instantané aux dossiers, gestion du planning et ordonnances numériques en un clic.</p>
+                <a href="login.xhtml" class="btn-actor ba-blue">Espace médecin <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="actor reveal">
+                <div class="actor-icon ai-teal"><i class="fas fa-user-nurse"></i></div>
+                <h3>Secrétaires</h3>
+                <p>Gestion des rendez-vous, accueil des patients et facturation simplifiée depuis un seul tableau de bord.</p>
+                <a href="login.xhtml" class="btn-actor ba-teal">Espace secrétaire <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="actor reveal">
+                <div class="actor-icon ai-purple"><i class="fas fa-user"></i></div>
+                <h3>Patients</h3>
+                <p>Prise de rendez-vous en ligne, accès aux ordonnances et suivi de son dossier médical depuis chez soi.</p>
+                <a href="login.xhtml" class="btn-actor ba-purple">Espace patient <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SECURITY -->
+<section id="securite" class="sec-wrapper">
+    <div class="sec-inner">
+        <div class="reveal-left">
+            <div class="sec-tag"><i class="fas fa-shield-halved"></i> Sécurité</div>
+            <h2 class="sec-title">Sécurité médicale<br/>sans compromis</h2>
+            <p class="sec-sub">La protection de vos données de santé est au cœur de chaque décision architecturale que nous prenons.</p>
+            <div class="sec-items">
+                <div class="sec-item">
+                    <div class="sec-ic"><i class="fas fa-shield-halved"></i></div>
+                    <div><h4>Conformité HIPAA &amp; RGPD</h4><p>Respect strict des normes internationales et européennes de protection des données de santé.</p></div>
+                </div>
+                <div class="sec-item">
+                    <div class="sec-ic"><i class="fas fa-lock"></i></div>
+                    <div><h4>Chiffrement AES-256 bout-en-bout</h4><p>Vos données sont chiffrées au repos et en transit. Inviolable et auditable à tout moment.</p></div>
+                </div>
+                <div class="sec-item">
+                    <div class="sec-ic"><i class="fas fa-server"></i></div>
+                    <div><h4>Hébergement Certifié HDS</h4><p>Serveurs dédiés aux données de santé avec sauvegardes automatiques toutes les heures.</p></div>
+                </div>
+                <div class="sec-item">
+                    <div class="sec-ic"><i class="fas fa-eye"></i></div>
+                    <div><h4>Audit &amp; Traçabilité complète</h4><p>Journalisation de chaque accès. Conformité totale aux exigences réglementaires en vigueur.</p></div>
+                </div>
+            </div>
+        </div>
+        <div class="reveal-right">
+            <div class="sec-visual">
+                <div style="text-align:center;margin-bottom:28px;">
+                    <div class="shield-ring"><i class="fas fa-shield-halved"></i></div>
+                    <p style="color:rgba(255,255,255,0.25);font-size:0.72rem;text-transform:uppercase;letter-spacing:2px;margin-top:14px;">Système Actif 24/7</p>
+                </div>
+                <div class="cert-grid">
+                    <div class="cert-card"><div class="cert-icon ci-green"><i class="fas fa-certificate"></i></div><div><h5>HDS Certifié</h5><p>Hébergement Données Santé</p></div></div>
+                    <div class="cert-card"><div class="cert-icon ci-blue"><i class="fas fa-shield-halved"></i></div><div><h5>RGPD Conforme</h5><p>Règlement européen</p></div></div>
+                    <div class="cert-card"><div class="cert-icon ci-amber"><i class="fas fa-lock"></i></div><div><h5>AES-256</h5><p>Chiffrement militaire</p></div></div>
+                    <div class="cert-card"><div class="cert-icon ci-teal"><i class="fas fa-check-circle"></i></div><div><h5>ISO 27001</h5><p>Sécurité de l'information</p></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="temoignages">
+    <div class="section">
+        <div class="reveal" style="text-align:center;">
+            <div class="section-tag"><i class="fas fa-star"></i> Témoignages</div>
+            <h2 class="section-title">Ils nous font confiance</h2>
+            <p class="section-sub" style="margin:0 auto;">Des milliers de professionnels de santé utilisent MediConnect chaque jour.</p>
+        </div>
+        <div class="test-grid">
+            <div class="test-card reveal">
+                <div class="test-stars"><div class="star"><i class="fas fa-star"></i></div><div class="star"><i class="fas fa-star"></i></div><div class="star"><i class="fas fa-star"></i></div><div class="star"><i class="fas fa-star"></i></div><div class="star"><i class="fas fa-star"></i></div></div>
+                <p class="test-text">"MediConnect a transformé ma pratique. Je gagne 2 heures par jour. Mes patients adorent les rappels automatiques et la prise de rendez-vous en ligne."</p>
+                <div class="test-author"><div class="test-avatar ta1">RB</div><div><div class="test-name">Dr. Rachid Benali</div><div class="test-role">Cardiologue · Casablanca</div></div></div>
+            </div>
+            <div class="test-card reveal">
+                <div class="test-stars"><div class="star"><i class="fas fa-star"></i></div><div class="star"><i class="fas fa-star"></i></div><div class="star"><i class="fas fa-star"></i></div><div class="star"><i class="fas fa-star"></i></div><div class="star"><i class="fas fa-star"></i></div></div>
+                <p class="test-text">"Interface remarquablement simple. La téléconsultation fonctionne parfaitement. J'ai étendu ma patientèle sans infrastructure supplémentaire."</p>
+                <div class="test-author"><div class="test-avatar ta2">NM</div><div><div class="test-name">Dr. Nadia Moussaoui</div><div class="test-role">Pédiatre · Rabat</div></div></div>
+            </div>
+            <div class="test-card reveal">
+                <div class="test-stars"><div class="star"><i class="fas fa-star"></i></div><div class="star"><i class="fas fa-star"></i></div><div class="star"><i class="fas fa-star"></i></div><div class="star"><i class="fas fa-star"></i></div><div class="star"><i class="fas fa-star"></i></div></div>
+                <p class="test-text">"Les ordonnances numériques ont éliminé toutes les erreurs de lecture. Les pharmaciens nous remercient. La migration s'est faite en 24h."</p>
+                <div class="test-author"><div class="test-avatar ta3">KA</div><div><div class="test-name">Dr. Karim Alaoui</div><div class="test-role">Médecin généraliste · Marrakech</div></div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+    <div class="cta-inner reveal">
+        <div class="cta-badge">Édition Limitée 2024</div>
+        <h2>Prêt à transformer votre pratique ?</h2>
+        <p>Rejoignez des milliers de professionnels de santé qui ont choisi MediConnect pour digitaliser leur cabinet.</p>
+        <div class="cta-buttons">
+            <a href="login.xhtml" class="btn-cta-white"><i class="fas fa-rocket"></i> Démarrer l'essai gratuit</a>
+            <a href="login.xhtml" class="btn-cta-outline"><i class="fas fa-phone"></i> Contacter un expert</a>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-inner">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <a href="#" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+                    <div class="logo-icon"><i class="fas fa-shield-halved"></i></div>
+                    <span style="font-weight:800;font-size:1.1rem;color:white;">MediConnect</span>
+                </a>
+                <p>La solution de gestion clinique de référence. Simplicité, efficacité et sécurité absolue pour les professionnels de santé.</p>
+            </div>
+            <div class="footer-col"><h4>Produit</h4><a href="#">Fonctionnalités</a><a href="#">Téléconsultation</a><a href="#">Tarifs</a><a href="#">Nouveautés</a></div>
+            <div class="footer-col"><h4>Support</h4><a href="#">Centre d'aide</a><a href="#">Documentation</a><a href="#">API Docs</a><a href="#">Statut système</a></div>
+            <div class="footer-col"><h4>Légal</h4><a href="#">Confidentialité</a><a href="#">Sécurité</a><a href="#">CGU</a><a href="#">Mentions légales</a></div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2024 MediConnect. Tous droits réservés. Certifié HDS.</span>
+            <div class="footer-social">
+                <a href="#" class="soc"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#" class="soc"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="soc"><i class="fab fa-facebook-f"></i></a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Navbar
+    const nav = document.getElementById('navbar');
+    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 80));
+
+    // Masquer le poster si vidéo chargée
+    const video = document.querySelector('.hero-video');
+    const poster = document.getElementById('videoPoster');
+    const canvas = document.getElementById('heroCanvas');
+    if (video) {
+        video.addEventListener('canplay', () => {
+            poster.style.display = 'none';
+            canvas.style.display = 'none';
+        });
+    }
+
+    // Canvas particules (fallback animé)
+    const ctx = canvas.getContext('2d');
+    let W, H, particles = [];
+    function resize() { W = canvas.width = canvas.offsetWidth; H = canvas.height = canvas.offsetHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    class Particle {
+        constructor() { this.reset(); }
+        reset() { this.x = Math.random()*W; this.y = Math.random()*H; this.vx = (Math.random()-0.5)*0.5; this.vy = (Math.random()-0.5)*0.5; this.r = Math.random()*2+0.5; this.alpha = Math.random()*0.5+0.2; }
+        update() { this.x+=this.vx; this.y+=this.vy; if(this.x<0||this.x>W||this.y<0||this.y>H) this.reset(); }
+        draw() { ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fillStyle=`rgba(100,160,255,${this.alpha})`; ctx.fill(); }
+    }
+    for(let i=0;i<100;i++) particles.push(new Particle());
+    function animate() {
+        ctx.clearRect(0,0,W,H);
+        particles.forEach(p=>{p.update();p.draw();});
+        for(let i=0;i<particles.length;i++) for(let j=i+1;j<particles.length;j++){
+            const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y,d=Math.sqrt(dx*dx+dy*dy);
+            if(d<90){ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.strokeStyle=`rgba(100,160,255,${0.1*(1-d/90)})`;ctx.lineWidth=0.5;ctx.stroke();}
+        }
+        requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Scroll reveal
+    const obs = new IntersectionObserver(entries=>{
+        entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});
+    },{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+    document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el=>obs.observe(el));
+
+    // Compteurs
+    function animateCount(el) {
+        const target=parseInt(el.dataset.count)||0;
+        if(!target) return;
+        const prefix=el.dataset.prefix||'', suffix=el.dataset.suffix||'';
+        let cur=0; const step=target/60;
+        const t=setInterval(()=>{cur=Math.min(cur+step,target);el.textContent=prefix+Math.round(cur)+suffix;if(cur>=target)clearInterval(t);},16);
+    }
+    const statObs=new IntersectionObserver(entries=>{
+        entries.forEach(e=>{if(e.isIntersecting){document.querySelectorAll('[data-count]').forEach(animateCount);statObs.disconnect();}});
+    },{threshold:0.5});
+    const statsEl=document.querySelector('.hero-stats');
+    if(statsEl) statObs.observe(statsEl);
+</script>
+</body>
+</html>

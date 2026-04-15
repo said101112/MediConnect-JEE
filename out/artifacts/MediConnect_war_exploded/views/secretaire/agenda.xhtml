@@ -1,0 +1,149 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets" xmlns:p="http://primefaces.org/ui" template="layout.xhtml">
+
+    <ui:define name="title">Agenda &amp; RDV - Secrétaire</ui:define>
+
+    <ui:define name="topbar-title">
+        <i class="pi pi-calendar" style="color: var(--primary-color);"></i> Appointments
+    </ui:define>
+
+    <ui:define name="topbar-actions">
+        <h:form>
+            <p:commandButton value="New Appointment" icon="pi pi-plus" onclick="PF('eventDialog').show();" type="button"
+                styleClass="ui-button-primary" style="padding: 0.5rem 1rem;" />
+        </h:form>
+    </ui:define>
+
+    <ui:define name="content">
+        <style>
+            .schedule-container {
+                background: white;
+                border-radius: 12px;
+                padding: 24px;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+                border: 1px solid var(--surface-border);
+                min-height: 700px;
+            }
+
+            .occupied-slot {
+                background-color: #ef4444 !important;
+                border-color: #b91c1c !important;
+                color: white !important;
+            }
+
+            .medecin-select-container {
+                background: white;
+                padding: 16px 24px;
+                border-radius: 12px;
+                margin-bottom: 24px;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                border: 1px solid var(--surface-border);
+            }
+
+            .fc-theme-standard th {
+                background: #f8fafc;
+                padding: 12px 0;
+            }
+
+            .fc-event {
+                border-radius: 4px;
+            }
+        </style>
+
+        <p:growl id="messages" showDetail="true" />
+
+        <h:form id="form">
+            <div class="medecin-select-container">
+                <h:outputLabel for="medecin" value="Sélectionner le médecin : " style="font-weight: 600;" />
+                <p:selectOneMenu id="medecin" value="#{agendaBean.selectedMedecinId}">
+                    <f:selectItem itemLabel="Sélectionnez un médecin" itemValue="#{null}" noSelectionOption="true" />
+                    <f:selectItems value="#{agendaBean.medecins}" var="med" itemLabel="#{med.fullName}"
+                        itemValue="#{med.id}" />
+                    <p:ajax listener="#{agendaBean.onMedecinChange}" update="schedule :messages" />
+                </p:selectOneMenu>
+            </div>
+
+            <div class="schedule-container">
+                <p:schedule id="schedule" value="#{agendaBean.eventModel}" widgetVar="myschedule" timeZone="UTC"
+                    clientTimeZone="local">
+                    <p:ajax event="dateSelect" listener="#{agendaBean.onDateSelect}"
+                        update=":eventDialogForm:eventDetails :messages"
+                        oncomplete="if (args.showDialog) PF('eventDialog').show();" />
+                    
+                    <p:ajax event="eventSelect" listener="#{agendaBean.onEventSelect}"
+                        update=":eventDialogForm:eventDetails :messages"
+                        oncomplete="PF('eventDialog').show();" />
+                </p:schedule>
+            </div>
+        </h:form>
+
+        <p:dialog widgetVar="eventDialog" header="Détails du Rendez-vous" showEffect="clip" hideEffect="clip"
+            modal="true" width="500" appendTo="@(body)">
+            <h:form id="eventDialogForm">
+                <p:outputPanel id="eventDetails">
+                    <p:messages id="dlgMessages" showDetail="true" closable="true" />
+                    <h:panelGrid columns="2" cellpadding="8" style="width:100%">
+
+                        <h:outputLabel value="Patient:" style="font-weight: 500;" />
+                        <h:panelGroup rendered="#{agendaBean.newRendezVous.id != null}">
+                            <h:outputText value="#{agendaBean.newRendezVous.patient.fullName}" style="font-weight: bold; color: var(--primary-color);" />
+                        </h:panelGroup>
+                        <p:selectOneMenu id="patientList" value="#{agendaBean.newRendezVous.patient.id}" filter="true"
+                            filterMatchMode="contains" required="true" style="width:100%"
+                            rendered="#{agendaBean.newRendezVous.id == null}">
+                            <f:selectItem itemLabel="Choisir un patient" itemValue="#{null}" noSelectionOption="true" />
+                            <f:selectItems value="#{agendaBean.patients}" var="pat"
+                                itemLabel="#{pat.fullName} - #{pat.cin}" itemValue="#{pat.id}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel for="motif" value="Motif:" style="font-weight: 500;" />
+                        <p:inputText id="motif" value="#{agendaBean.newRendezVous.motif}" required="true"
+                            style="width:100%" />
+
+                        <h:outputLabel for="dateChoice" value="Date:" style="font-weight: 500;" />
+                        <p:datePicker id="dateChoice" value="#{agendaBean.selectedDate}" pattern="yyyy-MM-dd"
+                            style="width:100%">
+                            <p:ajax event="dateSelect" listener="#{agendaBean.onManualDateSelect}"
+                                update="timeSlotList dlgMessages" />
+                        </p:datePicker>
+
+                        <h:outputLabel for="timeSlotList" value="Heure Disponible:" style="font-weight: 500;" />
+                        <p:selectOneMenu id="timeSlotList" value="#{agendaBean.selectedTimeSlot}" required="true"
+                            style="width:100%">
+                            <f:selectItem itemLabel="Sélectionnez l'heure" itemValue="#{null}"
+                                noSelectionOption="true" />
+                            <f:selectItems value="#{agendaBean.availableTimeSlots}" var="slot" itemLabel="#{slot}"
+                                itemValue="#{slot}" />
+                        </p:selectOneMenu>
+                        
+                        <h:outputLabel value="Statut:" style="font-weight: 500;" rendered="#{agendaBean.newRendezVous.id != null}" />
+                        <p:tag value="#{agendaBean.newRendezVous.statut}" severity="info" rendered="#{agendaBean.newRendezVous.id != null}" />
+
+                    </h:panelGrid>
+                </p:outputPanel>
+
+                <div style="text-align: right; margin-top: 15px; border-top: 1px solid #e5e7eb; padding-top: 15px; display: flex; justify-content: space-between;">
+                    <p:commandButton value="Annuler ce RDV" icon="pi pi-times" 
+                        update=":form:schedule :messages"
+                        action="#{agendaBean.cancelEvent}"
+                        rendered="#{agendaBean.newRendezVous.id != null}"
+                        oncomplete="PF('eventDialog').hide();"
+                        styleClass="ui-button-danger ui-button-flat" />
+                    
+                    <h:panelGroup>
+                        <p:commandButton value="Fermer" onclick="PF('eventDialog').hide();" type="button" styleClass="ui-button-secondary ui-button-flat" />
+                        <p:commandButton value="#{agendaBean.newRendezVous.id == null ? 'Enregistrer' : 'Mettre à jour'}" 
+                            update=":form:schedule :messages eventDetails"
+                            action="#{agendaBean.saveEvent}"
+                            oncomplete="if (!args.validationFailed) PF('eventDialog').hide();"
+                            styleClass="ui-button-primary" style="margin-left: 8px;" />
+                    </h:panelGroup>
+                </div>
+            </h:form>
+        </p:dialog>
+    </ui:define>
+
+</ui:composition>

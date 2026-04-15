@@ -1,0 +1,276 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="http://primefaces.org/ui"
+    template="layout.xhtml">
+
+    <ui:define name="title">Mes Ordonnances - MediConnect</ui:define>
+
+    <ui:define name="topbar-title">
+        <i class="pi pi-file-pdf" style="color: #ef4444;"></i> Mes Ordonnances
+    </ui:define>
+
+    <ui:define name="content">
+        <style>
+            /* ── Page Header ─────────────────────────────── */
+            .page-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 28px;
+            }
+            .page-header h2 {
+                margin: 0;
+                font-size: 22px;
+                font-weight: 700;
+                color: var(--text-color);
+            }
+            .page-header p {
+                margin: 4px 0 0 0;
+                font-size: 14px;
+                color: var(--text-color-secondary);
+            }
+
+            /* ── Badge ───────────────────────────────────── */
+            .badge-count {
+                background: #fef2f2;
+                color: #ef4444;
+                font-size: 13px;
+                font-weight: 600;
+                padding: 4px 12px;
+                border-radius: 20px;
+                border: 1px solid #fecaca;
+            }
+
+            /* ── Card Grid ───────────────────────────────── */
+            .ordonnances-grid {
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            /* ── Single Ordonnance Card ───────────────────── */
+            .ordonnance-card {
+                background: white;
+                border-radius: 14px;
+                border: 1px solid var(--surface-border);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+                padding: 24px 28px;
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                transition: box-shadow 0.2s, transform 0.2s;
+            }
+            .ordonnance-card:hover {
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.09);
+                transform: translateY(-2px);
+            }
+
+            /* Icon bubble */
+            .ordonnance-icon {
+                width: 54px;
+                height: 54px;
+                border-radius: 14px;
+                background: #fef2f2;
+                color: #ef4444;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+                flex-shrink: 0;
+            }
+
+            /* Main info area */
+            .ordonnance-info {
+                flex: 1;
+                min-width: 0;
+            }
+            .ordonnance-info .date-badge {
+                display: inline-block;
+                background: #eff6ff;
+                color: #2563eb;
+                font-size: 11px;
+                font-weight: 600;
+                padding: 2px 10px;
+                border-radius: 20px;
+                margin-bottom: 6px;
+                letter-spacing: 0.3px;
+                text-transform: uppercase;
+            }
+            .ordonnance-info h3 {
+                margin: 0 0 4px 0;
+                font-size: 16px;
+                font-weight: 700;
+                color: var(--text-color);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .ordonnance-info .meta {
+                font-size: 13px;
+                color: var(--text-color-secondary);
+                display: flex;
+                gap: 16px;
+                flex-wrap: wrap;
+                margin-top: 2px;
+            }
+            .ordonnance-info .meta span {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+
+            /* Diagnostic excerpt */
+            .ordonnance-excerpt {
+                margin-top: 10px;
+                font-size: 13px;
+                color: var(--text-color-secondary);
+                background: #f8fafc;
+                border-left: 3px solid #e2e8f0;
+                padding: 8px 12px;
+                border-radius: 0 6px 6px 0;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            /* Download button */
+            .btn-download {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                background: linear-gradient(135deg, #ef4444, #dc2626);
+                color: white !important;
+                border: none;
+                border-radius: 10px;
+                padding: 10px 20px;
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                text-decoration: none;
+                transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+                white-space: nowrap;
+                font-family: 'Inter', sans-serif;
+                box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+                flex-shrink: 0;
+            }
+            .btn-download:hover {
+                background: linear-gradient(135deg, #dc2626, #b91c1c);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+            }
+            .btn-download:active {
+                transform: translateY(0);
+            }
+
+            /* ── Empty State ─────────────────────────────── */
+            .empty-state {
+                text-align: center;
+                padding: 72px 24px;
+                background: white;
+                border-radius: 16px;
+                border: 2px dashed var(--surface-border);
+            }
+            .empty-state .empty-icon {
+                font-size: 56px;
+                color: #e2e8f0;
+                margin-bottom: 20px;
+            }
+            .empty-state h3 {
+                margin: 0 0 8px 0;
+                font-size: 20px;
+                font-weight: 700;
+                color: var(--text-color);
+            }
+            .empty-state p {
+                margin: 0;
+                font-size: 14px;
+                color: var(--text-color-secondary);
+                max-width: 360px;
+                margin: 0 auto;
+            }
+        </style>
+
+        <!-- Page header -->
+        <div class="page-header">
+            <div>
+                <h2>Mes Ordonnances</h2>
+                <p>Historique de vos prescriptions médicales</p>
+            </div>
+            <span class="badge-count">
+                <i class="pi pi-file"></i>
+                #{ordonnancesBean.count} ordonnance(s)
+            </span>
+        </div>
+
+        <!-- List or empty state -->
+        <h:form>
+            <div class="ordonnances-grid">
+
+                <!-- Empty state -->
+                <ui:fragment rendered="#{empty ordonnancesBean.ordonnances}">
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="pi pi-file-excel"></i>
+                        </div>
+                        <h3>Aucune ordonnance trouvée</h3>
+                        <p>Vos ordonnances apparaîtront ici après vos consultations médicales.</p>
+                    </div>
+                </ui:fragment>
+
+                <!-- Cards -->
+                <ui:repeat value="#{ordonnancesBean.ordonnances}" var="c">
+                    <div class="ordonnance-card">
+
+                        <!-- Icon -->
+                        <div class="ordonnance-icon">
+                            <i class="pi pi-file-pdf"></i>
+                        </div>
+
+                        <!-- Info -->
+                        <div class="ordonnance-info">
+                            <span class="date-badge">
+                                <i class="pi pi-calendar"></i>
+                                #{ordonnancesBean.formatDate(c.dateVisite)}
+                            </span>
+                            <h3>
+                                Ordonnance N°#{c.id}
+                                — Dr. #{c.medecin.prenom} #{c.medecin.nom}
+                            </h3>
+                            <div class="meta">
+                                <span>
+                                    <i class="pi pi-briefcase"></i>
+                                    #{c.medecin.specialite}
+                                </span>
+                                <span>
+                                    <i class="pi pi-check-circle" style="color: #10b981;"></i>
+                                    #{c.cloturee ? 'Clôturée' : 'En cours'}
+                                </span>
+                            </div>
+
+                            <!-- Diagnostic excerpt -->
+                            <ui:fragment rendered="#{not empty c.diagnostic}">
+                                <div class="ordonnance-excerpt">
+                                    <i class="pi pi-info-circle"></i>
+                                    #{c.diagnostic}
+                                </div>
+                            </ui:fragment>
+                        </div>
+
+                        <!-- Download button -->
+                        <p:commandButton
+                            styleClass="btn-download"
+                            icon="pi pi-download"
+                            value="Télécharger PDF"
+                            action="#{ordonnancesBean.telecharger(c.id)}"
+                            ajax="false"/>
+                    </div>
+                </ui:repeat>
+
+            </div>
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+    xmlns:p="http://primefaces.org/ui" xmlns:ui="jakarta.faces.facelets">
+
+<h:head>
+    <title>MediConnect - Inscription</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet' />
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&amp;w=2053&amp;auto=format&amp;fit=crop') no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
+            padding: 20px;
+        }
+
+        .bg-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 0;
+        }
+
+        .login-wrapper {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 480px;
+            /* Slightly wider for the 2 columns */
+        }
+
+        .login-card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            padding: 40px;
+        }
+
+        .welcome-text {
+            margin-bottom: 24px;
+        }
+
+        .welcome-text h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+
+        .welcome-text p {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row .form-group {
+            margin-bottom: 0;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .input-wrapper i.left-icon {
+            position: absolute;
+            left: 14px;
+            font-size: 18px;
+            color: #94a3b8;
+            z-index: 2;
+        }
+
+        /* Override PrimeFaces */
+        .ui-inputtext,
+        .ui-password input,
+        body .ui-selectonemenu {
+            width: 100% !important;
+            padding: 12px 14px 12px 42px !important;
+            background: #ffffff !important;
+            border: 1px solid #cbd5e1 !important;
+            border-radius: 8px !important;
+            color: #0f172a !important;
+            font-size: 14px !important;
+            box-shadow: none !important;
+            transition: all 0.2s ease !important;
+        }
+
+        body .ui-selectonemenu {
+            padding: 0 !important;
+            display: flex;
+            align-items: center;
+        }
+
+        body .ui-selectonemenu .ui-selectonemenu-label {
+            padding: 12px 14px 12px 42px !important;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        body .ui-selectonemenu .ui-selectonemenu-trigger {
+            width: 32px;
+            padding: 0;
+        }
+
+        .ui-inputtext:focus,
+        .ui-password input:focus,
+        body .ui-selectonemenu.ui-state-focus {
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+        }
+
+        .ui-password {
+            width: 100% !important;
+        }
+
+        body .ui-password .ui-inputfield {
+            padding-right: 40px !important;
+        }
+
+        body .ui-input-icon-right>i,
+        body .ui-password>i {
+            color: #94a3b8 !important;
+            right: 14px !important;
+            margin-top: -9px !important;
+        }
+
+        .password-hint {
+            display: block;
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 6px;
+        }
+
+        .terms-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 24px;
+            font-size: 12px;
+            color: #475569;
+        }
+
+        .terms-row a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        body .ui-chkbox .ui-chkbox-box {
+            width: 18px !important;
+            height: 18px !important;
+            border: 1px solid #cbd5e1 !important;
+            border-radius: 4px !important;
+            background: #fff !important;
+            box-shadow: none !important;
+        }
+
+        body .ui-chkbox .ui-chkbox-box.ui-state-active {
+            border-color: #2563eb !important;
+            background: #2563eb !important;
+        }
+
+        .login-btn {
+            width: 100% !important;
+            background: #2563eb !important;
+            border: none !important;
+            padding: 12px !important;
+            color: white !important;
+            font-size: 15px !important;
+            font-weight: 600 !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
+            transition: background 0.2s !important;
+        }
+
+        .login-btn:hover {
+            background: #1d4ed8 !important;
+        }
+
+        .separator {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 28px 0 20px 0;
+            color: #94a3b8;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .separator::before,
+        .separator::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .separator:not(:empty)::before {
+            margin-right: 12px;
+        }
+
+        .separator:not(:empty)::after {
+            margin-left: 12px;
+        }
+
+        /* Secure Access Icons */
+        .secure-icons {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .secure-box {
+            flex: 1;
+            height: 40px;
+            border: 1px solid #f1f5f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            font-size: 18px;
+            background: #f8fafc;
+        }
+
+        .signup-text {
+            text-align: center;
+            font-size: 13px;
+            color: #475569;
+            margin-top: 24px;
+        }
+
+        .signup-text a {
+            color: #2563eb;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        /* Messaging Styling */
+        body .ui-messages {
+            margin: 0 0 20px 0 !important;
+        }
+
+        body .ui-messages>div {
+            border-radius: 8px !important;
+            padding: 12px !important;
+            border: 1px solid transparent !important;
+        }
+
+        /* Error messages */
+        body .ui-messages .ui-messages-error {
+            background: #fef2f2 !important;
+            border-color: #fecaca !important;
+            color: #dc2626 !important;
+        }
+
+        body .ui-messages .ui-messages-error-icon {
+            display: none;
+        }
+
+        /* Success messages */
+        body .ui-messages .ui-messages-info {
+            background: #ecfdf5 !important;
+            border-color: #a7f3d0 !important;
+            color: #059669 !important;
+        }
+
+        body .ui-messages .ui-messages-info-icon {
+            display: none;
+        }
+
+        body .ui-messages .ui-messages-error-summary,
+        body .ui-messages .ui-messages-info-summary {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        body .ui-messages .ui-messages-error-detail,
+        body .ui-messages .ui-messages-info-detail {
+            font-size: 13px;
+            margin-left: 4px;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <div class="bg-overlay"></div>
+
+    <div class="login-wrapper">
+        <div class="login-card">
+
+            <div class="welcome-text">
+                <h2>Créer votre compte</h2>
+                <p>Rejoignez le réseau de santé pour de meilleurs soins aux patients.</p>
+            </div>
+
+            <h:form id="signupForm">
+                <p:messages id="messages" showDetail="true" closable="true" />
+
+                <!-- Full Name Input -->
+                <div class="form-group">
+                    <label for="fullName">Nom complet</label>
+                    <div class="input-wrapper">
+                        <i class='bx bx-user left-icon'></i>
+                        <p:inputText id="fullName" value="#{signupBean.fullName}" placeholder="John Doe" required="true"
+                            requiredMessage="Le nom est requis." />
+                    </div>
+                </div>
+
+                <!-- Email Input -->
+                <div class="form-group">
+                    <label for="email">Adresse email</label>
+                    <div class="input-wrapper">
+                        <i class='bx bx-envelope left-icon'></i>
+                        <p:inputText id="email" value="#{signupBean.email}" placeholder="docteur@mediconnect.com"
+                            required="true" requiredMessage="L'email est requis." />
+                    </div>
+                </div>
+
+                <!-- Password Input -->
+                <div class="form-group" style="margin-bottom: 8px;">
+                    <label for="password">Mot de passe</label>
+                    <div class="input-wrapper">
+                        <i class='bx bx-lock-alt left-icon'></i>
+                        <p:password id="password" value="#{signupBean.password}" placeholder="••••••••" required="true"
+                            requiredMessage="Le mot de passe est requis." feedback="false" toggleMask="true" />
+                    </div>
+                    <span class="password-hint">Doit contenir au moins 8 caractères avec un mélange de lettres et de
+                        chiffres.</span>
+                </div>
+
+                <!-- Terms and Conditions -->
+                <div class="terms-row">
+                    <p:selectBooleanCheckbox id="terms" value="#{signupBean.termsAccepted}" />
+                    <label for="signupForm:terms" style="cursor: pointer;">J'accepte les <a href="#">Conditions
+                            d'utilisation</a> et la <a href="#">Politique de confidentialité</a>.</label>
+                </div>
+
+                <!-- Submit Button -->
+                <p:commandButton value="Créer le compte &amp;rarr;" escape="false" action="#{signupBean.signup}"
+                    update="messages" styleClass="login-btn" ajax="false" />
+            </h:form>
+
+            <div class="separator">
+                ACCÈS SÉCURISÉ
+            </div>
+
+            <!-- Secure Access Icons -->
+            <div class="secure-icons">
+                <div class="secure-box"><i class='bx bx-shield-quarter'></i></div>
+                <div class="secure-box"><i class='bx bx-fingerprint'></i></div>
+                <div class="secure-box"><i class='bx bx-key'></i></div>
+            </div>
+
+            <div class="signup-text">
+                Vous avez déjà un compte ? <a href="login.xhtml">Connectez-vous</a>
+            </div>
+
+        </div>
+    </div>
+</h:body>
+
+</html>
