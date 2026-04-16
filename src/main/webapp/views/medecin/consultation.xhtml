@@ -60,9 +60,19 @@
         .si-green  { background:#f0fdf4; color:#16a34a; }
         .si-orange { background:#fff7ed; color:#ea580c; }
         .section-body { padding:20px; }
-
-        .form-group { margin-bottom:16px; }
-        .form-group label { display:block; font-size:0.82rem; font-weight:600; color:#374151; margin-bottom:6px; }
+        .form-grid { display: grid; gap: 20px; }
+        .form-grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .form-grid-3 { grid-template-columns: repeat(3, 1fr); }
+        
+        .form-group { margin-bottom: 0px; }
+        .form-group label { display:block; font-size:0.85rem; font-weight:600; color:#475569; margin-bottom:8px; }
+        
+        /* Modern Inputs Override */
+        .ui-inputtextarea, .ui-inputfield, .ui-selectonemenu { box-shadow: none !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; padding: 10px 14px !important; font-family: 'Inter', sans-serif !important; font-size: 0.9rem !important; color: #1e293b !important; background: white !important; transition: all 0.2s !important; }
+        .ui-inputtextarea:focus, .ui-inputfield:focus, .ui-selectonemenu:focus { border-color: #3b82f6 !important; box-shadow: 0 0 0 3px rgba(59,130,246,0.1) !important; outline: none !important; }
+        
+        /* Action buttons bar */
+        .actions-bar { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding-top: 20px; border-top: 1px dashed #e2e8f0; margin-top: 24px; }
 
         .btn-save  { display:inline-flex; align-items:center; gap:6px; padding:9px 18px; background:#f8fafc; color:#475569; border:1px solid #e2e8f0; border-radius:8px; font-size:0.88rem; font-weight:600; cursor:pointer; }
         .btn-save:hover { background:#f1f5f9; }
@@ -98,7 +108,7 @@
         </div>
         <nav class="sidebar-nav">
             <a href="dashboard.xhtml"  class="nav-item"><i class="fas fa-th-large"/> Dashboard</a>
-            <a href="#"                class="nav-item"><i class="fas fa-user-injured"/> Patients</a>
+            <a href="patients.xhtml"   class="nav-item"><i class="fas fa-user-injured"/> Patients</a>
             <a href="planning.xhtml"   class="nav-item"><i class="fas fa-calendar-check"/> Appointments</a>
             <a href="historique.xhtml" class="nav-item active"><i class="fas fa-stethoscope"/> Consultations</a>
             <a href="facturation.xhtml" class="nav-item"><i class="fas fa-file-invoice-dollar"/> Billing</a>
@@ -214,35 +224,87 @@
                     </div>
                 </h:panelGroup>
 
-                <!-- EXAMEN CLINIQUE -->
                 <h:panelGroup rendered="#{consultationBean.consultationEnCours != null}">
+                
+                    <!-- DOSSIER MEDICAL REFACTORING / EDITOR -->
+                    <div class="section">
+                        <div class="section-header">
+                            <div class="section-icon si-orange" style="background:#fef2f2; color:#dc2626;"><i class="fas fa-notes-medical"/></div>
+                            <h4>Dossier Médical (Antécédents &amp; Allergies)</h4>
+                        </div>
+                        <div class="section-body" style="background:#fafbfc;">
+                            <div class="form-grid form-grid-2">
+                                <div class="form-group">
+                                    <label>Antécédents médicaux</label>
+                                    <p:inputTextarea value="#{consultationBean.patientSelectionne.antecedents}"
+                                                     rows="2" style="width:100%"
+                                                     placeholder="Hypertension, diabète, chirurgies passées..."/>
+                                </div>
+                                <div class="form-group">
+                                    <label>Allergies</label>
+                                    <p:inputTextarea value="#{consultationBean.patientSelectionne.allergies}"
+                                                     rows="2" style="width:100%"
+                                                     placeholder="Pénicilline, pollen..."/>
+                                </div>
+                            </div>
+                            <div class="form-grid form-grid-3" style="margin-top:20px;">
+                                <div class="form-group">
+                                    <label>Groupe Sanguin</label>
+                                    <p:selectOneMenu value="#{consultationBean.patientSelectionne.groupeSanguin}" style="width:100%">
+                                        <f:selectItem itemLabel="Non spécifié" itemValue="" />
+                                        <f:selectItem itemLabel="A+" itemValue="A+" />
+                                        <f:selectItem itemLabel="A-" itemValue="A-" />
+                                        <f:selectItem itemLabel="B+" itemValue="B+" />
+                                        <f:selectItem itemLabel="B-" itemValue="B-" />
+                                        <f:selectItem itemLabel="AB+" itemValue="AB+" />
+                                        <f:selectItem itemLabel="AB-" itemValue="AB-" />
+                                        <f:selectItem itemLabel="O+" itemValue="O+" />
+                                        <f:selectItem itemLabel="O-" itemValue="O-" />
+                                    </p:selectOneMenu>
+                                </div>
+                            </div>
+                            <div class="actions-bar">
+                                <p:commandButton value="Mettre à jour le Dossier" styleClass="btn-save"
+                                                 action="#{consultationBean.sauvegarderDossierMedical}"
+                                                 update="consultForm" icon="fas fa-save" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- EXAMEN CLINIQUE -->
                     <div class="section">
                         <div class="section-header">
                             <div class="section-icon si-blue"><i class="fas fa-stethoscope"/></div>
                             <h4>Clinical Examination</h4>
                         </div>
                         <div class="section-body">
-                            <div class="form-group">
-                                <label>Observations cliniques *</label>
-                                <p:inputTextarea value="#{consultationBean.consultationEnCours.observations}"
-                                                 rows="4" style="width:100%"
-                                                 placeholder="Décrivez les observations cliniques..."
-                                                 disabled="#{consultationBean.consultationEnCours.cloturee}"/>
-                            </div>
-                            <div class="form-group">
-                                <label>Diagnostic *</label>
-                                <p:inputTextarea value="#{consultationBean.consultationEnCours.diagnostic}"
-                                                 rows="3" style="width:100%"
-                                                 placeholder="Saisissez le diagnostic final..."
-                                                 disabled="#{consultationBean.consultationEnCours.cloturee}"/>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Observations cliniques *</label>
+                                    <p:inputTextarea value="#{consultationBean.consultationEnCours.observations}"
+                                                     rows="4" style="width:100%"
+                                                     placeholder="Décrivez les observations cliniques..."
+                                                     disabled="#{consultationBean.consultationEnCours.cloturee}"/>
+                                </div>
+                                <div class="form-group">
+                                    <label>Diagnostic *</label>
+                                    <p:inputTextarea value="#{consultationBean.consultationEnCours.diagnostic}"
+                                                     rows="3" style="width:100%"
+                                                     placeholder="Saisissez le diagnostic final..."
+                                                     disabled="#{consultationBean.consultationEnCours.cloturee}"/>
+                                </div>
                             </div>
                             <h:panelGroup rendered="#{not consultationBean.consultationEnCours.cloturee}">
-                                <p:commandButton value="Sauvegarder" styleClass="btn-save"
-                                                 action="#{consultationBean.sauvegarder}"
-                                                 update="consultForm"/>
-                                <p:commandButton value="Cloturer la consultation" styleClass="btn-close"
-                                                 action="#{consultationBean.cloturerConsultation}"
-                                                 onclick="return confirm('Clôturer définitivement ?')"/>
+                                <div class="actions-bar">
+                                    <p:commandButton value="Sauvegarder" styleClass="btn-save"
+                                                     action="#{consultationBean.sauvegarder}"
+                                                     icon="fas fa-save"
+                                                     update="consultForm"/>
+                                    <p:commandButton value="Cloturer la consultation" styleClass="btn-close"
+                                                     action="#{consultationBean.cloturerConsultation}"
+                                                     icon="fas fa-lock"
+                                                     onclick="return confirm('Clôturer définitivement ?')"/>
+                                </div>
                             </h:panelGroup>
                         </div>
                     </div>
@@ -254,33 +316,40 @@
                             <h4>Ordonnance Médicale</h4>
                         </div>
                         <div class="section-body">
-                            <div class="form-group">
-                                <label>Médicaments prescrits *</label>
-                                <p:inputTextarea value="#{consultationBean.medicamentsOrdonnance}"
-                                                 rows="4" style="width:100%"
-                                                 placeholder="Ex: Amoxicilline 500mg - 1cp 3x/jour pendant 7 jours"/>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Médicaments prescrits *</label>
+                                    <p:inputTextarea value="#{consultationBean.medicamentsOrdonnance}"
+                                                     rows="4" style="width:100%"
+                                                     placeholder="Ex: Amoxicilline 500mg - 1cp 3x/jour pendant 7 jours"/>
+                                </div>
+                                <div class="form-group">
+                                    <label>Posologie / Recommandations</label>
+                                    <p:inputTextarea value="#{consultationBean.posologie}"
+                                                     rows="2" style="width:100%"
+                                                     placeholder="Recommandations supplémentaires..."/>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label>Posologie / Recommandations</label>
-                                <p:inputTextarea value="#{consultationBean.posologie}"
-                                                 rows="2" style="width:100%"
-                                                 placeholder="Recommandations supplémentaires..."/>
-                            </div>
-                            <p:commandButton value="Generer Ordonnance PDF" styleClass="btn-pdf"
-                                             action="#{consultationBean.genererOrdonnance}"
-                                             update="consultForm"/>
+                            
                             <h:panelGroup rendered="#{not empty consultationBean.consultationEnCours.cheminPdfOrdonnance}">
-                                <div class="pdf-result">
+                                <div class="pdf-result" style="margin-top: 10px; margin-bottom: 5px;">
                                     <i class="fas fa-file-pdf" style="color:#16a34a;font-size:1.2rem;"/>
                                     <div>
                                         <div style="font-size:0.78rem;color:#64748b;">Ordonnance générée</div>
-                                        <h:outputLink value="#{request.contextPath}/#{consultationBean.consultationEnCours.cheminPdfOrdonnance}"
+                                        <h:outputLink value="#{request.contextPath}/download/ordonnance?id=#{consultationBean.consultationEnCours.id}"
                                                       target="_blank">
-                                            Telecharger l'ordonnance
+                                            Télécharger l'ordonnance
                                         </h:outputLink>
                                     </div>
                                 </div>
                             </h:panelGroup>
+
+                            <div class="actions-bar">
+                                <p:commandButton value="Générer Ordonnance PDF" styleClass="btn-pdf"
+                                                 action="#{consultationBean.genererOrdonnance}"
+                                                 icon="fas fa-file-pdf"
+                                                 update="consultForm"/>
+                            </div>
                         </div>
                     </div>
 
@@ -311,7 +380,7 @@
                                         <td><h:outputText value="#{c.dateVisiteFormatee}"/></td>
                                         <td><h:outputText value="#{c.diagnostic}"/></td>
                                         <td>
-                                            <h:outputLink value="#{request.contextPath}/#{c.cheminPdfOrdonnance}"
+                                            <h:outputLink value="#{request.contextPath}/download/ordonnance?id=#{c.id}"
                                                           target="_blank"
                                                           rendered="#{not empty c.cheminPdfOrdonnance}">
                                                 <i class="fas fa-file-pdf" style="color:#2563eb;"/> Voir PDF

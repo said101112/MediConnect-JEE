@@ -1,9 +1,11 @@
 package com.mediconnect.service;
 
 import com.mediconnect.model.Medecin;
+import com.mediconnect.model.Patient;
 import com.mediconnect.model.RendezVous;
 import com.mediconnect.model.StatutRDV;
 import com.mediconnect.repository.MedecinRepository;
+import com.mediconnect.repository.PatientRepository;
 import com.mediconnect.repository.RendezVousRepository;
 
 import java.io.Serializable;
@@ -17,10 +19,12 @@ public class MedecinService implements Serializable {
 
     private final MedecinRepository medecinRepository;
     private final RendezVousRepository rendezVousRepository;
+    private final PatientRepository patientRepository;
 
     public MedecinService() {
         this.medecinRepository = new MedecinRepository();
         this.rendezVousRepository = new RendezVousRepository();
+        this.patientRepository = new PatientRepository();
     }
 
     public Optional<Medecin> findById(Long id) {
@@ -59,6 +63,10 @@ public class MedecinService implements Serializable {
     // Annuler un RDV
     public void annulerRdv(Integer rdvId) {
         rendezVousRepository.updateStatut(rdvId, StatutRDV.ANNULE);
+    }
+
+    public List<Patient> getPatientsByMedecin(Long medecinId) {
+        return patientRepository.findByMedecin(medecinId);
     }
 
     public void update(Medecin medecin) {

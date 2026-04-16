@@ -88,7 +88,7 @@
         </div>
         <nav class="sidebar-nav">
             <a href="dashboard.xhtml"  class="nav-item"><i class="fas fa-th-large"/> Dashboard</a>
-            <a href="#"                class="nav-item"><i class="fas fa-user-injured"/> Patients</a>
+            <a href="patients.xhtml"   class="nav-item"><i class="fas fa-user-injured"/> Patients</a>
             <a href="planning.xhtml"   class="nav-item"><i class="fas fa-calendar-check"/> Appointments</a>
             <a href="historique.xhtml" class="nav-item active"><i class="fas fa-stethoscope"/> Consultations</a>
             <a href="facturation.xhtml" class="nav-item"><i class="fas fa-file-invoice-dollar"/> Billing</a>
@@ -197,7 +197,7 @@
                                                     <i class="fas fa-pen-to-square btn-icon"/> Voir
                                                 </h:commandLink>
                                                 
-                                                <h:outputLink value="#{request.contextPath}/#{c.cheminPdfOrdonnance}" 
+                                                <h:outputLink value="#{request.contextPath}/download/ordonnance?id=#{c.id}" 
                                                               target="_blank" styleClass="btn-action" title="Ordonnance"
                                                               rendered="#{not empty c.cheminPdfOrdonnance}">
                                                     <i class="fas fa-file-pdf btn-icon" style="color:#ef4444;"/> PDF

@@ -21,6 +21,7 @@ import com.mediconnect.model.Consultation;
 import com.mediconnect.model.RendezVous;
 import com.mediconnect.model.StatutRDV;
 import com.mediconnect.repository.ConsultationRepository;
+import com.mediconnect.repository.PatientRepository;
 import com.mediconnect.repository.RendezVousRepository;
 
 import java.io.ByteArrayOutputStream;
@@ -37,11 +38,13 @@ public class ConsultationService implements Serializable {
 
     private final ConsultationRepository consultationRepository;
     private final RendezVousRepository rendezVousRepository;
+    private final PatientRepository patientRepository;
     private final FactureService factureService;
 
     public ConsultationService() {
         this.consultationRepository = new ConsultationRepository();
         this.rendezVousRepository = new RendezVousRepository();
+        this.patientRepository = new PatientRepository();
         this.factureService = new FactureService();
     }
 
@@ -69,6 +72,10 @@ public class ConsultationService implements Serializable {
 
         rendezVousRepository.updateStatut(rdvId, StatutRDV.EN_COURS);
         return consultation;
+    }
+
+    public void updatePatient(com.mediconnect.model.Patient patient) {
+        patientRepository.update(patient);
     }
 
     public void sauvegarderConsultation(Consultation consultation) throws Exception {

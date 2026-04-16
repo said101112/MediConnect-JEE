@@ -3,9 +3,6 @@ package com.mediconnect.controller;
 import com.mediconnect.model.Patient;
 import com.mediconnect.model.Role;
 
-import java.time.LocalDate;
-import java.util.UUID;
-
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -50,9 +47,10 @@ public class SignupBean implements Serializable {
         newUser.setNom(nom);
         newUser.setEmail(email.trim().toLowerCase());
 
-        // Provide dummy data for required database fields
-        newUser.setCin("PENDING-" + UUID.randomUUID().toString().substring(0, 8));
-        newUser.setDateNaissance(LocalDate.of(2000, 1, 1));
+        // Leave CIN and date_naissance null — the patient will complete their profile later
+        // via the "Modifier" button on the Dossier Médical page
+        newUser.setCin(null);
+        newUser.setDateNaissance(null);
 
         try {
             com.mediconnect.service.PatientService patientService = new com.mediconnect.service.PatientService();

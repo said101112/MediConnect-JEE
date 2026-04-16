@@ -246,8 +246,10 @@
             }
         </style>
 
+        <h:form id="mainDossierForm">
+
         <!-- Summary stats bar -->
-        <div class="stats-row">
+        <h:panelGroup id="statsBar" layout="block" styleClass="stats-row">
             <div class="stat-mini">
                 <div class="num" style="color: #7c3aed;">#{dossierMedicalBean.age}</div>
                 <div class="lbl">Ans</div>
@@ -262,7 +264,7 @@
                 </div>
                 <div class="lbl">Groupe Sanguin</div>
             </div>
-        </div>
+        </h:panelGroup>
 
         <div class="dossier-layout">
 
@@ -273,39 +275,46 @@
                 <div class="card">
                     <div class="card-header" style="color: #7c3aed;">
                         <i class="pi pi-user" style="color: #7c3aed;"></i> Identité
+                        <p:commandLink oncomplete="PF('editProfileDlg').show()" update=":editProfileForm"
+                                     style="margin-left: auto; color: #7c3aed; font-size: 13px; font-weight: 600; text-decoration: none;"
+                                     process="@this">
+                            <i class="pi pi-user-edit" style="font-size: 14px; margin-right: 4px;"></i> Modifier
+                        </p:commandLink>
                     </div>
                     <div class="card-body">
-                        <div class="patient-avatar">
-                            #{dossierMedicalBean.getInitiale(dossierMedicalBean.patient.prenom)}
-                        </div>
-                        <div class="patient-name">
-                            #{dossierMedicalBean.patient.prenom} #{dossierMedicalBean.patient.nom}
-                        </div>
-                        <div class="patient-email">#{dossierMedicalBean.patient.email}</div>
+                        <h:panelGroup id="identityContent">
+                            <div class="patient-avatar">
+                                #{dossierMedicalBean.getInitiale(dossierMedicalBean.patient.prenom)}
+                            </div>
+                            <div class="patient-name">
+                                #{dossierMedicalBean.patient.prenom} #{dossierMedicalBean.patient.nom}
+                            </div>
+                            <div class="patient-email">#{dossierMedicalBean.patient.email}</div>
 
-                        <div class="info-row">
-                            <i class="pi pi-id-card"></i>
-                            <span class="info-label">CIN</span>
-                            <span class="info-value">#{empty dossierMedicalBean.patient.cin ? '—' : dossierMedicalBean.patient.cin}</span>
-                        </div>
-                        <div class="info-row">
-                            <i class="pi pi-calendar"></i>
-                            <span class="info-label">Naissance</span>
-                            <span class="info-value">
-                                #{dossierMedicalBean.formatDate(dossierMedicalBean.patient.dateNaissance)}
-                                (#{dossierMedicalBean.age} ans)
-                            </span>
-                        </div>
-                        <div class="info-row">
-                            <i class="pi pi-phone"></i>
-                            <span class="info-label">Téléphone</span>
-                            <span class="info-value">#{empty dossierMedicalBean.patient.telephone ? '—' : dossierMedicalBean.patient.telephone}</span>
-                        </div>
-                        <div class="info-row">
-                            <i class="pi pi-map-marker"></i>
-                            <span class="info-label">Adresse</span>
-                            <span class="info-value">#{empty dossierMedicalBean.patient.adresse ? '—' : dossierMedicalBean.patient.adresse}</span>
-                        </div>
+                            <div class="info-row">
+                                <i class="pi pi-id-card"></i>
+                                <span class="info-label">CIN</span>
+                                <span class="info-value">#{empty dossierMedicalBean.patient.cin ? '—' : dossierMedicalBean.patient.cin}</span>
+                            </div>
+                            <div class="info-row">
+                                <i class="pi pi-calendar"></i>
+                                <span class="info-label">Naissance</span>
+                                <span class="info-value">
+                                    #{dossierMedicalBean.formatDate(dossierMedicalBean.patient.dateNaissance)}
+                                    (#{dossierMedicalBean.age} ans)
+                                </span>
+                            </div>
+                            <div class="info-row">
+                                <i class="pi pi-phone"></i>
+                                <span class="info-label">Téléphone</span>
+                                <span class="info-value">#{empty dossierMedicalBean.patient.telephone ? '—' : dossierMedicalBean.patient.telephone}</span>
+                            </div>
+                            <div class="info-row">
+                                <i class="pi pi-map-marker"></i>
+                                <span class="info-label">Adresse</span>
+                                <span class="info-value">#{empty dossierMedicalBean.patient.adresse ? '—' : dossierMedicalBean.patient.adresse}</span>
+                            </div>
+                        </h:panelGroup>
                     </div>
                 </div>
 
@@ -357,14 +366,12 @@
                         </div>
 
                         <!-- Download button -->
-                        <h:form>
                             <p:commandButton
                                 styleClass="btn-download-dossier"
                                 icon="pi pi-download"
                                 value="Télécharger mon Dossier PDF"
                                 action="#{dossierMedicalBean.telechargerDossier()}"
                                 ajax="false"/>
-                        </h:form>
                     </div>
                 </div>
 
@@ -440,6 +447,65 @@
             </div><!-- end right column -->
 
         </div><!-- end dossier-layout -->
+
+        </h:form><!-- end mainDossierForm -->
+
+        <!-- Dialog Modifier Profil -->
+        <p:dialog header="Modifier mes informations personnelles" widgetVar="editProfileDlg" modal="true" draggable="false"
+                  resizable="false" showEffect="fade" hideEffect="fade" responsive="true" width="450">
+            <h:form id="editProfileForm">
+                <p:messages id="editMsgs" closable="true" />
+                
+                <div style="display: flex; flex-direction: column; gap: 15px; padding: 10px 0;">
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <div class="field" style="flex: 1;">
+                            <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 5px;">Prénom</label>
+                            <p:inputText value="#{dossierMedicalBean.patientEdit.prenom}" style="width: 100%;" required="true" requiredMessage="Le prénom est obligatoire." />
+                        </div>
+                        <div class="field" style="flex: 1;">
+                            <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 5px;">Nom</label>
+                            <p:inputText value="#{dossierMedicalBean.patientEdit.nom}" style="width: 100%;" required="true" requiredMessage="Le nom est obligatoire." />
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 5px;">Email</label>
+                        <p:inputText value="#{dossierMedicalBean.patientEdit.email}" style="width: 100%;" required="true" requiredMessage="L'email est obligatoire." />
+                    </div>
+
+                    <div class="field">
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 5px;">CIN</label>
+                        <p:inputText value="#{dossierMedicalBean.patientEdit.cin}" style="width: 100%;" placeholder="Votre CIN" required="true" requiredMessage="Le CIN est obligatoire." />
+                    </div>
+                    
+                    <div class="field">
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 5px;">Date de Naissance</label>
+                        <p:datePicker value="#{dossierMedicalBean.patientEdit.dateNaissance}" pattern="dd/MM/yyyy"
+                                    showIcon="true" showOnFocus="false" style="width: 100%;" />
+                    </div>
+                    
+                    <div class="field">
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 5px;">Téléphone</label>
+                        <p:inputText value="#{dossierMedicalBean.patientEdit.telephone}" style="width: 100%;" placeholder="06XXXXXXXX" />
+                    </div>
+                    
+                    <div class="field">
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 5px;">Adresse</label>
+                        <p:inputTextarea value="#{dossierMedicalBean.patientEdit.adresse}" rows="2" style="width: 100%;" placeholder="Votre adresse complète" />
+                    </div>
+                </div>
+                
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; border-top: 1px solid #f1f5f9; padding-top: 15px;">
+                    <p:commandButton value="Annuler" onclick="PF('editProfileDlg').hide()" type="button" 
+                                   styleClass="ui-button-flat ui-button-secondary" />
+                    <p:commandButton value="Enregistrer" action="#{dossierMedicalBean.saveProfile}" 
+                                   update=":mainDossierForm:identityContent :mainDossierForm:statsBar editMsgs"
+                                   oncomplete="if (!args.validationFailed) PF('editProfileDlg').hide()"
+                                   style="background: #7c3aed; border: none;" icon="pi pi-check" />
+                </div>
+            </h:form>
+        </p:dialog>
 
     </ui:define>
 

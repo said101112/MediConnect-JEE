@@ -9,223 +9,218 @@
 
     <ui:define name="content">
         <style>
-            .schedule-container {
-                background: white;
-                border-radius: 16px;
-                padding: 30px;
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
-                border: 1px solid #f1f5f9;
+            .booking-container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 30px;
                 margin-top: 10px;
             }
 
-            /* Custom Header Styling like the image */
-            .custom-schedule-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
+            .left-panel {
+                flex: 1;
+                min-width: 300px;
                 background: white;
-                padding: 12px 20px;
-                border-radius: 12px;
-                margin-bottom: 20px;
+                border-radius: 16px;
+                padding: 30px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
                 border: 1px solid #f1f5f9;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             }
 
-            .view-switcher-pill {
+            .right-panel {
+                flex: 2;
+                min-width: 400px;
+                background: white;
+                border-radius: 16px;
+                padding: 30px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+                border: 1px solid #f1f5f9;
+            }
+
+            .section-title {
+                font-size: 1.25rem;
+                font-weight: 700;
+                color: #1e293b;
+                margin-bottom: 25px;
                 display: flex;
-                background: #f8fafc;
-                padding: 4px;
-                border-radius: 10px;
-                gap: 4px;
+                align-items: center;
+                gap: 10px;
+                padding-bottom: 15px;
+                border-bottom: 1px solid #e2e8f0;
             }
 
-            .view-btn {
-                border: none !important;
-                background: transparent !important;
-                color: #64748b !important;
-                font-weight: 500 !important;
-                padding: 8px 16px !important;
-                border-radius: 8px !important;
-                font-size: 13px !important;
-                box-shadow: none !important;
+            .field-group {
+                margin-bottom: 25px;
             }
 
-            .view-btn.active {
-                background: #2563eb !important;
-                color: white !important;
-            }
-
-            /* Schedule Internals */
-            .fc-header-toolbar {
-                display: none !important;
-                /* Hide default toolbar to use our custom one */
-            }
-
-            .fc-theme-standard td,
-            .fc-theme-standard th {
-                border-color: #f1f5f9 !important;
-            }
-
-            .fc-col-header-cell-cushion {
-                padding: 15px 0 !important;
-                font-weight: 600 !important;
-                color: #334155 !important;
+            .field-label {
+                display: block;
+                font-size: 0.9rem;
+                font-weight: 600;
+                color: #64748b;
+                margin-bottom: 8px;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
-                font-size: 11px;
             }
 
-            .fc-timegrid-slot-label-cushion {
-                font-size: 11px;
+            /* Custom Calendar styles */
+            .ui-datepicker.ui-widget {
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                width: 100%;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            }
+            .ui-datepicker .ui-datepicker-header {
+                background: white;
+                border-bottom: 1px solid #e2e8f0;
+                border-radius: 12px 12px 0 0;
+            }
+            
+            /* Slots Grid */
+            .slots-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 12px;
+            }
+
+            .slot-btn {
+                background: #f8fafc !important;
+                color: #3b82f6 !important;
+                border: 1px solid #bfdbfe !important;
+                font-weight: 600 !important;
+                border-radius: 8px !important;
+                transition: all 0.2s;
+            }
+            
+            .slot-btn:hover {
+                background: #eff6ff !important;
+                border-color: #3b82f6 !important;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 6px rgba(59, 130, 246, 0.15) !important;
+            }
+
+            .no-slots {
+                text-align: center;
+                padding: 40px;
                 color: #94a3b8;
-                font-weight: 500;
-                text-transform: uppercase;
+                background: #f8fafc;
+                border-radius: 12px;
+                border: 1px dashed #cbd5e1;
             }
 
-            /* Event Styling matching image (Left border accent) */
-            .fc-event {
-                border: none !important;
-                border-radius: 6px !important;
-                padding: 4px 8px !important;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02) !important;
-            }
-
-            .occupied-slot {
-                background-color: #f1f5f9 !important;
-                border-left: 4px solid #cbd5e1 !important;
-                color: #64748b !important;
-                cursor: not-allowed !important;
-            }
-
-            .my-rdv-slot {
-                background-color: #ecfdf5 !important;
-                border-left: 4px solid #10b981 !important;
-                color: #065f46 !important;
-            }
-
-            .fc-timegrid-now-indicator-line {
-                border-color: #ef4444 !important;
-            }
-
-            .medecin-select-container {
-                margin-bottom: 0;
-                box-shadow: none;
+            .upcoming-table .ui-datatable-header {
+                background: transparent;
                 border: none;
-                flex: 1;
                 padding: 0;
+                margin-bottom: 10px;
             }
         </style>
 
         <h:form id="form">
             <p:growl id="messages" showDetail="true" />
-
-            <div class="custom-schedule-header">
-                <div class="view-switcher-pill">
-                    <p:commandButton value="Week" onclick="PF('rdvSchedule').changeView('timeGridWeek')"
-                        styleClass="view-btn active" type="button" />
-                    <p:commandButton value="Day" onclick="PF('rdvSchedule').changeView('timeGridDay')"
-                        styleClass="view-btn" type="button" />
-                    <p:commandButton value="Month" onclick="PF('rdvSchedule').changeView('dayGridMonth')"
-                        styleClass="view-btn" type="button" />
+            
+            <!-- Mes rendez-vous à venir (Full width section at top, optional) -->
+            <h:panelGroup id="myAppointments" rendered="#{not empty prendreRdvBean.myUpcomingAppointments}">
+                <div class="left-panel" style="margin-bottom: 30px; min-width: 100%;">
+                    <div class="section-title">
+                        <i class="pi pi-clock" style="color: #3b82f6;"></i> Mes Rendez-vous à venir
+                    </div>
+                    <p:dataTable value="#{prendreRdvBean.myUpcomingAppointments}" var="myRdv" styleClass="upcoming-table">
+                        <p:column headerText="Date et Heure">
+                            <strong>
+                                <h:outputText value="#{myRdv.dateHeure}">
+                                    <f:convertDateTime pattern="EEEE dd MMMM yyyy à HH:mm" type="localDateTime" locale="fr_FR"/>
+                                </h:outputText>
+                            </strong>
+                        </p:column>
+                        <p:column headerText="Médecin">
+                            Dr. #{myRdv.medecin.nom} #{myRdv.medecin.prenom}
+                            <div style="font-size: 0.85rem; color: #64748b;">#{myRdv.medecin.specialite}</div>
+                        </p:column>
+                        <p:column headerText="Action" style="width: 150px; text-align: center;">
+                            <p:commandButton value="Annuler" action="#{prendreRdvBean.cancelAppointment(myRdv.id)}" 
+                                update=":form" styleClass="ui-button-danger ui-button-flat" icon="pi pi-times-circle"
+                                onstart="return confirm('Êtes-vous sûr de vouloir annuler ce rendez-vous ?');"/>
+                        </p:column>
+                    </p:dataTable>
                 </div>
+            </h:panelGroup>
 
-                <div style="display: flex; align-items: center; gap: 20px;">
-                    <div class="medecin-select-container">
-                        <span
-                            style="font-size: 11px; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-right: 10px; letter-spacing: 0.5px;">Médecin:</span>
-                        <p:selectOneMenu id="medecin" value="#{prendreRdvBean.selectedMedecinId}"
-                            style="min-width: 250px; border-radius: 8px;">
-                            <f:selectItem itemLabel="All Doctors" itemValue="#{null}" noSelectionOption="true" />
+            <div class="booking-container">
+                <!-- Left Panel: Doctor & Date Selection -->
+                <div class="left-panel">
+                    <div class="section-title">
+                        <i class="pi pi-user" style="color: #3b82f6;"></i> Sélection
+                    </div>
+
+                    <div class="field-group">
+                        <span class="field-label">Choisissez un médecin</span>
+                        <p:selectOneMenu id="medecin" value="#{prendreRdvBean.selectedMedecinId}" style="width: 100%;">
+                            <f:selectItem itemLabel="Sélectionnez un docteur" itemValue="#{null}" noSelectionOption="true" />
                             <f:selectItems value="#{prendreRdvBean.medecins}" var="med"
-                                itemLabel="Dr. #{med.nom} #{med.prenom}" itemValue="#{med.id}" />
-                            <p:ajax listener="#{prendreRdvBean.onMedecinChange}" update="schedule form:messages" />
+                                itemLabel="Dr. #{med.nom} #{med.prenom} - #{med.specialite}" itemValue="#{med.id}" />
+                            <p:ajax listener="#{prendreRdvBean.onMedecinOrDateChange}" update="slotsPanel" />
                         </p:selectOneMenu>
                     </div>
 
-                    <p:commandButton icon="pi pi-chevron-left" onclick="PF('rdvSchedule').prev()"
-                        styleClass="ui-button-flat ui-button-secondary" type="button"
-                        style="border-radius: 50% !important; width: 32px; height: 32px;" />
-                    <p:commandButton icon="pi pi-chevron-right" onclick="PF('rdvSchedule').next()"
-                        styleClass="ui-button-flat ui-button-secondary" type="button"
-                        style="border-radius: 50% !important; width: 32px; height: 32px;" />
+                    <div class="field-group">
+                        <span class="field-label">Choisissez une date</span>
+                        <p:datePicker value="#{prendreRdvBean.selectedDate}" inline="true" 
+                                      mindate="#{now}" disabledDays="#{prendreRdvBean.disabledDays}">
+                            <p:ajax event="dateSelect" listener="#{prendreRdvBean.onMedecinOrDateChange}" update="slotsPanel" />
+                        </p:datePicker>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Available Slots -->
+                <div class="right-panel">
+                    <div class="section-title">
+                        <i class="pi pi-calendar" style="color: #3b82f6;"></i> Créneaux Disponibles
+                    </div>
+
+                    <h:panelGroup id="slotsPanel">
+                        
+                        <h:panelGroup rendered="#{prendreRdvBean.selectedMedecinId == null}">
+                            <div class="no-slots">
+                                <i class="pi pi-info-circle" style="font-size: 2.5rem; margin-bottom: 15px; color: #cbd5e1;"></i>
+                                <p style="margin: 0;">Veuillez d'abord sélectionner un médecin pour voir ses disponibilités.</p>
+                            </div>
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{prendreRdvBean.selectedMedecinId != null}">
+                            
+                            <div style="margin-bottom: 20px; color: #64748b; font-weight: 500;">
+                                Disponibilités pour le <strong>
+                                    <h:outputText value="#{prendreRdvBean.selectedDate}">
+                                        <f:convertDateTime pattern="dd MMMM yyyy" type="localDate" locale="fr_FR" />
+                                    </h:outputText>
+                                </strong> avec <strong>#{prendreRdvBean.selectedMedecinName}</strong>
+                            </div>
+
+                            <h:panelGroup rendered="#{empty prendreRdvBean.availableSlots}">
+                                <div class="no-slots" style="background-color: #fff1f2; border-color: #fecdd3; color: #9f1239;">
+                                    <i class="pi pi-calendar-times" style="font-size: 2.5rem; margin-bottom: 15px; color: #fecdd3;"></i>
+                                    <p style="margin: 0;">Aucun créneau disponible pour cette date.<br/>Veuillez sélectionner une autre date.</p>
+                                </div>
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{not empty prendreRdvBean.availableSlots}">
+                                <div class="slots-grid">
+                                    <ui:repeat value="#{prendreRdvBean.availableSlots}" var="slot">
+                                        <p:commandButton value="#{slot}" action="#{prendreRdvBean.bookAppointment(slot)}"
+                                                         update=":form" styleClass="slot-btn"
+                                                         onstart="return confirm('Confirmez-vous la prise de ce rendez-vous à ' + '#{slot}' + ' ?');" />
+                                    </ui:repeat>
+                                </div>
+                            </h:panelGroup>
+                            
+                        </h:panelGroup>
+
+                    </h:panelGroup>
                 </div>
             </div>
-
-            <div class="schedule-container">
-                <p:schedule id="schedule" value="#{prendreRdvBean.eventModel}" widgetVar="rdvSchedule" timeZone="UTC"
-                    clientTimeZone="local" minTime="09:00:00" maxTime="18:00:00" slotDuration="00:30:00"
-                    slotLabelInterval="01:00" allDaySlot="false" view="timeGridWeek" rightHeaderTemplate=""
-                    leftHeaderTemplate="" centerHeaderTemplate="" slotLabelFormat="hh:mm A">
-
-                    <p:ajax event="dateSelect" listener="#{prendreRdvBean.onDateSelect}"
-                        update=":eventDialogForm:eventDetails messages"
-                        oncomplete="if (args.showDialog) PF('eventDialog').show();" />
-
-                    <p:ajax event="eventSelect" listener="#{prendreRdvBean.onEventSelect}"
-                        update="messages :cancelDialogForm:cancelDetails"
-                        oncomplete="if (args.isMine) PF('cancelDialog').show();" />
-                </p:schedule>
-            </div>
+            
         </h:form>
 
-        <p:dialog widgetVar="eventDialog" header="Confirmer la réservation" showEffect="clip" hideEffect="clip"
-            modal="true" width="450">
-            <h:form id="eventDialogForm">
-                <p:outputPanel id="eventDetails">
-                    <p:messages id="dlgMessages" showDetail="true" closable="true" />
-
-                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                        <div style="margin-bottom: 10px;">
-                            <strong>Date :</strong>
-                            <h:outputText value="#{prendreRdvBean.selectedDate} à #{prendreRdvBean.selectedTimeSlot}"
-                                style="color: var(--primary-color); font-weight: bold;" />
-                        </div>
-                        <div>
-                            <strong>Médecin :</strong>
-                            <h:outputText value="#{prendreRdvBean.selectedMedecinName}" />
-                        </div>
-                    </div>
-
-                    <h:panelGrid columns="1" cellpadding="5" style="width:100%">
-                        <h:outputLabel for="motif" value="Motif de la visite (optionnel):" style="font-weight: 500;" />
-                        <p:inputTextarea id="motif" value="#{prendreRdvBean.newRendezVous.motif}" rows="3"
-                            style="width:100%; border-radius: 6px;"
-                            placeholder="Ex: Consultation générale, suivi, douleur..." />
-                    </h:panelGrid>
-                </p:outputPanel>
-
-                <div
-                    style="text-align: right; margin-top: 20px; border-top: 1px solid #e5e7eb; padding-top: 15px; display: flex; justify-content: flex-end; gap: 10px;">
-                    <p:commandButton value="Annuler" type="button" onclick="PF('eventDialog').hide();"
-                        styleClass="ui-button-flat ui-button-secondary" />
-                    <p:commandButton value="Confirmer le RDV" update=":form:messages :form:schedule eventDetails"
-                        action="#{prendreRdvBean.addEvent}" oncomplete="if (!args.error) PF('eventDialog').hide();"
-                        styleClass="ui-button-primary" icon="pi pi-check" />
-                </div>
-            </h:form>
-        </p:dialog>
-
-        <p:confirmDialog widgetVar="cancelDialog" header="Annuler le rendez-vous"
-            message="Êtes-vous sûr de vouloir annuler ce rendez-vous ?" severity="warn">
-            <h:form id="cancelDialogForm">
-                <p:outputPanel id="cancelDetails" style="margin-bottom: 20px;">
-                    <div
-                        style="background: #fff1f2; padding: 12px; border-radius: 8px; color: #991b1b; font-size: 14px;">
-                        <i class="pi pi-info-circle" style="margin-right: 8px;"></i>
-                        RDV prévu le <strong>#{prendreRdvBean.selectedDate}</strong> à
-                        <strong>#{prendreRdvBean.selectedTimeSlot}</strong>.
-                    </div>
-                </p:outputPanel>
-
-                <div style="text-align: right; display: flex; justify-content: flex-end; gap: 10px;">
-                    <p:commandButton value="Non, garder" type="button" onclick="PF('cancelDialog').hide();"
-                        styleClass="ui-button-flat ui-button-secondary" />
-                    <p:commandButton value="Oui, annuler le RDV" action="#{prendreRdvBean.deleteSelectedEvent}"
-                        update=":form:messages :form:schedule" oncomplete="PF('cancelDialog').hide();"
-                        styleClass="ui-button-danger" icon="pi pi-trash" />
-                </div>
-            </h:form>
-        </p:confirmDialog>
     </ui:define>
 
 </ui:composition>

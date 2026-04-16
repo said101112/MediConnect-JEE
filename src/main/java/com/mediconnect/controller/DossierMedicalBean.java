@@ -9,6 +9,9 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.faces.application.FacesMessage;
+
+import com.mediconnect.repository.UserRepository;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -31,13 +34,24 @@ public class DossierMedicalBean implements Serializable {
     private SessionManager sessionManager;
 
     private Patient patient;
+    private Patient patientEdit; // Copy for editing
     private List<Consultation> consultations = new ArrayList<>();
     private final ConsultationService consultationService = new ConsultationService();
+    private final UserRepository userRepository = new UserRepository();
+    private final com.mediconnect.repository.PatientRepository patientRepository = new com.mediconnect.repository.PatientRepository();
 
     @PostConstruct
     public void init() {
         if (sessionManager.isLoggedIn() && sessionManager.isPatient()) {
-            patient = (Patient) sessionManager.getCurrentUser();
+            Patient sessionPatient = (Patient) sessionManager.getCurrentUser();
+            // Fetch updated patient data directly from database to include recent medical record edits
+            userRepository.findById(sessionPatient.getId()).ifPresent(user -> {
+                if (user instanceof Patient) this.patient = (Patient) user;
+            });
+            if (this.patient == null) {
+                this.patient = sessionPatient; // Fallback
+            }
+            prepareEdit();
             consultations = consultationService.getOrdonnancesByPatient(patient.getId());
         }
     }
@@ -47,6 +61,60 @@ public class DossierMedicalBean implements Serializable {
         FacesContext ctx = FacesContext.getCurrentInstance();
         String contextPath = ctx.getExternalContext().getRequestContextPath();
         ctx.getExternalContext().redirect(contextPath + "/download/dossier");
+    }
+
+    /** Prepare the editing copy. */
+    public void prepareEdit() {
+        if (patient != null) {
+            // Manual copy to avoid modifying the displayed one until save
+            patientEdit = new Patient();
+            patientEdit.setId(patient.getId());
+            patientEdit.setNom(patient.getNom());
+            patientEdit.setPrenom(patient.getPrenom());
+            patientEdit.setEmail(patient.getEmail());
+            patientEdit.setCin(patient.getCin());
+            patientEdit.setTelephone(patient.getTelephone());
+            patientEdit.setAdresse(patient.getAdresse());
+            patientEdit.setDateNaissance(patient.getDateNaissance());
+            patientEdit.setPassword(patient.getPassword());
+            patientEdit.setActive(patient.getActive());
+            patientEdit.setAllergies(patient.getAllergies());
+            patientEdit.setAntecedents(patient.getAntecedents());
+            patientEdit.setGroupeSanguin(patient.getGroupeSanguin());
+        }
+    }
+
+    /** Save the profile changes. */
+    public void saveProfile() {
+        try {
+            // Perform update in repository
+            patientRepository.update(patientEdit);
+            
+            // If successful, update the main objects
+            this.patient = patientEdit; 
+            
+            // Sync with SessionManager so other pages (like dashboard) show updated name/email
+            sessionManager.setCurrentUser(patient);
+            
+            prepareEdit(); // Refresh edit copy for next time
+            
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Succès", "Votre profil a été mis à jour avec succès."));
+                    
+        } catch (Exception e) {
+            String msg = e.getMessage();
+            if (msg != null && (msg.contains("cin") || msg.contains("unique constraint"))) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Ce CIN est déjà utilisé par un autre patient."));
+            } else if (msg != null && msg.contains("email")) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Cet email est déjà utilisé."));
+            } else {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Impossible de mettre à jour le profil. Vérifiez vos données."));
+            }
+            e.printStackTrace();
+        }
     }
 
     /** Format a LocalDate for display. */
@@ -88,6 +156,8 @@ public class DossierMedicalBean implements Serializable {
     // ── Getters ─────────────────────────────────────────────────────────────
 
     public Patient getPatient() { return patient; }
+    public Patient getPatientEdit() { return patientEdit; }
+    public void setPatientEdit(Patient patientEdit) { this.patientEdit = patientEdit; }
     public List<Consultation> getConsultations() { return consultations; }
     public int getConsultationCount() { return consultations != null ? consultations.size() : 0; }
 }

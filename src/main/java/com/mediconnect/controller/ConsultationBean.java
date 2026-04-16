@@ -75,6 +75,17 @@ public class ConsultationBean implements Serializable {
         }
     }
 
+    public void sauvegarderDossierMedical() {
+        try {
+            consultationService.updatePatient(patientSelectionne);
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Succès", "Dossier médical mis à jour avec succès."));
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Mise à jour du dossier impossible."));
+        }
+    }
+
     public String cloturerConsultation() {
         try {
             consultationService.cloturerConsultation(consultationEnCours);

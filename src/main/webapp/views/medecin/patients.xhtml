@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <title>MediConnect – Mes Patients</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',sans-serif; background:#f8fafc; color:#1e293b; display:flex; min-height:100vh; }
+
+        .sidebar { width:240px; background:#fff; border-right:1px solid #e2e8f0; display:flex; flex-direction:column; position:fixed; height:100vh; z-index:100; }
+        .sidebar-logo { display:flex; align-items:center; gap:10px; padding:20px; border-bottom:1px solid #f1f5f9; }
+        .logo-icon { width:38px; height:38px; background:#2563eb; border-radius:10px; display:flex; align-items:center; justify-content:center; color:white; font-size:18px; }
+        .logo-text { font-weight:700; font-size:1rem; color:#1e293b; }
+        .logo-sub  { font-size:0.72rem; color:#94a3b8; }
+        .sidebar-nav { flex:1; padding:16px 12px; }
+        .nav-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; color:#64748b; text-decoration:none; font-size:0.9rem; font-weight:500; transition:all 0.15s; margin-bottom:2px; }
+        .nav-item:hover { background:#f1f5f9; color:#1e293b; }
+        .nav-item.active { background:#eff6ff; color:#2563eb; }
+        .nav-item i { width:18px; text-align:center; }
+        .sidebar-footer { padding:16px 20px; border-top:1px solid #f1f5f9; display:flex; align-items:center; gap:10px; }
+        .avatar { width:36px; height:36px; background:linear-gradient(135deg,#2563eb,#1d4ed8); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:0.85rem; flex-shrink:0; }
+
+        .main { margin-left:240px; flex:1; display:flex; flex-direction:column; }
+        .topbar { background:white; border-bottom:1px solid #e2e8f0; padding:14px 28px; display:flex; align-items:center; position:sticky; top:0; z-index:50; }
+        .content { padding:28px; }
+
+        .card { background:white; border-radius:14px; border:1px solid #e2e8f0; overflow:hidden; }
+        .card-header { padding:18px 20px; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; justify-content:space-between; }
+        .card-header h3 { font-size:1rem; font-weight:600; }
+
+        .appt-table { width:100%; border-collapse:collapse; }
+        .appt-table th { text-align:left; font-size:0.72rem; font-weight:600; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px; padding:12px 20px; border-bottom:1px solid #f1f5f9; }
+        .appt-table td { padding:14px 20px; border-bottom:1px solid #f8fafc; font-size:0.88rem; }
+        .patient-cell { display:flex; align-items:center; gap:10px; }
+        .p-avatar { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700; color:white; background:#2563eb; }
+    </style>
+</h:head>
+
+<h:body>
+
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon"><i class="fas fa-shield-halved"/></div>
+            <div>
+                <div class="logo-text">MediConnect</div>
+                <div class="logo-sub">Clinic Management</div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.xhtml"  class="nav-item"><i class="fas fa-th-large"/> Dashboard</a>
+            <a href="patients.xhtml"   class="nav-item active"><i class="fas fa-user-injured"/> Patients</a>
+            <a href="planning.xhtml"   class="nav-item"><i class="fas fa-calendar-check"/> Appointments</a>
+            <a href="historique.xhtml" class="nav-item"><i class="fas fa-stethoscope"/> Consultations</a>
+            <a href="facturation.xhtml" class="nav-item"><i class="fas fa-file-invoice-dollar"/> Billing</a>
+        </nav>
+        <div class="sidebar-footer">
+            <h:form style="width: 100%;">
+                <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
+                    <div class="avatar">Dr</div>
+                    <div style="flex: 1;">
+                        <div style="font-size: 0.85rem; font-weight: 600;">Dr. #{medecinBean.medecinConnecte.fullName}</div>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="topbar">
+            <h2 style="font-size: 1.25rem; font-weight: 700;">Mes Patients</h2>
+        </div>
+
+        <div class="content">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Liste de vos patients suivis</h3>
+                </div>
+                <h:form id="patientForm">
+                    <table class="appt-table">
+                        <thead>
+                        <tr>
+                            <th>Patient</th>
+                            <th>Email</th>
+                            <th>Téléphone</th>
+                            <th>Date de Naissance</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <ui:repeat value="#{patientMedecinBean.patients}" var="p">
+                            <tr>
+                                <td>
+                                    <div class="patient-cell">
+                                        <div class="p-avatar">
+                                            #{p.prenom.substring(0,1)}#{p.nom.substring(0,1)}
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 600;">#{p.fullName}</div>
+                                            <div style="font-size: 0.75rem; color: #94a3b8;">ID: ##{p.id}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>#{p.email}</td>
+                                <td>#{p.telephone}</td>
+                                <td>
+                                    <h:outputText value="#{p.dateNaissance}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy" type="localDate"/>
+                                    </h:outputText>
+                                </td>
+                            </tr>
+                        </ui:repeat>
+                        <h:panelGroup rendered="#{empty patientMedecinBean.patients}">
+                            <tr>
+                                <td colspan="4" style="text-align: center; padding: 40px; color: #94a3b8;">
+                                    <i class="fas fa-user-slash" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                                    Aucun patient trouvé pour le moment.
+                                </td>
+                            </tr>
+                        </h:panelGroup>
+                        </tbody>
+                    </table>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+</h:body>
+</html>

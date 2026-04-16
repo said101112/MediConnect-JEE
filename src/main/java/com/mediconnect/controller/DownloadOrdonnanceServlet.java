@@ -2,6 +2,7 @@ package com.mediconnect.controller;
 
 import com.mediconnect.model.Consultation;
 import com.mediconnect.model.Patient;
+import com.mediconnect.model.User;
 import com.mediconnect.service.ConsultationService;
 import com.mediconnect.service.SessionManager;
 import jakarta.inject.Inject;
@@ -34,7 +35,7 @@ public class DownloadOrdonnanceServlet extends HttpServlet {
             throws ServletException, IOException {
 
         // ── Auth guard ──────────────────────────────────────────────────────
-        if (!sessionManager.isLoggedIn() || !sessionManager.isPatient()) {
+        if (!sessionManager.isLoggedIn()) {
             resp.sendRedirect(req.getContextPath() + "/login.xhtml");
             return;
         }
@@ -61,8 +62,18 @@ public class DownloadOrdonnanceServlet extends HttpServlet {
         }
 
         // ── Ownership check ─────────────────────────────────────────────────
-        Patient currentPatient = (Patient) sessionManager.getCurrentUser();
-        if (!consultation.getPatient().getId().equals(currentPatient.getId())) {
+        boolean authorized = false;
+        User currentUser = sessionManager.getCurrentUser();
+
+        if (sessionManager.isPatient()) {
+            authorized = consultation.getPatient().getId().equals(currentUser.getId());
+        } else if (sessionManager.isMedecin()) {
+            authorized = consultation.getMedecin().getId().equals(currentUser.getId());
+        } else if (sessionManager.isSecretaire()) {
+            authorized = true; // Secretaries can download any for administrative purposes
+        }
+
+        if (!authorized) {
             resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Accès refusé.");
             return;
         }

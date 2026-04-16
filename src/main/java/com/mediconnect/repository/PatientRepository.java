@@ -12,4 +12,22 @@ public class PatientRepository {
             return session.createQuery("SELECT p FROM Patient p", Patient.class).list();
         }
     }
+    public List<Patient> findByMedecin(Long medecinId) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery(
+                            "SELECT DISTINCT p FROM Consultation c " +
+                            "JOIN c.patient p " +
+                            "WHERE c.medecin.id = :medecinId", Patient.class)
+                    .setParameter("medecinId", medecinId)
+                    .list();
+        }
+    }
+
+    public void update(Patient patient) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+            session.merge(patient);
+            session.getTransaction().commit();
+        }
+    }
 }
