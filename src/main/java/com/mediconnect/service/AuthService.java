@@ -15,9 +15,13 @@ public class AuthService implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private final UserRepository userRepository;
-
+    
     public AuthService() {
-        this.userRepository = new UserRepository();
+        this(new UserRepository());
+    }
+
+    public AuthService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     /**
